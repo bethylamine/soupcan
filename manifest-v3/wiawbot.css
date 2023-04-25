@@ -1,0 +1,10 @@
+body {
+    --wiawBotTransphobic: #cf2d21;
+ }
+
+.wiaw-label-transphobe, a.wiaw-label-transphobe {
+    color: var(--wiawBotTransphobic) !important;
+    font-weight: bold !important;
+}
+
+ .has-wiaw-label * { color: inherit !important; }

@@ -1,0 +1,33 @@
+{
+    "name": "WhatIsAWomanBot",
+    "version": "0.1",
+    "manifest_version": 3,
+    "description": "Brings features of WhatIsAWomanBot to your Twitter pages.",
+    "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
+    "host_permissions": ["*://*.twitter.com/*"],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [{
+        "all_frames": true,
+        "css": ["wiawbot.css"],
+        "js": ["wiawbot.js"],
+        "matches": ["*://*.twitter.com/*" ]
+    }],
+    "action": {
+        "default_icon": {
+            "16": "icon16.png",
+            "24": "icon24.png",
+            "32": "icon32.png",
+            "48": "icon48.png"
+        },
+        "default_title": "WhatIsAWomanBot"
+    },
+    "icons": {
+        "16": "icon16.png",
+        "32": "icon32.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
+    },
+    "permissions": ["contextMenus", "storage"]
+}
