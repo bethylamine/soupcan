@@ -1,9 +1,15 @@
 body {
     --wiawBotTransphobic: #cf2d21;
+    --wiawBotLocallyTransphobic: #faa11b;
  }
 
 .wiaw-label-transphobe, a.wiaw-label-transphobe {
     color: var(--wiawBotTransphobic) !important;
+    font-weight: bold !important;
+}
+
+.wiaw-label-local-transphobe, a.wiaw-label-local-transphobe {
+    color: var(--wiawBotLocallyTransphobic) !important;
     font-weight: bold !important;
 }
 

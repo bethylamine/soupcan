@@ -83,6 +83,11 @@ async function processLink(a) {
   hashed_identifier = await hash(identifier + ":" + database["salt"]);
 
   database_entry = database["entries"][hashed_identifier];
+
+  if (!database_entry) {
+    database_entry = local_entries[hashed_identifier];
+  }
+
   if (database_entry) {
     a.wiawLabel = database_entry["label"]
     if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
@@ -208,10 +213,36 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     identifier = getIdentifier(localUrl);
 
+    // Add locally
+    var local_key = await hash(identifier + ":" + database["salt"])
+    local_entries[local_key] = {"label": "local-transphobe", "reason": "Reported by you"};
+
+    browser.storage.local.set({
+      "local_entries": local_entries
+    });
+
+    updateAllLabels();
+
+    // Report to WIAW
+
     const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
     const jsonData = await response.json();
+
     console.log(jsonData);
     sendResponse(jsonData);
+    return true;
+  } else if (message.action == "update-database") {
+    const response = await fetch('https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json');
+    const jsonData = await response.json();
+
+    browser.storage.local.set({
+      "database": {
+          "last_updated": Date.now(),
+          "salt": jsonData["salt"],
+          "entries": jsonData["entries"]
+        }
+    });
+    sendResponse("OK");
     return true;
   }
   sendResponse("Hello from content!");

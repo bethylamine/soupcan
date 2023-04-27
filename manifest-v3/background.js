@@ -22,6 +22,12 @@ function start() {
     contexts: ["page"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
+  browser.contextMenus.create({
+    id: "update-database",
+    title: "Update database",
+    contexts: ["page"],
+    targetUrlPatterns: ["*://*.twitter.com/*"]
+  });
 
   browser.contextMenus.onClicked.addListener(function (info, tab) {
     var action = info.menuItemId;
@@ -35,6 +41,12 @@ function start() {
     } else if (action == "run-setup") {
       browser.tabs.create({
         url: getURL('start.html')
+      });
+    } else if (action == "update-database") {
+      browser.tabs.sendMessage(tab.id, {
+        "action": "update-database"
+      }).then((response) => {
+        console.log("Response is " + response);
       });
     }
   });
