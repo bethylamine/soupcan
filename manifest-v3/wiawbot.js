@@ -30,6 +30,9 @@ function init() {
 function createObserver() {
   var observer = new MutationObserver(mutationsList => {
     for (const mutation of mutationsList) {
+      if (location.href != lastUpdatedUrl) {
+        updatePage();
+      }
       if (mutation.type == 'childList') {
         for (const node of mutation.addedNodes) {
           if (node instanceof HTMLAnchorElement) {
@@ -37,11 +40,6 @@ function createObserver() {
           }
           if (node instanceof HTMLDivElement) {
             checkDiv(node);
-            if (node.getAttribute("data-testid") == "TypeaheadUser") {
-              processSearchResult(node);
-            } else if (node.getAttribute("data-testid") == "typeaheadRecentSearchesItem") {
-              processSearchResult(node);
-            }
           }
           if (node instanceof HTMLElement) {
             for (const subnode of node.querySelectorAll('a')) {
@@ -60,7 +58,7 @@ function createObserver() {
 
 function checkDiv(div) {
   var dt = div.getAttribute("data-testid")
-  if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem") {
+  if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem" || dt == "User-Name" || dt == "UserName" || dt == "conversation") {
     processDiv(div);
   }
 
@@ -72,9 +70,27 @@ function checkDiv(div) {
   }
 }
 
+function applyProfileDecorations(div) {
+  return;
+  if (div.getAttribute("data-testid") == "UserName") {
+    if (!/<div[^>]*id=['"]wiawbe-profile/.test(div.innerHTML)) {
+      div.innerHTML = div.innerHTML + "<div id='wiawbe-profile'><p><span id='wiawbe-profile-reason'>" + div.wiawReason + "</span></p></div>";
+    }
+
+    var profileReason = document.getElementById("wiawbe-profile-reason");
+    if (profileReason) {
+      profileReason.innerText = div.wiawReason;
+    }
+}
+}
+
 function updateAllLabels() {
   for (const a of document.getElementsByTagName('a')) {
     processLink(a);
+  }
+  var profileDiv = document.getElementById("wiawbe-profile");
+  if (profileDiv) {
+    profileDiv.remove();
   }
   for (const div of document.getElementsByTagName('div')) {
     checkDiv(div);
@@ -93,7 +109,7 @@ function hash(string) {
 }
 
 async function processDiv(div) {
-  div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/g, "$1");
+  div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/gs, "$1");
   if (!div_identifier) {
     return;
   }
@@ -102,25 +118,32 @@ async function processDiv(div) {
 
   if (database_entry) {
     div.wiawLabel = database_entry["label"]
-    if (div.wiawLabel && !div.classList.contains('has-wiaw-label')) {
+    div.wiawReason =  database_entry["reason"];
+    if (div.wiawLabel && !div.classList.contains('wiaw-label' + div.wiawLabel)) {
+      div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
       div.classList.add('has-wiaw-label');
       div.classList.add('wiaw-label-' + div.wiawLabel);
     }
   } else {
+    console.log("Removing label from div with identifier " + div_identifier);
     div.classList.remove('has-wiaw-label');
     div.classList.remove('wiaw-label-' + div.wiawLabel);
     div.classList.add('wiaw-removed');
     div.wiawLabel = null;
+    div.wiawReason = null;
   }
 
   if (!div.observer) {
     div.observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         if (mutation.attributeName == "class") {
-          if (div.wiawLabel && !mutation.target.classList.contains('has-wiaw-label')) {
+          if (div.wiawLabel && !mutation.target.classList.contains('wiaw-label-' + div.wiawLabel)) {
+            div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
             mutation.target.classList.add('has-wiaw-label');
             mutation.target.classList.add('wiaw-label-' + div.wiawLabel);
           }
+        } else if (mutation.attributeName == "data-wiawbe-reason") {
+          applyProfileDecorations(div);
         }
       });
     });
@@ -148,11 +171,20 @@ async function processLink(a) {
   }
   
   identifier = getIdentifier(localUrl);
+  a.wiawLabel = null;
+  a.wiawReason = null;
 
   database_entry = await getDatabaseEntry(identifier);
 
   if (database_entry) {
     a.wiawLabel = database_entry["label"]
+    a.wiawReason = database_entry["reason"]
+
+    if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
+      a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
+      a.classList.remove("has-wiaw-label");
+    }
+
     if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
       a.classList.add('has-wiaw-label');
       a.classList.add('wiaw-label-' + a.wiawLabel);
@@ -162,15 +194,19 @@ async function processLink(a) {
     a.classList.remove('wiaw-label-' + a.wiawLabel);
     a.classList.add('wiaw-removed');
     a.wiawLabel = null;
+    a.wiawReason = null;
   }
 
   if (!a.observer) {
     a.observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
-        if (mutation.attributeName == "class") {
-          if (a.wiawLabel && !mutation.target.classList.contains('has-wiaw-label')) {
-            mutation.target.classList.add('has-wiaw-label');
-            mutation.target.classList.add('wiaw-label-' + a.wiawLabel);
+        if (mutation.attributeName == "class" || mutation.attributeName == "href" || true) {
+          if (a.wiawLabel) {
+            if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
+              a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
+              mutation.target.classList.add('has-wiaw-label');
+              mutation.target.classList.add('wiaw-label-' + a.wiawLabel);
+            }
           }
         }
       });
@@ -318,5 +354,5 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 });
 
 init();
-setInterval(updatePage, 1000);
+setInterval(updatePage, 10000);
 setInterval(updateAllLabels, 2000);
