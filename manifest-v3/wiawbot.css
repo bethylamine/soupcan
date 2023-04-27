@@ -3,12 +3,12 @@ body {
     --wiawBotLocallyTransphobic: #faa11b;
  }
 
-.wiaw-label-transphobe, a.wiaw-label-transphobe {
+.wiaw-label-transphobe, a.wiaw-label-transphobe, div.wiaw-label-transphobe {
     color: var(--wiawBotTransphobic) !important;
     font-weight: bold !important;
 }
 
-.wiaw-label-local-transphobe, a.wiaw-label-local-transphobe {
+.wiaw-label-local-transphobe, a.wiaw-label-local-transphobe, div.wiaw-label-local-transphobe {
     color: var(--wiawBotLocallyTransphobic) !important;
     font-weight: bold !important;
 }

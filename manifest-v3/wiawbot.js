@@ -40,6 +40,18 @@ function createObserver() {
           if (node instanceof HTMLAnchorElement) {
             processLink(node);
           }
+          if (node instanceof HTMLDivElement) {
+            checkDiv(node);
+            console.log("Looking at div ");
+            console.log(node);
+            if (node.getAttribute("data-testid") == "TypeaheadUser") {
+              console.log("Process div fast 1");
+              processSearchResult(node);
+            } else if (node.getAttribute("data-testid") == "typeaheadRecentSearchesItem") {
+              console.log("Process div fast 2");
+              processSearchResult(node);
+            }
+          }
           if (node instanceof HTMLElement) {
             for (const subnode of node.querySelectorAll('a')) {
               processLink(subnode);
@@ -55,9 +67,27 @@ function createObserver() {
   });
 }
 
+function checkDiv(div) {
+  var dt = div.getAttribute("data-testid")
+  if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem") {
+    console.log("Process div fast");
+    processDiv(div);
+  }
+
+  if (div.hasChildNodes()) {
+    for(var i = 0; i < div.children.length; i++){
+      var child = div.children[i];
+      checkDiv(child);
+    }
+  }
+}
+
 function updateAllLabels() {
   for (const a of document.getElementsByTagName('a')) {
     processLink(a);
+  }
+  for (const div of document.getElementsByTagName('div')) {
+    checkDiv(div);
   }
 }
 
@@ -72,6 +102,58 @@ function hash(string) {
   });
 }
 
+async function processDiv(div) {
+  identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/g, "$1");
+  console.log("Got identifier " + identifier);
+  if (!identifier) {
+    return;
+  }
+
+  database_entry = await getDatabaseEntry(identifier);
+
+  console.log("Database entry is " + database_entry);
+
+  if (database_entry) {
+    div.wiawLabel = database_entry["label"]
+    if (div.wiawLabel && !div.classList.contains('has-wiaw-label')) {
+      div.classList.add('has-wiaw-label');
+      div.classList.add('wiaw-label-' + div.wiawLabel);
+    }
+  } else {
+    div.classList.remove('has-wiaw-label');
+    div.classList.remove('wiaw-label-' + div.wiawLabel);
+    div.classList.add('wiaw-removed');
+    div.wiawLabel = null;
+  }
+
+  if (!div.observer) {
+    div.observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName == "class") {
+          if (div.wiawLabel && !mutation.target.classList.contains('has-wiaw-label')) {
+            mutation.target.classList.add('has-wiaw-label');
+            mutation.target.classList.add('wiaw-label-' + div.wiawLabel);
+          }
+        }
+      });
+    });
+
+    div.observer.observe(div, {attributes: true});
+  }
+}
+
+async function getDatabaseEntry(identifier) {
+  hashed_identifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
+
+  database_entry = database["entries"][hashed_identifier];
+
+  if (!database_entry) {
+    database_entry = local_entries[hashed_identifier];
+  }
+
+  return database_entry;
+}
+
 async function processLink(a) {
   localUrl = getLocalUrl(a.href);
   if (!localUrl) {
@@ -80,13 +162,7 @@ async function processLink(a) {
   
   identifier = getIdentifier(localUrl);
 
-  hashed_identifier = await hash(identifier + ":" + database["salt"]);
-
-  database_entry = database["entries"][hashed_identifier];
-
-  if (!database_entry) {
-    database_entry = local_entries[hashed_identifier];
-  }
+  database_entry = await getDatabaseEntry(identifier);
 
   if (database_entry) {
     a.wiawLabel = database_entry["label"]
@@ -193,6 +269,13 @@ function updatePage() {
     if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
       a.classList.add('wiaw-label-' + a.wiawLabel);
       a.classList.add('has-wiaw-label');
+    }
+  }
+  // Color-code all divs
+  for (const div of document.querySelectorAll('div')) {
+    if (div.wiawLabel && !div.classList.contains('has-wiaw-label')) {
+      div.classList.add('wiaw-label-' + div.wiawLabel);
+      div.classList.add('has-wiaw-label');
     }
   }
 }
