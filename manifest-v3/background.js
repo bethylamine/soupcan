@@ -26,7 +26,12 @@ function start() {
   browser.contextMenus.onClicked.addListener(function (info, tab) {
     var action = info.menuItemId;
     if (action == "report-transphobe") {
-
+      browser.tabs.sendMessage(tab.id, {
+        "action": "report-transphobe",
+        "url": info.linkUrl
+      }).then((response) => {
+        console.log("Response is " + response);
+      });
     } else if (action == "run-setup") {
       browser.tabs.create({
         url: getURL('start.html')

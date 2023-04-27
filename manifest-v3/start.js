@@ -28,8 +28,8 @@ async function startDownload() {
   header.innerText = "Update";
 
   setTimeout(async () => {
-    const { json, cancel } = http('https://raw.githubusercontent.com/bethylamine/twitter-archives/main/');
-    result = await json("browser_database.json");
+    const { json, cancel } = http('https://wiaw-extension.s3.us-west-2.amazonaws.com/');
+    result = await json("dataset.json");
 
     browser.storage.local.set({
       "database": {
@@ -57,7 +57,7 @@ function makeid(length) {
 
 function launchTwitterLogin() {
   var state = makeid(30);
-  var url = "https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VGs4NXk4c19MR3M3bFYwNGlhdDA6MTpjaQ&redirect_uri=https%3A%2F%2Fapi.beth.lgbt%2Fextension-login&scope=tweet.read+users.read&state=" + state + "&code_challenge=challenge&code_challenge_method=plain"
+  var url = "https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VGs4NXk4c19MR3M3bFYwNGlhdDA6MTpjaQ&redirect_uri=https%3A%2F%2Fapi.beth.lgbt%2Fextension-login&scope=tweet.read+users.read+offline.access&state=" + state + "&code_challenge=challenge&code_challenge_method=plain"
   window.open(url);
 
   checkLogin(state);
@@ -118,8 +118,7 @@ function showDownloadResult() {
 
 const setProgressbarValue = (payload) => {
   const { received, length, loading } = payload;
-  const value = Math.round((received / length) * 100);
-  value = Math.max(0, Math.min(100, value));
+  const value = Math.max(0, Math.min(100, Math.round((received / length) * 100)));
   progressBar.innerText = `${value}%`;
   progressBar.style.width = `${value}%`;
   progressRole.setAttribute('aria-valuenow', value);

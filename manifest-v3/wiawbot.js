@@ -10,8 +10,10 @@ var local_entries = {
 
 }
 
+var state = "";
+
 function init() {
-  browser.storage.local.get(["database", "local_entries"], v => {
+  browser.storage.local.get(["database", "local_entries", "state"], v => {
     if (v.database) {
       database = v.database;
       console.log("Loaded database");
@@ -19,6 +21,10 @@ function init() {
     if (v.local_entries) {
       local_entries = v.local_entries;
       console.log("Loaded local entries");
+    }
+    if (v.state) {
+      state = v.state;
+      console.log("Loaded state");
     }
   });
   
@@ -185,6 +191,32 @@ function updatePage() {
     }
   }
 }
+
+// Receive messages from background script
+browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+  console.log(message);
+  if (message.action == "report-transphobe") {
+    if (!state) {
+      sendResponse("Invalid state!");
+      return true;
+    }
+    var localUrl = getLocalUrl(message.url);
+    if (!localUrl) {
+      sendResponse("Invalid report target!");
+      return true;
+    }
+
+    identifier = getIdentifier(localUrl);
+
+    const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
+    const jsonData = await response.json();
+    console.log(jsonData);
+    sendResponse(jsonData);
+    return true;
+  }
+  sendResponse("Hello from content!");
+  return true;
+});
 
 init();
 setInterval(updatePage, 1000);
