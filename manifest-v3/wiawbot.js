@@ -103,13 +103,13 @@ function hash(string) {
 }
 
 async function processDiv(div) {
-  identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/g, "$1");
-  console.log("Got identifier " + identifier);
-  if (!identifier) {
+  div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/g, "$1");
+  console.log("Got div identifier " + div_identifier);
+  if (!div_identifier) {
     return;
   }
 
-  database_entry = await getDatabaseEntry(identifier);
+  database_entry = await getDatabaseEntry(div_identifier);
 
   console.log("Database entry is " + database_entry);
 
@@ -294,7 +294,8 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       return true;
     }
 
-    identifier = getIdentifier(localUrl);
+    const identifier = getIdentifier(localUrl);
+    console.log("For report, identifier is " + identifier);
 
     // Add locally
     var local_key = await hash(identifier + ":" + database["salt"])
@@ -307,6 +308,8 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     updateAllLabels();
 
     // Report to WIAW
+
+    console.log("Reporting to wiawbow, identifier is " + identifier);
 
     const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
     const jsonData = await response.json();
