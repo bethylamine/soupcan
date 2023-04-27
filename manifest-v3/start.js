@@ -16,29 +16,87 @@ var header = document.getElementById("header");
 
 downloadButton.addEventListener("click", startDownload);
 closeButton.addEventListener("click", () => window.close());
-continueButton.addEventListener("click", setupAuth);
-skipButton.addEventListener("click", goToEnd);
-
-const { json, cancel } = http('https://wiaw-extension.s3.us-west-2.amazonaws.com/');
+continueButton.addEventListener("click", goToEnd);
+loginButton.addEventListener("click", launchTwitterLogin)
 
 var result = {};
 
 async function startDownload() {
   progressBarWrapper.classList.remove("d-none");
   downloadButton.classList.add("d-none");
-  topText.innerText = "Downloading extension data... Please keep this tab open.";
+  topText.innerText = "Downloading extension data... Please keep this tab open. If this doesn't start within 10 seconds, please DM me on Twitter";
   header.innerText = "Update";
 
-  result = await json("browser_extension_entries.json");
+  setTimeout(async () => {
+    const { json, cancel } = http('https://raw.githubusercontent.com/bethylamine/twitter-archives/main/');
+    result = await json("browser_database.json");
 
-  browser.storage.local.set({
-    "database": {
-        "last_updated": Date.now(),
-        "entries": result
+    browser.storage.local.set({
+      "database": {
+          "last_updated": Date.now(),
+          "salt": result["salt"],
+          "entries": result["entries"]
+        }
+    });
+
+    showDownloadResult();
+  }, 100);
+}
+
+function makeid(length) {
+  let result = '';
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const charactersLength = characters.length;
+  let counter = 0;
+  while (counter < length) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    counter += 1;
+  }
+  return result;
+}
+
+function launchTwitterLogin() {
+  var state = makeid(30);
+  var url = "https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VGs4NXk4c19MR3M3bFYwNGlhdDA6MTpjaQ&redirect_uri=https%3A%2F%2Fapi.beth.lgbt%2Fextension-login&scope=tweet.read+users.read&state=" + state + "&code_challenge=challenge&code_challenge_method=plain"
+  window.open(url);
+
+  checkLogin(state);
+}
+
+async function checkLogin(state) {
+  try {
+    const response = await fetch("https://api.beth.lgbt/extension-login-check?state=" + state);
+    const jsonData = await response.json();
+    if ("response" in jsonData) {
+      var resp = jsonData["response"]
+      if (resp == "none") {
+        // retry in a bit
+        setTimeout(() => checkLogin(state), 1000);
+      } else if (resp == "true") {
+        // all good
+        browser.storage.local.set({
+          "state": state
+        });
+        goToDownload();
+      } else if (resp == "false") {
+        // all bad
+      } else {
+        topText.innerHTML = "Something went wrong with the authorization validation. Sorry, please contact @bethylamine! resp was " + resp;
       }
-  });
+    } else {
+      topText.innerHTML = "Something went wrong with the authorization validation. Sorry, please contact @bethylamine! jsonData was " + JSON.stringify(jsonData);
+    }
 
-  showDownloadResult();
+  } catch (error) {
+    topText.innerHTML = "Something went wrong with the authorization validation. Sorry, please contact @bethylamine! Error: " + error;
+  }
+}
+
+function goToDownload() {
+  header.innerText = "Download";
+  topText.innerHTML = "Now we will need to download the extension database.";
+  loginButton.classList.add("d-none");
+  downloadButton.classList.remove("d-none");
 }
 
 function goToEnd() {
@@ -46,31 +104,22 @@ function goToEnd() {
   topText.innerHTML = "You're ready to start enjoying your new Twitter experience. You may close this page now.";
   closeButton.classList.remove("d-none");
   instructions.classList.remove("d-none");
-  skipButton.classList.add("d-none");
   loginButton.classList.add("d-none");
+  continueButton.classList.add("d-none");
 }
 
 function showDownloadResult() {
   progressBarWrapper.classList.add("d-none");
   var number = Object.keys(result).length;
-  topText.innerText = `Success! ${number} entries were loaded into the database.`;
+  topText.innerText = `Success! The database was loaded.`;
   header.innerText = "Results";
   continueButton.classList.remove("d-none");
-}
-
-function setupAuth() {
-  header.innerText = "Authorization";
-  topText.innerHTML = "If you'd like to be able to report transphobes, you will need to log in with Twitter. " +
-    "Your public Twitter ID is transmitted with the report for auditing purposes, but no other profile information is saved. " +
-    "You can skip this part and come back to it later if you want by right-clicking any Twitter page and selecting 'Re-run setup'."
-  continueButton.classList.add("d-none");
-  loginButton.classList.remove("d-none");
-  skipButton.classList.remove("d-none");
 }
 
 const setProgressbarValue = (payload) => {
   const { received, length, loading } = payload;
   const value = Math.round((received / length) * 100);
+  value = Math.max(0, Math.min(100, value));
   progressBar.innerText = `${value}%`;
   progressBar.style.width = `${value}%`;
   progressRole.setAttribute('aria-valuenow', value);

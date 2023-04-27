@@ -55,7 +55,18 @@ function updateAllLabels() {
   }
 }
 
-function processLink(a) {
+function hash(string) {
+  const utf8 = new TextEncoder().encode(string);
+  return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((bytes) => bytes.toString(16).padStart(2, '0'))
+      .join('');
+    return hashHex;
+  });
+}
+
+async function processLink(a) {
   localUrl = getLocalUrl(a.href);
   if (!localUrl) {
     return;
@@ -63,7 +74,9 @@ function processLink(a) {
   
   identifier = getIdentifier(localUrl);
 
-  database_entry = database["entries"][identifier];
+  hashed_identifier = await hash(identifier + ":" + database["salt"]);
+
+  database_entry = database["entries"][hashed_identifier];
   if (database_entry) {
     a.wiawLabel = database_entry["label"]
     if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
@@ -108,7 +121,12 @@ function getIdentifier(localUrl) {
 }
 
 function getLocalUrl(url) {
-  url = url.replace(new URL(url).origin, "");
+  try {
+    url = url.replace(new URL(url).origin, "");
+  } catch {
+    return null;
+  }
+
 
   if (!url) {
     return null;
