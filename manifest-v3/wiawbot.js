@@ -1,7 +1,5 @@
 var browser = browser || chrome;
 
-console.log("I've been loaded!")
-
 var database = {
   "entries": {}
 }
@@ -16,15 +14,12 @@ function init() {
   browser.storage.local.get(["database", "local_entries", "state"], v => {
     if (v.database) {
       database = v.database;
-      console.log("Loaded database");
     }
     if (v.local_entries) {
       local_entries = v.local_entries;
-      console.log("Loaded local entries");
     }
     if (v.state) {
       state = v.state;
-      console.log("Loaded state");
     }
   });
   
@@ -42,13 +37,9 @@ function createObserver() {
           }
           if (node instanceof HTMLDivElement) {
             checkDiv(node);
-            console.log("Looking at div ");
-            console.log(node);
             if (node.getAttribute("data-testid") == "TypeaheadUser") {
-              console.log("Process div fast 1");
               processSearchResult(node);
             } else if (node.getAttribute("data-testid") == "typeaheadRecentSearchesItem") {
-              console.log("Process div fast 2");
               processSearchResult(node);
             }
           }
@@ -70,7 +61,6 @@ function createObserver() {
 function checkDiv(div) {
   var dt = div.getAttribute("data-testid")
   if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem") {
-    console.log("Process div fast");
     processDiv(div);
   }
 
@@ -104,14 +94,11 @@ function hash(string) {
 
 async function processDiv(div) {
   div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/g, "$1");
-  console.log("Got div identifier " + div_identifier);
   if (!div_identifier) {
     return;
   }
 
   database_entry = await getDatabaseEntry(div_identifier);
-
-  console.log("Database entry is " + database_entry);
 
   if (database_entry) {
     div.wiawLabel = database_entry["label"]
@@ -282,7 +269,6 @@ function updatePage() {
 
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  console.log(message);
   if (message.action == "report-transphobe") {
     if (!state) {
       sendResponse("Invalid state!");
@@ -295,7 +281,6 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
 
     const identifier = getIdentifier(localUrl);
-    console.log("For report, identifier is " + identifier);
 
     // Add locally
     var local_key = await hash(identifier + ":" + database["salt"])
@@ -309,12 +294,9 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     // Report to WIAW
 
-    console.log("Reporting to wiawbow, identifier is " + identifier);
-
     const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
     const jsonData = await response.json();
 
-    console.log(jsonData);
     sendResponse(jsonData);
     return true;
   } else if (message.action == "update-database") {
