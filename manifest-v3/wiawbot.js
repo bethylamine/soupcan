@@ -67,18 +67,6 @@ function checkDiv(node) {
     processDiv(node);
   }
 
-  var role = node.getAttribute("role");
-  if (role == "heading") {
-    var parent = node.parentNode;
-    if (parent instanceof HTMLDivElement && !parent.innerHTML.includes("username = >@")) {
-      var mainPane = document.querySelector('[data-testid="primaryColumn"]');
-      if (mainPane && mainPane.contains(parent)) {
-        parent.insertAdjacentHTML("afterbegin", "<!-- username = >@" + getIdentifier(getLocalUrl(location.href)) + "< -->");
-        processDiv(parent);
-      }
-    }
-  }
-
   if (node.hasChildNodes()) {
     for(var i = 0; i < node.children.length; i++){
       var child = node.children[i];
@@ -172,12 +160,32 @@ async function getDatabaseEntry(identifier) {
   hashed_identifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
 
   database_entry = database["entries"][hashed_identifier];
+  local_entry = local_entries[hashed_identifier];
+
+  final_entry = database_entry;
 
   if (!database_entry) {
-    database_entry = local_entries[hashed_identifier];
+    if (local_entry) {
+      if (local_entry["label"] == "local-transphobe") {
+        final_entry = local_entry;
+      }
+    }
   }
 
-  return database_entry;
+  if (!local_entry) {
+    final_entry = database_entry;
+  }
+
+  if (!!database_entry && !!local_entry) {
+    // prioritize
+    if (database_entry["label"] == "transphobe" && local_entry["label"] == "local-appeal") {
+      final_entry = local_entry;
+    } else {
+      final_entry = database_entry;
+    }
+  }
+
+  return final_entry;
 }
 
 async function processLink(a) {
@@ -372,7 +380,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
       const jsonData = await response.json();
 
-      notifier.success('Report submitted successfully');
+      notifier.success('Report received: @' + identifier);
       sendResponse(jsonData);
     } catch (error) {
       notifier.alert("Failed to submit report: " + error);
@@ -385,6 +393,57 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       
       updateAllLabels();
       sendResponse("Failed");
+    }
+    return true;
+  } else if (message.action == "appeal-label") {
+    if (!state) {
+      sendResponse("Invalid state!");
+      return true;
+    }
+    var localUrl = getLocalUrl(message.url);
+    if (!localUrl) {
+      sendResponse("Invalid report target!");
+      return true;
+    }
+
+    const identifier = getIdentifier(localUrl);
+
+    dbEntry = await getDatabaseEntry(identifier);
+    if (dbEntry) {
+      console.log("Got entry");
+      console.log(dbEntry);
+      // Add locally
+      var local_key = await hash(identifier + ":" + database["salt"])
+      local_entries[local_key] = {"label": "local-appeal", "reason": "Appealed by you"};
+
+      browser.storage.local.set({
+        "local_entries": local_entries
+      });
+      
+      updateAllLabels();
+
+      try {
+        // Report to WIAW
+
+        const response = await fetch("https://api.beth.lgbt/appeal-label?state=" + state + "&screen_name=" + identifier);
+        const jsonData = await response.json();
+
+        notifier.success('Appeal received: @' + identifier);
+        sendResponse(jsonData);
+      } catch (error) {
+        notifier.alert("Failed to submit report: " + error);
+        // Remove locally
+        delete local_entries[local_key];
+
+        browser.storage.local.set({
+          "local_entries": local_entries
+        });
+        
+        updateAllLabels();
+        sendResponse("Failed");
+      }
+    } else {
+      notifier.warning("Nothing to appeal");
     }
     return true;
   } else if (message.action == "update-database") {

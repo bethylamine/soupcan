@@ -1,8 +1,8 @@
 {
-    "name": "WhatIsAWomanBot",
-    "version": "0.1",
+    "name": "Soupcan",
+    "version": "0.2",
     "manifest_version": 3,
-    "description": "Brings features of WhatIsAWomanBot to your Twitter pages.",
+    "description": "Support trans people and improving your experience on Twitter",
     "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
     "host_permissions": ["*://*.twitter.com/*"],
     "background": {

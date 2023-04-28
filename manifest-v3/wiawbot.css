@@ -1,6 +1,7 @@
 body {
     --wiawBotTransphobic: #cf2d21;
     --wiawBotLocallyTransphobic: #faa11b;
+    --wiawBotLocallyAppealed: #15ae9f;
  }
 
 .wiaw-label-transphobe, a.wiaw-label-transphobe, div.wiaw-label-transphobe {
@@ -12,6 +13,12 @@ body {
     color: var(--wiawBotLocallyTransphobic) !important;
     font-weight: bold !important;
 }
+
+.wiaw-label-local-appeal, a.wiaw-label-local-appeal, div.wiaw-label-local-appeal {
+    color: var(--wiawBotLocallyAppealed) !important;
+    font-weight: bold !important;
+}
+
 
 .wiawbe-reason {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
