@@ -13,4 +13,16 @@ body {
     font-weight: bold !important;
 }
 
+.wiawbe-reason {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    position: absolute;
+    width: 100%;
+    text-align: right;
+    font-weight: 400 !important;
+}
+
+a.wiawbe-no-underline {
+    text-decoration: none !important;
+}
+
  .has-wiaw-label * { color: inherit !important; }

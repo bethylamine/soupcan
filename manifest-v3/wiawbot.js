@@ -56,42 +56,37 @@ function createObserver() {
   });
 }
 
-function checkDiv(div) {
-  var dt = div.getAttribute("data-testid")
+function checkDiv(node) {
+  var dt = node.getAttribute("data-testid")
   if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem" || dt == "User-Name" || dt == "UserName" || dt == "conversation") {
-    processDiv(div);
+    processDiv(node);
   }
 
-  if (div.hasChildNodes()) {
-    for(var i = 0; i < div.children.length; i++){
-      var child = div.children[i];
+  var role = node.getAttribute("role");
+  if (role == "heading") {
+    var parent = node.parentNode;
+    if (parent instanceof HTMLDivElement && !parent.innerHTML.includes("username = >@")) {
+      var mainPane = document.querySelector('[data-testid="primaryColumn"]');
+      if (mainPane && mainPane.contains(parent)) {
+        parent.insertAdjacentHTML("afterbegin", "<!-- username = >@" + getIdentifier(getLocalUrl(location.href)) + "< -->");
+        processDiv(parent);
+      }
+    }
+  }
+
+  if (node.hasChildNodes()) {
+    for(var i = 0; i < node.children.length; i++){
+      var child = node.children[i];
       checkDiv(child);
     }
   }
-}
-
-function applyProfileDecorations(div) {
-  return;
-  if (div.getAttribute("data-testid") == "UserName") {
-    if (!/<div[^>]*id=['"]wiawbe-profile/.test(div.innerHTML)) {
-      div.innerHTML = div.innerHTML + "<div id='wiawbe-profile'><p><span id='wiawbe-profile-reason'>" + div.wiawReason + "</span></p></div>";
-    }
-
-    var profileReason = document.getElementById("wiawbe-profile-reason");
-    if (profileReason) {
-      profileReason.innerText = div.wiawReason;
-    }
-}
 }
 
 function updateAllLabels() {
   for (const a of document.getElementsByTagName('a')) {
     processLink(a);
   }
-  var profileDiv = document.getElementById("wiawbe-profile");
-  if (profileDiv) {
-    profileDiv.remove();
-  }
+  
   for (const div of document.getElementsByTagName('div')) {
     checkDiv(div);
   }
@@ -125,7 +120,6 @@ async function processDiv(div) {
       div.classList.add('wiaw-label-' + div.wiawLabel);
     }
   } else {
-    console.log("Removing label from div with identifier " + div_identifier);
     div.classList.remove('has-wiaw-label');
     div.classList.remove('wiaw-label-' + div.wiawLabel);
     div.classList.add('wiaw-removed');
@@ -133,9 +127,18 @@ async function processDiv(div) {
     div.wiawReason = null;
   }
 
+  if (div.getAttribute("data-testid") == "UserName") {
+    addReasonToUserNameDiv(div);
+  }
+
   if (!div.observer) {
     div.observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
+
+        if (div.getAttribute("data-testid") == "UserName") {
+          addReasonToUserNameDiv(div);
+        }
+
         if (mutation.attributeName == "class") {
           if (div.wiawLabel && !mutation.target.classList.contains('wiaw-label-' + div.wiawLabel)) {
             div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
@@ -152,6 +155,14 @@ async function processDiv(div) {
   }
 }
 
+function addReasonToUserNameDiv(div) {
+  if (!/wiawbe-reason/.test(div.innerHTML)) {
+    if (div.wiawReason) {
+      div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'>[" + div.wiawReason + "]</span>");
+    }
+  }
+}
+
 async function getDatabaseEntry(identifier) {
   hashed_identifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
 
@@ -165,6 +176,11 @@ async function getDatabaseEntry(identifier) {
 }
 
 async function processLink(a) {
+  if (a.getAttribute("role") == "tab") {
+    // don't label tabs
+    return;
+  }
+
   localUrl = getLocalUrl(a.href);
   if (!localUrl) {
     return;
@@ -217,6 +233,10 @@ async function processLink(a) {
 }
 
 function getIdentifier(localUrl) {
+  if (!localUrl) {
+    return null;
+  }
+  
   var identifier = localUrl;
 
   if (identifier.startsWith("/")) {
@@ -259,6 +279,8 @@ function getLocalUrl(url) {
 
   var reserved_slugs = [
     "/compose/",
+    "/following",
+    "/followers",
     "/explore/",
     "/i/",
     "/articles/",
@@ -283,8 +305,19 @@ var lastUpdatedUrl = null;
 function updatePage() {
   if (location.href != lastUpdatedUrl) {
     lastUpdatedUrl = location.href;
+
+    function removeProfileReason() {
+      var profileReason = document.getElementById("wiawbe-profile-reason");
+      if (profileReason) {
+        profileReason.remove();
+      }
+    }  
+
     setTimeout(updateAllLabels, 25);
     setTimeout(updateAllLabels, 200);
+
+    setTimeout(removeProfileReason, 25);
+    setTimeout(removeProfileReason, 200);
   }
   
   // Color-code all links
@@ -355,4 +388,4 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
 init();
 setInterval(updatePage, 10000);
-setInterval(updateAllLabels, 2000);
+setInterval(updateAllLabels, 3000);
