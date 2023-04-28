@@ -10,8 +10,8 @@
     },
     "content_scripts": [{
         "all_frames": true,
-        "css": ["wiawbot.css"],
-        "js": ["wiawbot.js"],
+        "css": ["awesome-notifications/style.css", "wiawbot.css"],
+        "js": ["awesome-notifications/index.var.js", "wiawbot.js"],
         "matches": ["*://*.twitter.com/*" ]
     }],
     "action": {

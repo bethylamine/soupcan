@@ -1,5 +1,10 @@
 var browser = browser || chrome;
 
+options = {
+  "position": "top-left"
+};
+var notifier = new AWN(options);
+
 var database = {
   "entries": {}
 }
@@ -358,28 +363,50 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     browser.storage.local.set({
       "local_entries": local_entries
     });
-
+    
     updateAllLabels();
 
-    // Report to WIAW
+    try {
+      // Report to WIAW
 
-    const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
-    const jsonData = await response.json();
+      const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
+      const jsonData = await response.json();
 
-    sendResponse(jsonData);
+      notifier.success('Report submitted successfully');
+      sendResponse(jsonData);
+    } catch (error) {
+      notifier.alert("Failed to submit report: " + error);
+      // Remove locally
+      delete local_entries[local_key];
+
+      browser.storage.local.set({
+        "local_entries": local_entries
+      });
+      
+      updateAllLabels();
+      sendResponse("Failed");
+    }
     return true;
   } else if (message.action == "update-database") {
-    const response = await fetch('https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json');
-    const jsonData = await response.json();
+    notifier.info("Database downloading");
+    try {
+      const response = await fetch('https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json');
+      const jsonData = await response.json();
 
-    browser.storage.local.set({
-      "database": {
-          "last_updated": Date.now(),
-          "salt": jsonData["salt"],
-          "entries": jsonData["entries"]
-        }
-    });
-    sendResponse("OK");
+      browser.storage.local.set({
+        "database": {
+            "last_updated": Date.now(),
+            "salt": jsonData["salt"],
+            "entries": jsonData["entries"]
+          }
+      });
+      notifier.success("Database updated!");
+      sendResponse("OK");
+    } catch (error) {
+      notifier.alert("Database update failed! " + error);
+      sendResponse("Fail");
+      return true;
+    }
     return true;
   }
   sendResponse("Hello from content!");

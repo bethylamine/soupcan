@@ -26,3 +26,7 @@ a.wiawbe-no-underline {
 }
 
  .has-wiaw-label * { color: inherit !important; }
+
+ #awn-toast-container {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif !important;
+ }
