@@ -9,7 +9,7 @@ var database = {
   "entries": {}
 }
 
-var local_entries = {
+var localEntries = {
 
 }
 
@@ -21,7 +21,7 @@ function init() {
       database = v.database;
     }
     if (v.local_entries) {
-      local_entries = v.local_entries;
+      localEntries = v.local_entries;
     }
     if (v.state) {
       state = v.state;
@@ -157,35 +157,35 @@ function addReasonToUserNameDiv(div) {
 }
 
 async function getDatabaseEntry(identifier) {
-  hashed_identifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
+  var hashedIdentifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
 
-  database_entry = database["entries"][hashed_identifier];
-  local_entry = local_entries[hashed_identifier];
+  var databaseEntry = database["entries"][hashedIdentifier];
+  var localEntry = localEntries[hashedIdentifier];
 
-  final_entry = database_entry;
+  var finalEntry = databaseEntry;
 
-  if (!database_entry) {
-    if (local_entry) {
-      if (local_entry["label"] == "local-transphobe") {
-        final_entry = local_entry;
+  if (!databaseEntry) {
+    if (localEntry) {
+      if (localEntry["label"] == "local-transphobe") {
+        finalEntry = localEntry;
       }
     }
   }
 
-  if (!local_entry) {
-    final_entry = database_entry;
+  if (!localEntry) {
+    finalEntry = databaseEntry;
   }
 
-  if (!!database_entry && !!local_entry) {
+  if (!!databaseEntry && !!localEntry) {
     // prioritize
-    if (database_entry["label"] == "transphobe" && local_entry["label"] == "local-appeal") {
-      final_entry = local_entry;
+    if (databaseEntry["label"] == "transphobe" && localEntry["label"] == "local-appeal") {
+      finalEntry = localEntry;
     } else {
-      final_entry = database_entry;
+      finalEntry = databaseEntry;
     }
   }
 
-  return final_entry;
+  return finalEntry;
 }
 
 async function processLink(a) {
@@ -203,11 +203,11 @@ async function processLink(a) {
   a.wiawLabel = null;
   a.wiawReason = null;
 
-  database_entry = await getDatabaseEntry(identifier);
+  const databaseEntry = await getDatabaseEntry(identifier);
 
-  if (database_entry) {
-    a.wiawLabel = database_entry["label"]
-    a.wiawReason = database_entry["reason"]
+  if (databaseEntry) {
+    a.wiawLabel = databaseEntry["label"]
+    a.wiawReason = databaseEntry["reason"]
 
     if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
       a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
@@ -275,7 +275,7 @@ function getLocalUrl(url) {
     return null;
   }
 
-  var reserved_urls = [
+  var reservedUrls = [
     "/home",
     "/explore",
     "/notifications",
@@ -284,13 +284,13 @@ function getLocalUrl(url) {
     "/privacy"
   ]
 
-  for (const reserved_url of reserved_urls) {
-    if (url == reserved_url) {
+  for (const reservedUrl of reservedUrls) {
+    if (url == reservedUrl) {
       return null;
     }
   }
 
-  var reserved_slugs = [
+  var reservedSlugs = [
     "/compose/",
     "/following",
     "/followers",
@@ -305,8 +305,8 @@ function getLocalUrl(url) {
     "/analytics",
   ]
 
-  for (const reserved_slug of reserved_slugs) {
-    if (url.includes(reserved_slug)) {
+  for (const reservedSlug of reservedSlugs) {
+    if (url.includes(reservedSlug)) {
       return null;
     }
   }
@@ -349,6 +349,74 @@ function updatePage() {
   }
 }
 
+async function sendLabel(reportType, identifier, sendResponse, localKey) {
+  var successMessage = "";
+  var failureMessage = "";
+  var endpoint = "";
+
+  if (reportType == "transphobe") {
+    endpoint = "report-transphobe";
+    successMessage = "Report received: @" + identifier;
+    failureMessage = "Failed to submit report: ";
+  } else if (reportType == "appeal") {
+    endpoint = "appeal-label";
+    successMessage = "Appeal received: @" + identifier;
+    failureMessage = "Failed to submit appeal: ";
+  } else {
+    notifier.alert("Invalid report type: " + reportType);
+    return;
+  }
+
+  try {
+    // Report to WIAW
+
+    const response = await fetch("https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier);
+    const jsonData = await response.json();
+
+    localEntries[localKey]["status"] = "received";
+    localEntries[localKey]["time"] = Date.now();
+
+    saveLocalEntries();
+
+    notifier.success(successMessage);
+    sendResponse(jsonData);
+  } catch (error) {
+    notifier.alert(failureMessage + error);
+
+    browser.storage.local.set({
+      "local_entries": localEntries
+    });
+    
+    updateAllLabels();
+    sendResponse("Failed");
+  }
+
+  return true;
+}
+
+function sendPendingLabels() {
+  Object.keys(localEntries).forEach(localKey => {
+    const localEntry = localEntries[localKey];
+
+    if (localEntry["status"] == "pending") {
+      const when = localEntry["time"];
+      const now = Date.now();
+
+      if (!when || now > when + 5000) { // 5 seconds
+        const reportType = localEntry["label"].replace("local-", "");
+        console.log("Report type: " + reportType);
+        sendLabel(reportType, localEntry["identifier"], () => {}, localKey);
+      }
+    }
+  });
+}
+
+function saveLocalEntries() {
+  browser.storage.local.set({
+    "local_entries": localEntries
+  });
+}
+
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
@@ -365,35 +433,13 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     const identifier = getIdentifier(localUrl);
 
     // Add locally
-    var local_key = await hash(identifier + ":" + database["salt"])
-    local_entries[local_key] = {"label": "local-transphobe", "reason": "Reported by you"};
+    var localKey = await hash(identifier + ":" + database["salt"])
+    localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "time": Date.now(), "identifier": identifier};
 
-    browser.storage.local.set({
-      "local_entries": local_entries
-    });
+    saveLocalEntries();
     
     updateAllLabels();
-
-    try {
-      // Report to WIAW
-
-      const response = await fetch("https://api.beth.lgbt/report-transphobe?state=" + state + "&screen_name=" + identifier);
-      const jsonData = await response.json();
-
-      notifier.success('Report received: @' + identifier);
-      sendResponse(jsonData);
-    } catch (error) {
-      notifier.alert("Failed to submit report: " + error);
-      // Remove locally
-      delete local_entries[local_key];
-
-      browser.storage.local.set({
-        "local_entries": local_entries
-      });
-      
-      updateAllLabels();
-      sendResponse("Failed");
-    }
+    sendLabel("transphobe", identifier, sendResponse, localKey);
     return true;
   } else if (message.action == "appeal-label") {
     if (!state) {
@@ -410,38 +456,14 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     dbEntry = await getDatabaseEntry(identifier);
     if (dbEntry) {
-      console.log("Got entry");
-      console.log(dbEntry);
       // Add locally
-      var local_key = await hash(identifier + ":" + database["salt"])
-      local_entries[local_key] = {"label": "local-appeal", "reason": "Appealed by you"};
+      var localKey = await hash(identifier + ":" + database["salt"])
+      localEntries[localKey] = {"label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier};
 
-      browser.storage.local.set({
-        "local_entries": local_entries
-      });
+      saveLocalEntries();
       
       updateAllLabels();
-
-      try {
-        // Report to WIAW
-
-        const response = await fetch("https://api.beth.lgbt/appeal-label?state=" + state + "&screen_name=" + identifier);
-        const jsonData = await response.json();
-
-        notifier.success('Appeal received: @' + identifier);
-        sendResponse(jsonData);
-      } catch (error) {
-        notifier.alert("Failed to submit report: " + error);
-        // Remove locally
-        delete local_entries[local_key];
-
-        browser.storage.local.set({
-          "local_entries": local_entries
-        });
-        
-        updateAllLabels();
-        sendResponse("Failed");
-      }
+      sendLabel("appeal", identifier, sendResponse, localKey);
     } else {
       notifier.warning("Nothing to appeal");
     }
@@ -475,3 +497,4 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 init();
 setInterval(updatePage, 10000);
 setInterval(updateAllLabels, 3000);
+setInterval(sendPendingLabels, 2000);

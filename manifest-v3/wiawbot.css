@@ -22,6 +22,7 @@ body {
 
 .wiawbe-reason {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    top: -25px;
     position: absolute;
     width: 100%;
     text-align: right;
