@@ -31,11 +31,11 @@ body {
     }
 }
 
-body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"])) {
+body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])) {
     filter: brightness(0%);
 }
 
-body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"])):hover {
+body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
     animation-duration: 1s;
