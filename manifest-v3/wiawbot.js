@@ -1,9 +1,8 @@
 var browser = browser || chrome;
 
-options = {
+var notifier = new AWN({
   "position": "top-left"
-};
-var notifier = new AWN(options);
+});
 
 var database = {
   "entries": {}
@@ -13,24 +12,34 @@ var localEntries = {
 
 }
 
+var options = {
+
+}
+
 var state = "";
 
 function init() {
-  browser.storage.local.get(["database", "local_entries", "state"], v => {
+  browser.storage.local.get(["database", "local_entries", "state", "options"], v => {
     if (v.database) {
-      database = v.database;
+      database = v.database || {};
     }
     if (v.local_entries) {
-      localEntries = v.local_entries;
+      localEntries = v.local_entries || {};
     }
     if (v.state) {
       state = v.state;
     }
+    if (v.options) {
+      options = v.options || {};
+    }
+
+    if (options["maskTransphobeMedia"]) {
+      document.getElementsByTagName("body")[0].classList.add("wiawbe-mask-media");
+    } 
   });
-  
+
   createObserver();
 }
-
 
 function createObserver() {
   var observer = new MutationObserver(mutationsList => {
@@ -65,6 +74,11 @@ function checkNode(node) {
   var dt = node.getAttribute("data-testid")
   if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem" || dt == "User-Name" || dt == "UserName" || dt == "conversation") {
     processDiv(node);
+  }
+
+  if (dt == "tweet") {
+    // mark the tweet as a labelled area
+    processDiv(node, true)
   }
 
   if (node.hasChildNodes()) {
@@ -111,26 +125,39 @@ function hash(string) {
   });
 }
 
-async function processDiv(div) {
-  div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/gs, "$1");
+async function processDiv(div, markArea = false) {
+  var div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/gs, "$1");
   if (!div_identifier) {
     return;
   }
 
-  database_entry = await getDatabaseEntry(div_identifier);
+  var database_entry = await getDatabaseEntry(div_identifier);
+
+  var hasLabelToApply = 'has-wiaw-label';
+  var labelPrefix = 'wiaw-label-';
+  var removedLabel = 'wiaw-removed';
+
+  if (markArea) {
+    hasLabelToApply = 'has-wiaw-area-label';
+    labelPrefix = 'wiaw-area-label-';
+    removedLabel = 'wiaw-area-removed';
+  }
 
   if (database_entry) {
     div.wiawLabel = database_entry["label"]
     div.wiawReason =  database_entry["reason"];
-    if (div.wiawLabel && !div.classList.contains('wiaw-label' + div.wiawLabel)) {
+    var labelToApply = labelPrefix + div.wiawLabel;
+    if (div.wiawLabel && !div.classList.contains(labelToApply)) {
       div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
-      div.classList.add('has-wiaw-label');
-      div.classList.add('wiaw-label-' + div.wiawLabel);
+      div.classList.add(hasLabelToApply);
+      div.classList.add(labelToApply);
+      div.setAttribute("data-wiawbeidentifier", div_identifier);
     }
   } else {
-    div.classList.remove('has-wiaw-label');
-    div.classList.remove('wiaw-label-' + div.wiawLabel);
-    div.classList.add('wiaw-removed');
+    div.classList.remove(hasLabelToApply);
+    div.classList.remove(labelToApply);
+    div.classList.add(removedLabel);
+    div.removeAttribute("data-wiawbeidentifier");
     div.wiawLabel = null;
     div.wiawReason = null;
   }
@@ -148,10 +175,11 @@ async function processDiv(div) {
         }
 
         if (mutation.attributeName == "class") {
-          if (div.wiawLabel && !mutation.target.classList.contains('wiaw-label-' + div.wiawLabel)) {
-            div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
-            mutation.target.classList.add('has-wiaw-label');
-            mutation.target.classList.add('wiaw-label-' + div.wiawLabel);
+          var labelToApply = labelPrefix + div.wiawLabel;
+          if (div.wiawLabel && !mutation.target.classList.contains(labelToApply)) {
+            div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith(labelPrefix)));
+            mutation.target.classList.add(hasLabelToApply);
+            mutation.target.classList.add(labelToApply);
           }
         } else if (mutation.attributeName == "data-wiawbe-reason") {
           applyProfileDecorations(div);
@@ -169,6 +197,17 @@ function addReasonToUserNameDiv(div) {
       div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'>[" + div.wiawReason + "]</span>");
     }
   }
+}
+
+async function identifierRed(identifier) {
+  var dbEntry = await getDatabaseEntry(identifier);
+  if (dbEntry) {
+    if (dbEntry["label"].includes("transphobe")) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 async function getDatabaseEntry(identifier) {
@@ -209,12 +248,12 @@ async function processLink(a) {
     return;
   }
 
-  localUrl = getLocalUrl(a.href);
+  var localUrl = getLocalUrl(a.href);
   if (!localUrl) {
     return;
   }
   
-  identifier = getIdentifier(localUrl);
+  var identifier = getIdentifier(localUrl);
   a.wiawLabel = null;
   a.wiawReason = null;
 
@@ -232,19 +271,21 @@ async function processLink(a) {
     if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
       a.classList.add('has-wiaw-label');
       a.classList.add('wiaw-label-' + a.wiawLabel);
+      a.setAttribute("data-wiawbeidentifier", identifier);
     }
   } else {
     a.classList.remove('has-wiaw-label');
-    a.classList.remove('wiaw-label-' + a.wiawLabel);
+    a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
     a.classList.add('wiaw-removed');
     a.wiawLabel = null;
     a.wiawReason = null;
+    a.removeAttribute("data-wiawbeidentifier");
   }
 
   if (!a.observer) {
     a.observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
-        if (mutation.attributeName == "class" || mutation.attributeName == "href" || true) {
+        if (mutation.attributeName == "class" || mutation.attributeName == "href") {
           if (a.wiawLabel) {
             if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
               a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));

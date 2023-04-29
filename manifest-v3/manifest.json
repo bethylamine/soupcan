@@ -29,5 +29,9 @@
         "48": "icon48.png",
         "128": "icon128.png"
     },
+    "options_ui": {
+        "open_in_tab": true,
+        "page": "options.html"
+     },
     "permissions": ["contextMenus", "storage"]
 }

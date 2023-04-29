@@ -19,6 +19,38 @@ body {
     font-weight: bold !important;
 }
 
+@keyframes wait-to-reveal {
+    0% {
+        filter: brightness(0%)
+    }
+    50% {
+        filter: brightness(0%)
+    }
+    100% {
+        filter: brightness(100%)
+    }
+}
+
+body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"])) {
+    filter: brightness(0%);
+}
+
+body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"])):hover {
+    filter: brightness(100%);
+    animation-name: wait-to-reveal;
+    animation-duration: 1s;
+}
+
+body.wiawbe-mask-media [class$="label-transphobe"] div[data-testid="videoComponent"]:has(video) {
+    filter: brightness(0%);
+}
+
+body.wiawbe-mask-media [class$="label-transphobe"] div[data-testid="videoComponent"]:has(video):hover {
+    filter: brightness(100%);
+    animation-name: wait-to-reveal;
+    animation-duration: 1s;
+}
+
 
 .wiawbe-reason {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
