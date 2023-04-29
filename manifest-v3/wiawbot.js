@@ -102,7 +102,7 @@ function updateAllLabels() {
   var usernameDiv = document.body.querySelector("div[data-testid='UserName']");
   if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
     const link = document.createElement('a');
-    link.href = location.href = "#";
+    link.href = location.href;
     // need to match the classes
     var otherUsernameLink = document.querySelector("div[data-testid='User-Name'] a");
     if (otherUsernameLink) {
