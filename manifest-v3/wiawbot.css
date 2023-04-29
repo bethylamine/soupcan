@@ -1,8 +1,12 @@
+/* Color scheme */
+
 body {
     --wiawBotTransphobic: #cf2d21;
     --wiawBotLocallyTransphobic: #faa11b;
     --wiawBotLocallyAppealed: #15ae9f;
  }
+
+ /* Marked text labels */
 
 .wiaw-label-transphobe, a.wiaw-label-transphobe, div.wiaw-label-transphobe {
     color: var(--wiawBotTransphobic) !important;
@@ -19,38 +23,77 @@ body {
     font-weight: bold !important;
 }
 
+/* Mask animation */
+
 @keyframes wait-to-reveal {
     0% {
-        filter: brightness(0%)
+        filter: brightness(20%) blur(30px)
     }
     50% {
-        filter: brightness(0%)
+        filter: brightness(30%) blur(20px)
     }
     100% {
-        filter: brightness(100%)
+        filter: brightness(100%) blur(0px)
     }
 }
 
-body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])) {
-    filter: brightness(0%);
+/* Image masking */
+
+body.wiawbe-mask-media [class$="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    content: "Image masked by Soupcan. Hover to view";
+    color: white;
+    padding-left: 5px;
+    padding-top: 5px;
+    background-image: linear-gradient(135deg, #3f1212 25%, #000000 25%, #000000 50%, #3f1212 50%, #3f1212 75%, #000000 75%, #000000 100%);
+    background-size: 56.57px 56.57px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    font-weight: 400;
 }
 
-body.wiawbe-mask-media [class$="label-transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover {
+body.wiawbe-mask-media [class$="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after {
+    opacity: 0;
+}
+
+body.wiawbe-mask-media [class$="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
     animation-duration: 1s;
 }
 
-body.wiawbe-mask-media [class$="label-transphobe"] div[data-testid="videoComponent"]:has(video) {
-    filter: brightness(0%);
+/* Video masking */
+
+body.wiawbe-mask-media [class$="transphobe"] div[data-testid="videoComponent"]:has(video)::after {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    content: "Video masked by Soupcan. Hover to view";
+    color: white;
+    padding-left: 5px;
+    padding-top: 5px;
+    background-image: linear-gradient(135deg, #3f1212 25%, #000000 25%, #000000 50%, #3f1212 50%, #3f1212 75%, #000000 75%, #000000 100%);
+    background-size: 56.57px 56.57px;
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    font-weight: 400;
 }
 
-body.wiawbe-mask-media [class$="label-transphobe"] div[data-testid="videoComponent"]:has(video):hover {
+body.wiawbe-mask-media [class$="transphobe"] div[data-testid="videoComponent"]:has(video):hover::after {
+    opacity: 0;
+}
+
+body.wiawbe-mask-media [class$="transphobe"] div[data-testid="videoComponent"]:has(video):hover {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
     animation-duration: 1s;
 }
 
+/* Mark reason on profile page */
 
 .wiawbe-reason {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -66,6 +109,8 @@ a.wiawbe-no-underline {
 }
 
  .has-wiaw-label * { color: inherit !important; }
+
+ /* Notifications */
 
  #awn-toast-container {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif !important;
