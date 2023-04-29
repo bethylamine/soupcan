@@ -545,15 +545,22 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
     const identifier = getIdentifier(localUrl);
 
-    // Add locally
-    var localKey = await hash(identifier + ":" + database["salt"])
-    localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "time": Date.now(), "identifier": identifier};
+    // see if they're already reported
+    const dbEntry = await getDatabaseEntry(identifier);
+    if (dbEntry && dbEntry["label"] && dbEntry["label"].includes("transphobe")) {
+      notifier.alert("@" + identifier + " is already souped! 🍅🥫");
+      return false;
+    } else {
+      // Add locally
+      var localKey = await hash(identifier + ":" + database["salt"])
+      localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "time": Date.now(), "identifier": identifier};
 
-    saveLocalEntries();
-    
-    updateAllLabels();
-    sendLabel("transphobe", identifier, sendResponse, localKey);
-    return true;
+      saveLocalEntries();
+      
+      updateAllLabels();
+      sendLabel("transphobe", identifier, sendResponse, localKey);
+      return true;
+    }
   } else if (message.action == "appeal-label") {
     if (!state) {
       sendResponse("Invalid state!");
