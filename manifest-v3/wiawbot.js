@@ -1,5 +1,7 @@
 var browser = browser || chrome;
 
+console.log("I am here");
+
 var notifier = new AWN({
   "position": "top-left"
 });
@@ -426,30 +428,32 @@ async function sendLabel(reportType, identifier, sendResponse, localKey) {
     return;
   }
 
-  try {
-    // Report to WIAW
+  // Report to WIAW
+  browser.runtime.sendMessage({
+    "action": "fetch",
+    "url": "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier
+  }).then(async response => {
+    try {
+      const jsonData = response["json"];
 
-    const response = await fetch("https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier);
-    const jsonData = await response.json();
+      localEntries[localKey]["status"] = "received";
+      localEntries[localKey]["time"] = Date.now();
 
-    localEntries[localKey]["status"] = "received";
-    localEntries[localKey]["time"] = Date.now();
+      saveLocalEntries();
 
-    saveLocalEntries();
-
-    notifier.success(successMessage);
-    sendResponse(jsonData);
-  } catch (error) {
-    notifier.alert(failureMessage + error);
-
-    browser.storage.local.set({
-      "local_entries": localEntries
-    });
-    
-    updateAllLabels();
-    sendResponse("Failed");
-  }
-
+      notifier.success(successMessage);
+      sendResponse(jsonData);
+    } catch (error) {
+      notifier.alert(failureMessage + error);
+  
+      browser.storage.local.set({
+        "local_entries": localEntries
+      });
+      
+      updateAllLabels();
+      sendResponse("Failed");
+    }
+  });
   return true;
 }
 
@@ -486,15 +490,17 @@ async function checkForDatabaseUpdates() {
     if (database["last_updated"]) {
       var lastUpdated = database["last_updated"];
       if (Date.now() > lastUpdated + 5 * 60 * 1000) { // 5 minutes
-        const response = await fetch("https://api.beth.lgbt/get-db-version");
-        if (response.status == 200) {
-          const version = await response.text();
+        browser.runtime.sendMessage({
+          "action": "fetch",
+          "url": "https://api.beth.lgbt/get-db-version"
+        }).then(async response => {
+          const version = response["text"];
           const numberVersion = parseInt(version);
           if (!database["version"] || database["version"] < numberVersion) {
             // update the database
             updateDatabase(() => {}, numberVersion);
           }
-        }
+        });
       }
     }
   }
@@ -503,29 +509,34 @@ async function checkForDatabaseUpdates() {
 async function updateDatabase(sendResponse, version) {
   notifier.info("Database downloading");
   database["downloading"] = true;
-  try {
-    const response = await fetch('https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json');
-    const jsonData = await response.json();
+  browser.runtime.sendMessage({
+    "action": "fetch",
+    "url": "https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json"
+  }).then(async response => {
+    try {
+      const jsonData = response["json"];
 
-    database = {
-      "version": version,
-      "last_updated": Date.now(),
-      "salt": jsonData["salt"],
-      "entries": jsonData["entries"],
-      "downloading": false,
-    };
+      database = {
+        "version": version,
+        "last_updated": Date.now(),
+        "salt": jsonData["salt"],
+        "entries": jsonData["entries"],
+        "downloading": false,
+      };
 
-    browser.storage.local.set({
-      "database": database
-    });
-    notifier.success("Database updated!");
-    sendResponse("OK");
-  } catch (error) {
-    database["downloading"] = false;
-    notifier.alert("Database update failed! " + error);
-    sendResponse("Fail");
-    return true;
-  }
+      browser.storage.local.set({
+        "database": database
+      });
+      notifier.success("Database updated!");
+      sendResponse("OK");
+    } catch (error) {
+      database["downloading"] = false;
+      notifier.alert("Database update failed! " + error);
+      sendResponse("Fail");
+      return true;
+    }
+  });
+
   return true;
 }
 
@@ -592,9 +603,10 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   } else if (message.action == "update-database") {
     updateDatabase(sendResponse, database["version"]);
   }
-  sendResponse("Hello from content!");
-  return true;
+  return false;
 });
+
+console.log("listener added");
 
 init();
 setInterval(updatePage, 10000);

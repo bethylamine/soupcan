@@ -12,25 +12,25 @@ function start() {
 
   browser.contextMenus.create({
     id: "report-transphobe",
-    title: "Report Transphobe",
+    title: "🍅 Report transphobe",
     contexts: ["link"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
   browser.contextMenus.create({
     id: "appeal-label",
-    title: "Appeal label",
+    title: "😇 Appeal label",
     contexts: ["link"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
   browser.contextMenus.create({
     id: "run-setup",
-    title: "Re-run setup",
+    title: "📐 Re-run setup",
     contexts: ["page"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
   browser.contextMenus.create({
     id: "update-database",
-    title: "Update database",
+    title: "🌐 Update database",
     contexts: ["page"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
@@ -68,5 +68,30 @@ function start() {
 function getURL(path) {
   return chrome.runtime.getURL(path);
 }
+
+const handleFetch = async (url, sendResponse) => {
+  const response = await fetch(url);
+  console.log("Got fetch response");
+  console.log(response);
+  var json = "";
+  try {
+    json = await response.clone().json();
+  } catch (error) {
+
+  }
+  const text = await response.text();
+  sendResponse({"text": text, "json": json});
+  //sendResponse(response);
+};
+
+browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log("Got message");
+  if (message.action == "fetch") {
+    console.log("Got fetch command");
+    handleFetch(message.url, sendResponse);
+    return true;
+  }
+  return false;
+});
 
 start();
