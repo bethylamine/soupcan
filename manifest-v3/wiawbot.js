@@ -476,6 +476,59 @@ function saveLocalEntries() {
   });
 }
 
+async function checkForDatabaseUpdates() {
+  // See if we haven't checked for database updates in a while.
+  if (database["downloading"]) {
+    return;
+  }
+
+  if (database) {
+    if (database["last_updated"]) {
+      var lastUpdated = database["last_updated"];
+      if (Date.now() > lastUpdated + 5 * 60 * 1000) { // 5 minutes
+        const response = await fetch("https://api.beth.lgbt/get-db-version");
+        if (response.status == 200) {
+          const version = await response.text();
+          const numberVersion = parseInt(version);
+          if (!database["version"] || database["version"] < numberVersion) {
+            // update the database
+            updateDatabase(() => {}, numberVersion);
+          }
+        }
+      }
+    }
+  }
+}
+
+async function updateDatabase(sendResponse, version) {
+  notifier.info("Database downloading");
+  database["downloading"] = true;
+  try {
+    const response = await fetch('https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json');
+    const jsonData = await response.json();
+
+    database = {
+      "version": version,
+      "last_updated": Date.now(),
+      "salt": jsonData["salt"],
+      "entries": jsonData["entries"],
+      "downloading": false,
+    };
+
+    browser.storage.local.set({
+      "database": database
+    });
+    notifier.success("Database updated!");
+    sendResponse("OK");
+  } catch (error) {
+    database["downloading"] = false;
+    notifier.alert("Database update failed! " + error);
+    sendResponse("Fail");
+    return true;
+  }
+  return true;
+}
+
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
@@ -530,26 +583,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
     return true;
   } else if (message.action == "update-database") {
-    notifier.info("Database downloading");
-    try {
-      const response = await fetch('https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json');
-      const jsonData = await response.json();
-
-      browser.storage.local.set({
-        "database": {
-            "last_updated": Date.now(),
-            "salt": jsonData["salt"],
-            "entries": jsonData["entries"]
-          }
-      });
-      notifier.success("Database updated!");
-      sendResponse("OK");
-    } catch (error) {
-      notifier.alert("Database update failed! " + error);
-      sendResponse("Fail");
-      return true;
-    }
-    return true;
+    updateDatabase(sendResponse, database["version"]);
   }
   sendResponse("Hello from content!");
   return true;
@@ -559,3 +593,4 @@ init();
 setInterval(updatePage, 10000);
 setInterval(updateAllLabels, 3000);
 setInterval(sendPendingLabels, 2000);
+setInterval(checkForDatabaseUpdates, 10000);
