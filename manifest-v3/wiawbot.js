@@ -44,7 +44,7 @@ function createObserver() {
             processLink(node);
           }
           if (node instanceof HTMLDivElement) {
-            checkDiv(node);
+            checkNode(node);
           }
           if (node instanceof HTMLElement) {
             for (const subnode of node.querySelectorAll('a')) {
@@ -61,7 +61,7 @@ function createObserver() {
   });
 }
 
-function checkDiv(node) {
+function checkNode(node) {
   var dt = node.getAttribute("data-testid")
   if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem" || dt == "User-Name" || dt == "UserName" || dt == "conversation") {
     processDiv(node);
@@ -70,7 +70,7 @@ function checkDiv(node) {
   if (node.hasChildNodes()) {
     for(var i = 0; i < node.children.length; i++){
       var child = node.children[i];
-      checkDiv(child);
+      checkNode(child);
     }
   }
 }
@@ -81,7 +81,22 @@ function updateAllLabels() {
   }
   
   for (const div of document.getElementsByTagName('div')) {
-    checkDiv(div);
+    checkNode(div);
+  }
+
+  // Check for username at top of profile page
+  var usernameDiv = document.body.querySelector("div[data-testid='UserName']");
+  if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
+    const link = document.createElement('a');
+    link.href = location.href = "#";
+    // need to match the classes
+    var otherUsernameLink = document.querySelector("div[data-testid='User-Name'] a");
+    if (otherUsernameLink) {
+      link.classList = otherUsernameLink.classList;
+      usernameDiv.after(link);
+      link.appendChild(usernameDiv);
+      usernameDiv.classList.add("wiawbe-linked");
+    }
   }
 }
 
@@ -266,6 +281,9 @@ function getIdentifier(localUrl) {
 function getLocalUrl(url) {
   try {
     url = url.replace(new URL(url).origin, "");
+    if (url.includes("#")) {
+      url = url.substr(0, url.indexOf("#"));
+    }
   } catch {
     return null;
   }
