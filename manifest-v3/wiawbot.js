@@ -444,6 +444,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
     var localUrl = getLocalUrl(message.url);
     if (!localUrl) {
+      notifier.alert("Invalid report target");
       sendResponse("Invalid report target!");
       return true;
     }
@@ -466,6 +467,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
     var localUrl = getLocalUrl(message.url);
     if (!localUrl) {
+      notifier.alert("Invalid appeal target");
       sendResponse("Invalid report target!");
       return true;
     }
