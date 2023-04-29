@@ -1,4 +1,4 @@
-# wiawbot-browser-extension
+# Soupcan
 
 ### A cross-browser extension for Twitter to bring [@WhatIsAWomanBot](https://twitter.com/WhatIsAWomanBot) features into your browser. Authored by [@bethylamine](https://twitter.com/bethylamine), with help from [@VehpuS](https://twitter.com/VehpuS).
 
