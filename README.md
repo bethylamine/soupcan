@@ -1,5 +1,7 @@
 # Soupcan
 
+![icon128](https://user-images.githubusercontent.com/130214958/235278689-2c66607f-2665-48da-b668-915c23296418.png)
+
 ### A cross-browser extension for Twitter to bring [@WhatIsAWomanBot](https://twitter.com/WhatIsAWomanBot) features into your browser. Authored by [@bethylamine](https://twitter.com/bethylamine), with help from [@VehpuS](https://twitter.com/VehpuS).
 
 ## Features
