@@ -1,12 +1,19 @@
 var browser = browser || chrome;
 
 function start() {
-  browser.storage.local.get(["database"], v => {
+  browser.storage.local.get(["database", "state"], v => {
     if (!v.database) {
-      // No database found, create it
-      browser.tabs.create({
-        url: getURL('start.html')
-      });
+      if (!v.state) {
+        // First time setup
+        browser.tabs.create({
+          url: getURL('start.html')
+        });
+      } else {
+        // Logged in but not database
+        browser.tabs.create({
+          url: getURL('start.html?download=1')
+        });
+      }
     }
   });
 

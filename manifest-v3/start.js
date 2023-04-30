@@ -6,7 +6,7 @@ var downloadButton = document.getElementById("download-button");
 var closeButton = document.getElementById("close-button");
 var continueButton = document.getElementById("continue-button");
 var loginButton = document.getElementById("login-button");
-var skipButton = document.getElementById("skip-button");
+var setupInstructions = document.getElementById("setup-instructions");
 var progressBarWrapper = document.getElementById("progress-bar-wrapper");
 var progressBar = document.getElementById("progress-bar");
 var progressRole = document.getElementById("progress-role");
@@ -18,6 +18,14 @@ downloadButton.addEventListener("click", startDownload);
 closeButton.addEventListener("click", () => window.close());
 continueButton.addEventListener("click", goToEnd);
 loginButton.addEventListener("click", launchTwitterLogin)
+
+const params = new Proxy(new URLSearchParams(window.location.search), {
+  get: (searchParams, prop) => searchParams.get(prop),
+});
+// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+if (params.download) {
+  goToDownload();
+}
 
 var result = {};
 
@@ -56,6 +64,7 @@ function makeid(length) {
 }
 
 function launchTwitterLogin() {
+  setupInstructions.classList.add("d-none");
   var state = makeid(30);
   var url = "https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VGs4NXk4c19MR3M3bFYwNGlhdDA6MTpjaQ&redirect_uri=https%3A%2F%2Fapi.beth.lgbt%2Fextension-login&scope=tweet.read+users.read+offline.access&state=" + state + "&code_challenge=challenge&code_challenge_method=plain"
   window.open(url);
@@ -93,7 +102,7 @@ async function checkLogin(state) {
 }
 
 function goToDownload() {
-  header.innerText = "Download";
+  header.innerText = "Step 2/2: Download";
   topText.innerHTML = "Now we will need to download the extension database.";
   loginButton.classList.add("d-none");
   downloadButton.classList.remove("d-none");
