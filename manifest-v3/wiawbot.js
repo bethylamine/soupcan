@@ -18,8 +18,10 @@ var options = {
 
 var state = "";
 
+var isModerator = false;
+
 function init() {
-  browser.storage.local.get(["database", "local_entries", "state", "options"], v => {
+  browser.storage.local.get(["database", "local_entries", "state", "options", "is_moderator"], v => {
     if (v.database) {
       database = v.database || {};
     }
@@ -31,6 +33,9 @@ function init() {
     }
     if (v.options) {
       options = v.options || {};
+    }
+    if (v.is_moderator) {
+      isModerator = v.is_moderator;
     }
 
     if (options["maskTransphobeMedia"]) {
@@ -601,7 +606,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     const identifier = getIdentifier(localUrl);
 
     dbEntry = await getDatabaseEntry(identifier);
-    if (dbEntry) {
+    if (dbEntry || isModerator) {
       // Add locally
       var localKey = await hash(identifier + ":" + database["salt"])
       localEntries[localKey] = {"label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier};
