@@ -461,10 +461,27 @@ function sendPendingLabels() {
       const when = localEntry["time"];
       const now = Date.now();
 
-      if (!when || now > when + 10000) {
+      if (!when || now > when + 10000) { // it's been at least 10 seconds
         const reportType = localEntry["label"].replace("local-", "");
-        console.log("Report type: " + reportType);
-        sendLabel(reportType, localEntry["identifier"], () => {}, localKey);
+        // check if the report already went through
+        browser.runtime.sendMessage({
+          "action": "fetch",
+          "url": "https://api.beth.lgbt/check-report?state=" + state + "&screen_name=" + localEntry["identifier"]
+        }).then(async response => {
+          try {
+            const reported = response["text"];
+            if (reported == "1") {
+              localEntries[localKey]["status"] = "received";
+        
+              saveLocalEntries();
+            } else {
+              notifier.info("Re-sending pending report for @" + localEntry["identifier"] + "...");
+              sendLabel(reportType, localEntry["identifier"], () => {}, localKey);     
+            }
+          } catch (error) {
+            notifier.alert(error);
+          }
+        });
       }
     }
   });
@@ -496,6 +513,7 @@ async function checkForDatabaseUpdates() {
             // update the database
             updateDatabase(() => {}, numberVersion);
           }
+          database["last_updated"] = Date.now();
         });
       }
     }
@@ -605,5 +623,5 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 init();
 setInterval(updatePage, 10000);
 setInterval(updateAllLabels, 3000);
-setInterval(sendPendingLabels, 10000);
+setInterval(sendPendingLabels, 4000);
 setInterval(checkForDatabaseUpdates, 10000);
