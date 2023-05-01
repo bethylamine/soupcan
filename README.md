@@ -21,6 +21,7 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 
 1. Download the repository (either by zip or with git, if you're comfortable) and save it somewhere.
 2. Search for how to load an unpacked extension in your browser of choice, then select the `manifest-v3` directory as the extension.
+3. For firefox, delete `manifest.json` and rename `manifest-firefox.json` to `manifest.json`, and load that.
 
 ## How to update
 
