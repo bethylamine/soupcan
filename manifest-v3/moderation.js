@@ -28,10 +28,20 @@ function buildTable(reports) {
     if (!grouped_reports[screenName]) {
       grouped_reports[screenName] = []
     }
-    grouped_reports[screenName].push(report);
-    grouped_reports[screenName] = grouped_reports[screenName].sort((a, b) => {
-      return a.report_time - b.report_time;
+    // Check for duplicate reporter
+    var duplicateReporter = false;
+    grouped_reports[screenName].forEach(gr => {
+      if (gr.reporter_id == report.reporter_id) {
+        duplicateReporter = true;
+      }
     });
+
+    if (!duplicateReporter) {
+      grouped_reports[screenName].push(report);
+      grouped_reports[screenName] = grouped_reports[screenName].sort((a, b) => {
+        return a.report_time - b.report_time;
+      });
+    }
   });
 
   var report_screen_names = Object.keys(grouped_reports);
@@ -55,6 +65,9 @@ function buildTable(reports) {
     var listTag = document.createElement("ol");
     reports.forEach(report => {
       var listEl = document.createElement("li");
+      if (report.reporter_screen_name == "(not recorded)") {
+        report.reporter_screen_name = "Twitter user " + report.reporter_id;
+      }
       listEl.innerHTML = "from " + report.reporter_screen_name + " at " + report.report_time;
       listTag.appendChild(listEl);
     });

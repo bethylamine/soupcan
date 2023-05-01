@@ -426,6 +426,9 @@ async function sendLabel(reportType, identifier, sendResponse, localKey) {
     return;
   }
 
+  localEntries[localKey]["time"] = Date.now();
+  saveLocalEntries();
+
   // Report to WIAW
   browser.runtime.sendMessage({
     "action": "fetch",
@@ -435,7 +438,6 @@ async function sendLabel(reportType, identifier, sendResponse, localKey) {
       const jsonData = response["json"];
 
       localEntries[localKey]["status"] = "received";
-      localEntries[localKey]["time"] = Date.now();
 
       saveLocalEntries();
 
@@ -443,10 +445,6 @@ async function sendLabel(reportType, identifier, sendResponse, localKey) {
       sendResponse(jsonData);
     } catch (error) {
       notifier.alert(failureMessage + error);
-  
-      browser.storage.local.set({
-        "local_entries": localEntries
-      });
       
       updateAllLabels();
       sendResponse("Failed");
@@ -463,7 +461,7 @@ function sendPendingLabels() {
       const when = localEntry["time"];
       const now = Date.now();
 
-      if (!when || now > when + 5000) { // 5 seconds
+      if (!when || now > when + 10000) {
         const reportType = localEntry["label"].replace("local-", "");
         console.log("Report type: " + reportType);
         sendLabel(reportType, localEntry["identifier"], () => {}, localKey);
@@ -607,5 +605,5 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 init();
 setInterval(updatePage, 10000);
 setInterval(updateAllLabels, 3000);
-setInterval(sendPendingLabels, 2000);
+setInterval(sendPendingLabels, 10000);
 setInterval(checkForDatabaseUpdates, 10000);
