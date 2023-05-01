@@ -68,7 +68,7 @@ function buildTable(reports) {
       if (report.reporter_screen_name == "(not recorded)") {
         report.reporter_screen_name = "Twitter user " + report.reporter_id;
       }
-      listEl.innerHTML = "from " + report.reporter_screen_name + " at " + report.report_time;
+      listEl.innerHTML = "from " + report.reporter_screen_name + " at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
       listTag.appendChild(listEl);
     });
     reportsCell.appendChild(listTag);
