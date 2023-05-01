@@ -1,7 +1,5 @@
 var browser = browser || chrome;
 
-console.log("I am here");
-
 var notifier = new AWN({
   "position": "top-left"
 });
@@ -605,8 +603,6 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   }
   return false;
 });
-
-console.log("listener added");
 
 init();
 setInterval(updatePage, 10000);

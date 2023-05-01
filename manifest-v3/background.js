@@ -15,6 +15,19 @@ function start() {
         });
       }
     }
+
+    if (v.state) {
+      handleFetch("https://api.beth.lgbt/moderation/is-moderator?state=" + v.state, response => {
+        if (response["text"] == "1") {
+          browser.contextMenus.create({
+            id: "moderate",
+            title: "👩‍⚖️ Moderate reports",
+            contexts: ["page"],
+            targetUrlPatterns: ["*://*.twitter.com/*"]
+          });
+        }
+      });
+    }
   });
 
   browser.contextMenus.create({
@@ -68,6 +81,10 @@ function start() {
       }).then((response) => {
         console.log("Response is " + response);
       });
+    } else if (action == "moderate") {
+      browser.tabs.create({
+        url: getURL('moderation.html')
+      });
     }
   });
 }
@@ -78,8 +95,6 @@ function getURL(path) {
 
 const handleFetch = async (url, sendResponse) => {
   const response = await fetch(url);
-  console.log("Got fetch response");
-  console.log(response);
   var json = "";
   try {
     json = await response.clone().json();
@@ -88,13 +103,10 @@ const handleFetch = async (url, sendResponse) => {
   }
   const text = await response.text();
   sendResponse({"text": text, "json": json});
-  //sendResponse(response);
 };
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  console.log("Got message");
   if (message.action == "fetch") {
-    console.log("Got fetch command");
     handleFetch(message.url, sendResponse);
     return true;
   }
