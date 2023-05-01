@@ -109,21 +109,17 @@ function updateAllLabels() {
 
 function isProfilePage() {
   const localUrl = getLocalUrl(location.href);
-  const isProfilePage = "/" + getIdentifier(localUrl) == localUrl.toLowerCase();
-  console.log("Is profile page? " + isProfilePage);
+  const isProfilePage = localUrl.toLowerCase().startsWith("/" + getIdentifier(localUrl));
   return isProfilePage;
 }
 
 var appliedLinkedToUsernameOnProfilePage = false;
 var usernameLinkClass = null;
 function applyLinkToUsernameOnProfilePage() {
-  console.log("0");
   if (!appliedLinkedToUsernameOnProfilePage) {
-    console.log("1");
     // Check for username at top of profile page
     var usernameDiv = document.body.querySelector("div[data-testid='UserName']");
     if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
-      console.log("2");
       const link = document.createElement('a');
       link.href = location.href;
       link.classList.add("wiaw-username-link");
@@ -138,24 +134,19 @@ function applyLinkToUsernameOnProfilePage() {
       // need to match the classes
       if (usernameLinkClass) {
         link.className = usernameLinkClass;
-        console.log("Set to " + usernameLinkClass);
         usernameDiv.after(link);
         link.appendChild(usernameDiv);
         usernameDiv.classList.add("wiawbe-linked");
         appliedLinkedToUsernameOnProfilePage = true;
       } else {
         var otherUsernameLink = document.querySelector("aside div[data-testid='UserCell'] a:not([tabindex])");
-        console.log(otherUsernameLink);
         if (otherUsernameLink) {
-          console.log(link.classList);
-          console.log(otherUsernameLink.classList);
           otherUsernameLink.classList.forEach(cname => {
             if (cname.includes("wiaw") || cname.includes("label")) {
               return;
             }
             link.classList.add(cname);
           });
-          console.log(link.classList);
           usernameLinkClass = link.className;
           usernameDiv.after(link);
           link.appendChild(usernameDiv);
