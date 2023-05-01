@@ -19,8 +19,15 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 
 ## How to install
 
-1. Download the repository and save it somewhere.
+1. Download the repository (either by zip or with git, if you're comfortable) and save it somewhere.
 2. Search for how to load an unpacked extension in your browser of choice, then select the `manifest-v3` directory as the extension.
+
+## How to update
+
+1. With new features you'll need to update the extension. Download the latest version from here (or if you have it checked
+   out with git, just do a git pull) and reload the extension (click the reload button in your extension page)
+   
+![image](https://user-images.githubusercontent.com/130214958/235387341-f1449b9d-7a41-46a0-95e3-b51aa3a6a498.png)
 
 ## Conflicts
 
