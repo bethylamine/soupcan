@@ -150,3 +150,29 @@ a.wiawbe-no-underline {
  #awn-toast-container {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif !important;
  }
+
+ /* Report reason modal */
+ .awn-popup-modal-reason {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+ }
+
+ .awn-popup-modal-reason h2 {
+    font-weight: 800;
+    font-size: 26px;
+ }
+
+ .awn-popup-modal-reason textarea {
+    width: 100%;
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+ }
+
+ .awn-popup-modal-reason a {
+    width: 50%;
+    float: right;
+    margin-top: 20px;
+ }
+
+ a.wiaw-username-link {
+    text-decoration: none;
+ }

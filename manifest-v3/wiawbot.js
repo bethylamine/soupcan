@@ -111,6 +111,10 @@ function updateAllLabels() {
   for (const div of document.getElementsByTagName('div')) {
     checkNode(div);
   }
+
+  if (isProfilePage) {
+    applyLinkToUsernameOnProfilePage();
+  }
 }
 
 function isProfilePage() {
@@ -123,10 +127,8 @@ function isProfilePage() {
   }
 }
 
-var appliedLinkedToUsernameOnProfilePage = false;
-var usernameLinkClass = null;
 function applyLinkToUsernameOnProfilePage() {
-  if (!appliedLinkedToUsernameOnProfilePage) {
+  if (!document.querySelector("a.wiaw-username-link")) {
     // Check for username at top of profile page
     var usernameDiv = document.body.querySelector("div[data-testid='UserName']");
     if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
@@ -141,29 +143,10 @@ function applyLinkToUsernameOnProfilePage() {
         previousLink.remove(); // delete the link
       }
 
-      // need to match the classes
-      if (usernameLinkClass) {
-        link.className = usernameLinkClass;
-        usernameDiv.after(link);
-        link.appendChild(usernameDiv);
-        usernameDiv.classList.add("wiawbe-linked");
-        appliedLinkedToUsernameOnProfilePage = true;
-      } else {
-        var otherUsernameLink = document.querySelector("aside div[data-testid='UserCell'] a:not([tabindex])");
-        if (otherUsernameLink) {
-          otherUsernameLink.classList.forEach(cname => {
-            if (cname.includes("wiaw") || cname.includes("label")) {
-              return;
-            }
-            link.classList.add(cname);
-          });
-          usernameLinkClass = link.className;
-          usernameDiv.after(link);
-          link.appendChild(usernameDiv);
-          usernameDiv.classList.add("wiawbe-linked");
-          appliedLinkedToUsernameOnProfilePage = true;
-        }
-      }
+      usernameDiv.after(link);
+      link.appendChild(usernameDiv);
+      usernameDiv.classList.add("wiawbe-linked");
+      appliedLinkedToUsernameOnProfilePage = true;
     }
   }
 }
@@ -468,7 +451,7 @@ function updatePage() {
   }
 }
 
-async function sendLabel(reportType, identifier, sendResponse, localKey) {
+async function sendLabel(reportType, identifier, sendResponse, localKey, reason = "") {
   var successMessage = "";
   var failureMessage = "";
   var endpoint = "";
@@ -477,10 +460,12 @@ async function sendLabel(reportType, identifier, sendResponse, localKey) {
     endpoint = "report-transphobe";
     successMessage = "Report received: @" + identifier;
     failureMessage = "Failed to submit report: ";
+    notifier.tip("Sending report: @" + identifier);
   } else if (reportType == "appeal") {
     endpoint = "appeal-label";
     successMessage = "Appeal received: @" + identifier;
     failureMessage = "Failed to submit appeal: ";
+    notifier.tip("Sending appeal: @" + identifier);
   } else {
     notifier.alert("Invalid report type: " + reportType);
     return;
@@ -489,10 +474,11 @@ async function sendLabel(reportType, identifier, sendResponse, localKey) {
   localEntries[localKey]["time"] = Date.now();
   saveLocalEntries();
 
+
   // Report to WIAW
   browser.runtime.sendMessage({
     "action": "fetch",
-    "url": "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier
+    "url": "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&reason=" + reason
   }).then(async response => {
     try {
       const jsonData = response["json"];
@@ -536,7 +522,7 @@ function sendPendingLabels() {
               saveLocalEntries();
             } else {
               notifier.info("Re-sending pending report for @" + localEntry["identifier"] + "...");
-              sendLabel(reportType, localEntry["identifier"], () => {}, localKey);     
+              sendLabel(reportType, localEntry["identifier"], () => {}, localKey, localEntry["submitReason"]);
             }
           } catch (error) {
             notifier.alert(error);
@@ -636,14 +622,52 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       notifier.alert("@" + identifier + " is already souped! 🍅🥫");
       return false;
     } else {
-      // Add locally
-      var localKey = await hash(identifier + ":" + database["salt"])
-      localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "time": Date.now(), "identifier": identifier};
+      var clonedTweetButton = document.querySelector("a[aria-label='Tweet']").cloneNode(true);
+      clonedTweetButton.href = "#";
 
-      saveLocalEntries();
-      
-      updateAllLabels();
-      sendLabel("transphobe", identifier, sendResponse, localKey);
+      for (const span of clonedTweetButton.querySelectorAll('span')) {
+        if (span.textContent !== '') {
+          span.innerText = 'Send Report';
+        }
+      }
+
+      notifier.modal(
+        '<h2>🍅 Report @' + identifier + "</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. It's optional, so if it's obvious, feel free to skip it.</p><textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
+        'modal-reason'
+      );
+      var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
+      var bodyBackgroundColor = document.getElementsByTagName("body")[0].style["background-color"];
+      var textColor = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("color");
+      if (popupElements) {
+        for (let el of popupElements) {
+          el.style["background-color"] = bodyBackgroundColor;
+          el.style["color"] = textColor;
+        }
+      }
+      var textArea = document.getElementById("wiawbe-reason-textarea");
+      if (textArea) {
+        textArea.style["backgroundColor"] = bodyBackgroundColor;
+        textArea.style["color"] = textColor;
+        textArea.style["border-color"] = textColor;
+      }
+      textArea.after(clonedTweetButton);
+
+      clonedTweetButton.addEventListener('click', async function() {
+        textArea.disabled = true;
+        var submitReason = textArea.value;
+        var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
+        awnPopupWrapper.classList.add("awn-hiding");
+        setTimeout(() => awnPopupWrapper.remove(), 300);
+        
+        // Add locally
+        var localKey = await hash(identifier + ":" + database["salt"])
+        localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
+
+        saveLocalEntries();
+        
+        updateAllLabels();
+        sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
+      });
       return true;
     }
   } else if (message.action == "appeal-label") {
