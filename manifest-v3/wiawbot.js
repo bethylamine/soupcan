@@ -236,7 +236,7 @@ async function processDiv(div, markArea = false) {
 }
 
 function addReasonToUserNameDiv(div) {
-  if (!/wiawbe-reason/.test(div.innerHTML)) {
+  if (!/wiawbe-profile-reason/.test(div.innerHTML)) {
     if (div.wiawReason) {
       div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'>[" + div.wiawReason + "]</span>");
     }
