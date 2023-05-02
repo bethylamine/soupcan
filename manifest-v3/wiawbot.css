@@ -69,7 +69,7 @@ body.hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
 /* Image masking */
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after
 {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     content: "";
@@ -84,13 +84,13 @@ body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>
 }
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after
 {
     opacity: 0;
 }
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover
 {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
@@ -100,7 +100,7 @@ body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>
 /* Video masking */
 
 body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] div[data-testid="videoComponent"]:has(video)::after
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after
 {
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     content: "";
