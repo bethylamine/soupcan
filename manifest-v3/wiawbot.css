@@ -53,6 +53,15 @@ div[data-testid="card.layoutSmall.media"] div[aria-label="Play"] {
     pointer-events: all;
 }
 
+/* Zalgo hiding */
+body.hide-zalgo div[data-testid="UserDescription"] {
+    overflow: hidden;
+}
+
+body.hide-zalgo div[data-testid="UserCell"] div[dir="auto"] {
+    overflow: hidden;
+}
+
 /* Image masking */
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after {

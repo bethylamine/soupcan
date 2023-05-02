@@ -1,8 +1,12 @@
 var browser = browser || chrome;
 
 const markTransphobeMediaCheckbox = document.getElementById("maskTransphobeMedia");
+const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
 
-markTransphobeMediaCheckbox.addEventListener("change", saveOptions);
+var inputs = document.getElementsByClassName("form-check-input");
+for (let el of inputs) {
+  el.addEventListener("change", saveOptions);
+};
 
 var options = {}
 
@@ -17,11 +21,15 @@ function loadOptions() {
     if (options["maskTransphobeMedia"]) {
       markTransphobeMediaCheckbox.checked = true;
     }
+    if (options["preventZalgoText"]) {
+      preventZalgoTextCheckbox.checked = true;
+    }
   });
 }
 
 function saveOptions() {
   options["maskTransphobeMedia"] = markTransphobeMediaCheckbox.checked;
+  options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
 
   browser.storage.local.set({
     "options": options

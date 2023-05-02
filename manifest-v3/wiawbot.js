@@ -41,6 +41,9 @@ function init() {
     if (options["maskTransphobeMedia"]) {
       document.getElementsByTagName("body")[0].classList.add("wiawbe-mask-media");
     } 
+    if (options["preventZalgoText"]) {
+      document.getElementsByTagName("body")[0].classList.add("hide-zalgo");
+    }
   });
 
   createObserver();
@@ -109,8 +112,12 @@ function updateAllLabels() {
 
 function isProfilePage() {
   const localUrl = getLocalUrl(location.href);
-  const isProfilePage = localUrl.toLowerCase().startsWith("/" + getIdentifier(localUrl));
-  return isProfilePage;
+  if (localUrl) {
+    const isProfilePage = localUrl.toLowerCase().startsWith("/" + getIdentifier(localUrl));
+    return isProfilePage;
+  } else {
+    return false;
+  }
 }
 
 var appliedLinkedToUsernameOnProfilePage = false;
@@ -171,6 +178,7 @@ function hash(string) {
 
 async function processDiv(div, markArea = false) {
   var div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/gs, "$1");
+
   if (!div_identifier) {
     return;
   }
