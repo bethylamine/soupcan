@@ -627,7 +627,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       if (icon) {
         icon.remove();
       }
-      clonedTweetButton.href = "#";
+      clonedTweetButton.href = "javascript:void(0)";
 
       for (const span of clonedTweetButton.querySelectorAll('span')) {
         span.innerText = 'Send Report';
