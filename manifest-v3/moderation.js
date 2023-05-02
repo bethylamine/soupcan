@@ -69,7 +69,6 @@ function buildTable(reports) {
         report.reporter_screen_name = "Twitter user " + report.reporter_id;
       }
       listEl.innerHTML = "from " + report.reporter_screen_name + " at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
-      report["user_reason"] = "hello world, this is a great reason";
       if (report["user_reason"]) {
         var preEl = document.createElement("pre");
         preEl.innerText = report["user_reason"];
