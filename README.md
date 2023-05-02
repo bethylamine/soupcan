@@ -33,3 +33,13 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 ## Conflicts
 
 The extension works while Shinigami Eyes is installed, but for the best experience, disable Shinigami Eyes while using this extension.
+
+## How To Use
+
+### Reporting Users
+
+Right click on the username and select soupcan click on "report user"
+
+### Appealing User Labels
+
+Right click on the username and select soupcan click on "appeal label"
