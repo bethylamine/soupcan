@@ -41,6 +41,9 @@ function init() {
     if (options["maskTransphobeMedia"]) {
       document.getElementsByTagName("body")[0].classList.add("wiawbe-mask-media");
     } 
+    if (options["maskAllTransphobeMedia"]) {
+      document.getElementsByTagName("body")[0].classList.add("wiawbe-mask-all-media");
+    } 
     if (options["preventZalgoText"]) {
       document.getElementsByTagName("body")[0].classList.add("hide-zalgo");
     }

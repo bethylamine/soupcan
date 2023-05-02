@@ -68,14 +68,12 @@ body.hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
 
 /* Image masking */
 
-body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after {
+body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after
+{
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    content: "⛔📷 Hover to view";
-    color: white;
-    padding-left: 5px;
-    padding-top: 5px;
-    background-image: linear-gradient(135deg, #3f1212 25%, #000000 25%, #000000 50%, #3f1212 50%, #3f1212 75%, #000000 75%, #000000 100%);
-    background-size: 56.57px 56.57px;
+    content: "";
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
     position: relative;
     display: inline-block;
     width: 100%;
@@ -85,11 +83,15 @@ body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([
     pointer-events: none;
 }
 
-body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after {
+body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after
+{
     opacity: 0;
 }
 
-body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover {
+body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover
+{
     filter: brightness(100%);
     animation-name: wait-to-reveal;
     animation-duration: 1s;
@@ -97,14 +99,12 @@ body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([
 
 /* Video masking */
 
-body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after {
+body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after,
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] div[data-testid="videoComponent"]:has(video)::after
+{
     font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    content: "⛔🎥 Hover to view";
-    color: white;
-    padding-left: 5px;
-    padding-top: 5px;
-    background-image: linear-gradient(135deg, #3f1212 25%, #000000 25%, #000000 50%, #3f1212 50%, #3f1212 75%, #000000 75%, #000000 100%);
-    background-size: 56.57px 56.57px;
+    content: "";
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
     position: relative;
     display: inline-block;
     width: 100%;
@@ -114,11 +114,15 @@ body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:h
     pointer-events: none;
 }
 
-body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover::after {
+body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover::after,
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] div[data-testid="videoComponent"]:has(video):hover::after
+{
     opacity: 0;
 }
 
-body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover {
+body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover,
+body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] div[data-testid="videoComponent"]:has(video):hover
+{
     filter: brightness(100%);
     animation-name: wait-to-reveal;
     animation-duration: 1s;
