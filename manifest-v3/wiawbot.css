@@ -62,6 +62,10 @@ body.hide-zalgo div[data-testid="UserCell"] div[dir="auto"] {
     overflow: hidden;
 }
 
+body.hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
+    overflow: hidden;
+}
+
 /* Image masking */
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after {
