@@ -623,12 +623,14 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       return false;
     } else {
       var clonedTweetButton = document.querySelector("a[aria-label='Tweet']").cloneNode(true);
+      var icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
+      if (icon) {
+        icon.remove();
+      }
       clonedTweetButton.href = "#";
 
       for (const span of clonedTweetButton.querySelectorAll('span')) {
-        if (span.textContent !== '') {
-          span.innerText = 'Send Report';
-        }
+        span.innerText = 'Send Report';
       }
 
       notifier.modal(
