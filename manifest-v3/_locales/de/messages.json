@@ -1,0 +1,166 @@
+{
+    "extensionName": {
+        "message": "Soupcan",
+        "description": "Name der Browsererweiterung."
+    },
+    "extensionDescription": {
+        "message": "Unterstützt trans Mensch und verbessert deren Twitter-Erfahrung",
+        "description": "Beschreibung der Browsererweiterung."
+    },
+    "actionReportTransphobe": {
+        "message": "🍅 melde ein transphobe Person",
+        "description": "Kontext Menü Aktion um transphobe Menschen zu melden."
+    },
+    "actionAppealLabel": {
+        "message": "😇 Meldung anfechten",
+        "description": "Kontext Menü Aktion um eine Bezeichnung anzufechten."
+    },
+    "actionRerunSetup": {
+        "message": "📐 Setup erneut durchführen",
+        "description": "Kontext Menü Aktion um den Setup-Prozess noch einmal laufen zu lassen."
+    },
+    "actionUpdateDatabase": {
+        "message": "🌐 Datenbank aktualisieren",
+        "description": "Kontext Menü Aktion um die Datenbank zu aktualisieren."
+    },
+    "actionModerateReports": {
+        "message": "👩‍⚖️ moderiere Meldungen",
+        "description": "Kontext Menü Aktion um Meldungen zu überprüfen und zu moderieren."
+    },
+    "reportReasonInstructions": {
+        "message": "<h2>🍅 Melde @$ID$</h2><p>Du kannst hier Belege für deine Meldung hinzufügen (bspw.ielsweise Links zu Tweets, etc.), wenn du denkst, diese sind hilfreich. Wenn du denkst es ist eindeutig genug, dann kannst du das Feld auch leerlassen.</p>",
+        "description": "Anleitung für den Benutzenden um eine Begründung anzugeben.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "userAlreadyRed": {
+        "message": "@$ID$ wurde schon ge-souped! 🍅🥫",
+        "description": "Fehlermeldung, wenn du versuchst einen bereits markierten Benutzenden zu melden.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "sendReportButton": {
+        "message": "Meldung senden",
+        "description": "Button der die Meldung abschickt."
+    },
+    "authorizationInvalid": {
+        "message": "Authorization ungültig, bitte logge dich erneut ein.",
+        "description": "Fehlermeldung wenn eine Befehl abgeschickt wird, weil die Logindaten falsch sind."
+    },
+    "invalidReportTarget": {
+        "message": "Ungültige transphob Meldung!",
+        "description":"Fehlermeldung wenn es nicht um einen gültigen transphoben Benutzenden handelt."
+    },
+    "invalidAppealTarget": {
+        "message": "Ungültige Anfechtungsmeldung",
+        "description": "Fehlermeldung wenn es nicht um eine gültige Anfechtungsmeldung handelt."
+    },
+    "databaseDownloading": {
+        "message": "Datenbank wird heruntergeladen...",
+        "description": "Tooltip der angezeigt wird, wenn die Datenbank heruntergeladen wird."
+    },
+    "databaseUpdated": {
+        "message": "Datenbank aktualisiert!",
+        "description": "Erfolgreiche Tooltip-Nachricht wenn die Datenbank heruntergeladen wurde."
+    },
+    "databaseUpdateFailed": {
+        "message": "Datenbankaktualisierung fehlgeschlagen! $ERROR$",
+        "description": "Fehlermeldung wenn die Datenbankaktualisierung fehlschlägt.",
+        "placeholders": {
+            "error" : {
+                "content" : "$1",
+                "example" : "TypeError: Cannot read properties of null (reading 'cloneNode')"
+            }
+        }
+    },
+    "genericError": {
+        "message": "Error: $ERROR",
+        "description": "Allgemeiner Fehler wenn irgendwas fehlschlägt.",
+        "placeholders": {
+            "error" : {
+                "content" : "$1",
+                "example" : "TypeError: Cannot read properties of null (reading 'cloneNode')"
+            }
+        }
+    },
+    "resendingReport": {
+        "message": "Sende die ausstehende Meldung für @$ID$ erneut.",
+        "description": "Tooltip-Nachricht wenn die Meldung erneut gesendet wird.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "sendingReport": {
+        "message": "Sende Meldung: @$ID$",
+        "description": "Tooltip-Nachricht wenn eine neue Meldung gesendet wird.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "reportReceived": {
+        "message": "Meldung erhalten: @$ID$",
+        "description": "Tooltip-Nachricht wenn die Meldung vom Server akzeptiert wurde.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "reportSubmissionFailed": {
+        "message": "Fehler bei der Medlungsübermittlung:",
+        "description": "Tooltip-Nachricht wenn es eine Fehlermeldung bei der Meldungsübermittlung gab."
+    },
+    "sendingAppeal": {
+        "message": "Sende Anfechtung: @$ID$",
+        "description": "Tooltip-Nachricht wenn eine neue Anfechtungsmeldung verschickt wird.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "appealReceived": {
+        "message": "Anfechtung erhalten: @$ID$",
+        "description": "Tooltip-Nachricht wenn eine Anfechtungsmeldung vom Server akzeptiert wurde.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "appealSubmissionFailed": {
+        "message": "Anfechtungsmeldung fehlgeschlagen:",
+        "description": "Tooltip-Nachricht wenn eine Anfechtungsmeldung nicht verschickt werden konnte."
+    },
+    "invalidReportType": {
+        "message": "Ugültige Meldungsart: $TYPE$",
+        "description": "Fehlermeldung wenn ein unerwartete Meldung (keine Transphob-Meldung oder Anfachtungsmeldung) gegeben wurde.",
+        "placeholders": {
+            "type" : {
+                "content" : "$1",
+                "example" : "transfreundlich"
+            }
+        }
+    },
+    "nothingToAppeal": {
+        "message": "nichts anzufechten",
+        "description": "Nachricht die anzeigt wird, wenn Benutzende die keinen Moderierenden sind versuchen einen Anzufechtenden zu melden, der nicht markiert ist."
+    }
+}
