@@ -478,7 +478,7 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
   // Report to WIAW
   browser.runtime.sendMessage({
     "action": "fetch",
-    "url": "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&reason=" + reason
+    "url": "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&reason=" + encodeURI(reason)
   }).then(async response => {
     try {
       const jsonData = response["json"];
