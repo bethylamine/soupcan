@@ -128,7 +128,7 @@ function isProfilePage() {
 }
 
 function applyLinkToUsernameOnProfilePage() {
-  if (!document.querySelector("a.wiaw-username-link")) {
+  if (!document.querySelector("a.wiaw-username-link") || !appliedLinkedToUsernameOnProfilePage) {
     // Check for username at top of profile page
     var usernameDiv = document.body.querySelector("div[data-testid='UserName']");
     if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
