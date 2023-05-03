@@ -628,7 +628,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         if (icon) {
           icon.remove();
         }
-        clonedTweetButton.href = "#";
+        clonedTweetButton.removeAttribute("href");
 
         for (const span of clonedTweetButton.querySelectorAll('span')) {
           span.innerText = browser.i18n.getMessage("sendReportButton");
