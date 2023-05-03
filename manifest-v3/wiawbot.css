@@ -54,24 +54,24 @@ div[data-testid="card.layoutSmall.media"] div[aria-label="Play"] {
 }
 
 /* Zalgo hiding */
-body.hide-zalgo div[data-testid="UserDescription"] {
+body.wiawbe-hide-zalgo div[data-testid="UserDescription"] {
     overflow: hidden;
 }
 
-body.hide-zalgo div[data-testid="UserCell"] div[dir="auto"] {
+body.wiawbe-hide-zalgo div[data-testid="UserCell"] div[dir="auto"] {
     overflow: hidden;
 }
 
-body.hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
+body.wiawbe-hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
     overflow: hidden;
 }
 
 /* Image masking */
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after
 {
-    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     content: "";
     background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
     position: relative;
@@ -79,18 +79,19 @@ body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class
     width: 100%;
     height: 100%;
     z-index: 2;
-    font-weight: 400;
     pointer-events: none;
 }
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after
 {
     opacity: 0;
 }
 
 body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover
 {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
@@ -100,9 +101,9 @@ body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class
 /* Video masking */
 
 body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video)::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video)::after
 {
-    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     content: "";
     background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
     position: relative;
@@ -110,22 +111,45 @@ body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] [class
     width: 100%;
     height: 100%;
     z-index: 2;
-    font-weight: 400;
     pointer-events: none;
 }
 
 body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover::after,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] div[data-testid="videoComponent"]:has(video):hover::after
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video):hover::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video):hover::after
 {
     opacity: 0;
 }
 
 body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover,
-body.wiawbe-mask-media.wiawbe-mask-all-media article[data-testid="tweet"] div[data-testid="videoComponent"]:has(video):hover
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video):hover,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video):hover
 {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
     animation-duration: 1s;
+}
+
+/* Full tweet masking */
+
+body.wiawbe-mask-all-content article[data-testid="tweet"].wiaw-area-label-transphobe,
+body.wiawbe-mask-all-content article[data-testid="tweet"]:has([class*="transphobe"]):has(span[data-testid="socialContext"])
+{
+    content: "";
+    filter: blur(8px);
+    position: relative;
+    display: inline-block;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+body.wiawbe-mask-all-content article[data-testid="tweet"].wiaw-area-label-transphobe:hover,
+body.wiawbe-mask-all-content article[data-testid="tweet"]:has([class*="transphobe"]):has(span[data-testid="socialContext"]):hover
+{
+    filter: blur(0px);
+    transition: 0.5s;
 }
 
 /* Mark reason on profile page */

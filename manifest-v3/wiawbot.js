@@ -21,7 +21,7 @@ var state = "";
 var isModerator = false;
 
 function init() {
-  browser.storage.local.get(["database", "local_entries", "state", "options", "is_moderator"], v => {
+  browser.storage.local.get(["database", "local_entries", "state", "is_moderator"], v => {
     if (v.database) {
       database = v.database || {};
     }
@@ -31,25 +31,65 @@ function init() {
     if (v.state) {
       state = v.state;
     }
-    if (v.options) {
-      options = v.options || {};
-    }
     if (v.is_moderator) {
       isModerator = v.is_moderator;
     }
-
-    if (options["maskTransphobeMedia"]) {
-      document.getElementsByTagName("body")[0].classList.add("wiawbe-mask-media");
-    } 
-    if (options["maskAllTransphobeMedia"]) {
-      document.getElementsByTagName("body")[0].classList.add("wiawbe-mask-all-media");
-    } 
-    if (options["preventZalgoText"]) {
-      document.getElementsByTagName("body")[0].classList.add("hide-zalgo");
-    }
   });
 
+  applyOptions();
   createObserver();
+}
+
+function applyOptions() {
+  browser.storage.local.get(["options"], v => {
+    var oldOptions = {...options};
+    var different = false;
+
+    if (v.options) {
+      options = v.options || {};
+    }
+
+    for (let optionKey in options) {
+      if (options[optionKey] != oldOptions[optionKey]) {
+        different = true;
+      }
+    }
+    for (let optionKey in oldOptions) {
+      if (options[optionKey] != oldOptions[optionKey]) {
+        different = true;
+      }
+    }
+
+    if (!different) {
+      return;
+    }
+
+    const body = document.getElementsByTagName("body")[0];
+
+    if (options["maskMode"]) {
+      var mm = options["maskMode"];
+      body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("wiawbe-mask-")));
+      switch (mm) {
+        case "direct-media-only":
+          body.classList.add("wiawbe-mask-media");
+          break;
+        case "media-incl-retweets":
+          body.classList.add("wiawbe-mask-media");
+          body.classList.add("wiawbe-mask-all-media");
+          break;
+        case "all-content":
+          body.classList.add("wiawbe-mask-media");
+          body.classList.add("wiawbe-mask-all-media");
+          body.classList.add("wiawbe-mask-all-content");
+          break;
+      }
+    }
+    
+    body.classList.remove("wiawbe-hide-zalgo");
+    if (options["preventZalgoText"]) {
+      body.classList.add("wiawbe-hide-zalgo");
+    }
+  });
 }
 
 function createObserver() {
@@ -737,3 +777,4 @@ setInterval(updatePage, 10000);
 setInterval(updateAllLabels, 3000);
 setInterval(sendPendingLabels, 4000);
 setInterval(checkForDatabaseUpdates, 10000);
+setInterval(applyOptions, 100);

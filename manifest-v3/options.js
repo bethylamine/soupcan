@@ -1,7 +1,9 @@
 var browser = browser || chrome;
 
-const maskTransphobeMediaCheckbox = document.getElementById("maskTransphobeMedia");
-const maskAllTransphobeMediaCheckbox = document.getElementById("maskAllTransphobeMedia");
+const maskNoneRadio = document.getElementById("maskNone");
+const maskTransphobeMediaRadio = document.getElementById("maskTransphobeMedia");
+const maskAllTransphobeMediaRadio = document.getElementById("maskAllTransphobeMedia");
+const maskAllTransphobeContentRadio = document.getElementById("maskAllTransphobeContent");
 const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
 
 var inputs = document.getElementsByClassName("form-check-input");
@@ -19,26 +21,35 @@ function loadOptions() {
       options = v.options || {};
     }
 
-    if (options["maskTransphobeMedia"]) {
-      maskTransphobeMediaCheckbox.checked = true;
+    if (options["maskMode"]) {
+      var mm = options["maskMode"];
+      switch (mm) {
+        case "none":
+          maskNoneRadio.checked = true;
+          break;
+        case "direct-media-only":
+          maskTransphobeMediaRadio.checked = true;
+          break;
+        case "media-incl-retweets":
+          maskAllTransphobeMediaRadio.checked = true;
+          break;
+        case "all-content":
+          maskAllTransphobeContentRadio.checked = true;
+          break;
+      }
     }
-    if (options["maskAllTransphobeMedia"]) {
-      maskAllTransphobeMediaCheckbox.checked = true;
-    }
+
     if (options["preventZalgoText"]) {
       preventZalgoTextCheckbox.checked = true;
     }
-
-    maskAllTransphobeMediaCheckbox.disabled = !maskTransphobeMediaCheckbox.checked;
   });
 }
 
 function saveOptions() {
-  options["maskTransphobeMedia"] = maskTransphobeMediaCheckbox.checked;
-  options["maskAllTransphobeMedia"] = maskAllTransphobeMediaCheckbox.checked;
-  options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
+  options["maskMode"] = document.querySelector('input[name="maskMode"]:checked').value;
+  console.log(options["maskMode"]);
 
-  maskAllTransphobeMediaCheckbox.disabled = !maskTransphobeMediaCheckbox.checked;
+  options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
 
   browser.storage.local.set({
     "options": options

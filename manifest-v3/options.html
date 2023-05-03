@@ -18,20 +18,34 @@
         <main>
           <h1 id="header" class="text-body-emphasis">Options</h1>
 
+          <h4>Masking transphobic content</h4>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="maskTransphobeMedia">
+            <input class="form-check-input" name="maskMode" type="radio" value="none" id="maskNone">
+            <label class="form-check-label" for="maskNone">
+              No masking
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" name="maskMode" type="radio" value="direct-media-only" id="maskTransphobeMedia">
             <label class="form-check-label" for="maskTransphobeMedia">
               Mask media from red users (hover over with mouse to reveal)
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="maskAllTransphobeMedia">
+            <input class="form-check-input" name="maskMode" type="radio" value="media-incl-retweets" id="maskAllTransphobeMedia">
             <label class="form-check-label" for="maskAllTransphobeMedia">
               Also mask all retweeted media from red users
             </label>
           </div>
-
           <div class="form-check">
+            <input class="form-check-input" name="maskMode" type="radio" value="all-content" id="maskAllTransphobeContent">
+            <label class="form-check-label" for="maskAllTransphobeContent">
+              Completely mask all content from red users
+            </label>
+          </div>
+
+          <h4>Extra features</h4>
+          <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" value="" id="preventZalgoText">
             <label class="form-check-label" for="preventZalgoText">
               Prevent <a href="https://en.wikipedia.org/wiki/Zalgo_text">Zalgo text</a>
