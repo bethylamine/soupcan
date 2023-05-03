@@ -175,4 +175,6 @@ a.wiawbe-no-underline {
 
  a.wiaw-username-link {
     text-decoration: none;
+    cursor: auto;
+    user-select: text;
  }

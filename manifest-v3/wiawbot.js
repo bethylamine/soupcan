@@ -133,7 +133,12 @@ function applyLinkToUsernameOnProfilePage() {
     var usernameDiv = document.body.querySelector("div[data-testid='UserName']");
     if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
       const link = document.createElement('a');
-      link.href = location.href;
+      link.setAttribute("href", location.href);
+      link.setAttribute("draggable", "false");
+      link.addEventListener("click", e => {
+        e.preventDefault();
+        return false;
+      });
       link.classList.add("wiaw-username-link");
       // Remove any previous link wrapper
       var previousLink = usernameDiv.closest("a.wiaw-username-link");
@@ -286,12 +291,24 @@ async function processLink(a) {
     return;
   }
 
-  var localUrl = getLocalUrl(a.href);
-  if (!localUrl) {
+  var identifier = null;
+
+  var dataIdentifier = a.getAttribute("data-wiawbeidentifier");
+  if (dataIdentifier) {
+    var identifier = dataIdentifier;
+  } else {
+    var localUrl = getLocalUrl(a.href);
+    if (!localUrl) {
+      return;
+    }
+    
+    identifier = getIdentifier(localUrl);
+  }
+
+  if (!identifier) {
     return;
   }
-  
-  var identifier = getIdentifier(localUrl);
+
   a.wiawLabel = null;
   a.wiawReason = null;
 
