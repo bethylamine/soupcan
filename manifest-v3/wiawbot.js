@@ -623,7 +623,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         notifier.alert("@" + identifier + " is already souped! 🍅🥫");
         return false;
       } else {
-        var clonedTweetButton = document.querySelector("a[aria-label='Tweet']").cloneNode(true);
+        var clonedTweetButton = document.querySelector("a[data-testid='SideNav_NewTweet_Button']").cloneNode(true);
         var icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
         if (icon) {
           icon.remove();
