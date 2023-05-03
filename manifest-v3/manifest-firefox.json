@@ -1,8 +1,8 @@
 {
-    "name": "Soupcan",
-    "version": "0.5.3",
+    "name": "__MSG_extensionName__",
+    "version": "0.6.0",
     "manifest_version": 3,
-    "description": "Support trans people and improving your experience on Twitter",
+    "description": "__MSG_extensionDescription__",
     "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
     "host_permissions": ["*://*.twitter.com/*"],
     "background": {

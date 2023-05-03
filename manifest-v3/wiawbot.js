@@ -458,16 +458,16 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
 
   if (reportType == "transphobe") {
     endpoint = "report-transphobe";
-    successMessage = "Report received: @" + identifier;
-    failureMessage = "Failed to submit report: ";
-    notifier.tip("Sending report: @" + identifier);
+    successMessage = browser.i18n.getMessage("reportReceived", [identifier]);
+    failureMessage = browser.i18n.getMessage("reportSubmissionFailed") + " ";
+    notifier.tip(browser.i18n.getMessage("sendingReport", [identifier]));
   } else if (reportType == "appeal") {
     endpoint = "appeal-label";
-    successMessage = "Appeal received: @" + identifier;
-    failureMessage = "Failed to submit appeal: ";
-    notifier.tip("Sending appeal: @" + identifier);
+    successMessage = browser.i18n.getMessage("appealReceived", [identifier]);
+    failureMessage = browser.i18n.getMessage("appealSubmissionFailed") + " ";
+    notifier.tip(browser.i18n.getMessage("sendingAppeal", [identifier]));
   } else {
-    notifier.alert("Invalid report type: " + reportType);
+    notifier.alert(browser.i18n.getMessage("invalidReportType", [reportType]));
     return;
   }
 
@@ -521,11 +521,11 @@ function sendPendingLabels() {
         
               saveLocalEntries();
             } else {
-              notifier.info("Re-sending pending report for @" + localEntry["identifier"] + "...");
+              notifier.info(browser.i18n.getMessage("resendingReport", [localEntry["identifier"]]));
               sendLabel(reportType, localEntry["identifier"], () => {}, localKey, localEntry["submitReason"]);
             }
           } catch (error) {
-            notifier.alert(error);
+            notifier.alert(browser.i18n.getMessage("genericError", [error]));
           }
         });
       }
@@ -567,7 +567,7 @@ async function checkForDatabaseUpdates() {
 }
 
 async function updateDatabase(sendResponse, version) {
-  notifier.info("Database downloading");
+  notifier.info(browser.i18n.getMessage("databaseDownloading"));
   database["downloading"] = true;
   browser.runtime.sendMessage({
     "action": "fetch",
@@ -587,11 +587,11 @@ async function updateDatabase(sendResponse, version) {
       browser.storage.local.set({
         "database": database
       });
-      notifier.success("Database updated!");
+      notifier.success(browser.i18n.getMessage("databaseUpdated"));
       sendResponse("OK");
     } catch (error) {
       database["downloading"] = false;
-      notifier.alert("Database update failed! " + error);
+      notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [error]));
       sendResponse("Fail");
       return true;
     }
@@ -605,13 +605,13 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
     try {
       if (!state) {
-        notifier.alert("Authorization invalid, please log in again.");
+        notifier.alert(browser.i18n.getMessage("authorizationInvalid"));
         sendResponse("Invalid state!");
         return true;
       }
       var localUrl = getLocalUrl(message.url);
       if (!localUrl) {
-        notifier.alert("Invalid report target");
+        notifier.alert(browser.i18n.getMessage("invalidReportTarget"));
         sendResponse("Invalid report target!");
         return true;
       }
@@ -620,7 +620,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       // see if they're already reported
       const dbEntry = await getDatabaseEntry(identifier);
       if (dbEntry && dbEntry["label"] && dbEntry["label"].includes("transphobe")) {
-        notifier.alert("@" + identifier + " is already souped! 🍅🥫");
+        notifier.alert(browser.i18n.getMessage("userAlreadyRed", [identifier]));
         return false;
       } else {
         var clonedTweetButton = document.querySelector("a[data-testid='SideNav_NewTweet_Button']").cloneNode(true);
@@ -631,11 +631,11 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         clonedTweetButton.href = "#";
 
         for (const span of clonedTweetButton.querySelectorAll('span')) {
-          span.innerText = 'Send Report';
+          span.innerText = browser.i18n.getMessage("sendReportButton");
         }
 
         notifier.modal(
-          '<h2>🍅 Report @' + identifier + "</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. It's optional, so if it's obvious, feel free to skip it.</p><textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
+          browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
           'modal-reason'
         );
         var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
@@ -674,19 +674,19 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         return true;
       }
     } catch (error) {
-      notifier.alert("Error: " + error);
+      notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
   } else if (message.action == "appeal-label") {
     try {
       if (!state) {
-        notifier.alert("Authorization invalid, please log in again.");
+        notifier.alert(browser.i18n.getMessage("authorizationInvalid"));
         sendResponse("Invalid state!");
         return true;
       }
       var localUrl = getLocalUrl(message.url);
       if (!localUrl) {
-        notifier.alert("Invalid appeal target");
-        sendResponse("Invalid report target!");
+        notifier.alert(browser.i18n.getMessage("invalidAppealTarget"));
+        sendResponse("Invalid appeal target!");
         return true;
       }
 
@@ -703,11 +703,11 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         updateAllLabels();
         sendLabel("appeal", identifier, sendResponse, localKey);
       } else {
-        notifier.warning("Nothing to appeal");
+        notifier.warning(browser.i18n.getMessage("nothingToAppeal"));
       }
       return true;
     } catch (error) {
-      notifier.alert("Error: " + error);
+      notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
   } else if (message.action == "update-database") {
     updateDatabase(sendResponse, database["version"]);

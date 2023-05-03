@@ -24,7 +24,7 @@ function start() {
           });
           browser.contextMenus.create({
             id: "moderate",
-            title: "👩‍⚖️ Moderate reports",
+            title: browser.i18n.getMessage("actionModerateReports"),
             contexts: ["page"],
             targetUrlPatterns: ["*://*.twitter.com/*"]
           });
@@ -35,25 +35,25 @@ function start() {
 
   browser.contextMenus.create({
     id: "report-transphobe",
-    title: "🍅 Report transphobe",
+    title: browser.i18n.getMessage("actionReportTransphobe"),
     contexts: ["link"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
   browser.contextMenus.create({
     id: "appeal-label",
-    title: "😇 Appeal label",
+    title: browser.i18n.getMessage("actionAppealLabel"),
     contexts: ["link"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
   browser.contextMenus.create({
     id: "run-setup",
-    title: "📐 Re-run setup",
+    title: browser.i18n.getMessage("actionRerunSetup"),
     contexts: ["page"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
   browser.contextMenus.create({
     id: "update-database",
-    title: "🌐 Update database",
+    title: browser.i18n.getMessage("actionUpdateDatabase"),
     contexts: ["page"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
