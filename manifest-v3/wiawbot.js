@@ -603,103 +603,112 @@ async function updateDatabase(sendResponse, version) {
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
-    if (!state) {
-      sendResponse("Invalid state!");
-      return true;
-    }
-    var localUrl = getLocalUrl(message.url);
-    if (!localUrl) {
-      notifier.alert("Invalid report target");
-      sendResponse("Invalid report target!");
-      return true;
-    }
-
-    const identifier = getIdentifier(localUrl);
-
-    // see if they're already reported
-    const dbEntry = await getDatabaseEntry(identifier);
-    if (dbEntry && dbEntry["label"] && dbEntry["label"].includes("transphobe")) {
-      notifier.alert("@" + identifier + " is already souped! 🍅🥫");
-      return false;
-    } else {
-      var clonedTweetButton = document.querySelector("a[aria-label='Tweet']").cloneNode(true);
-      var icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
-      if (icon) {
-        icon.remove();
+    try {
+      if (!state) {
+        notifier.alert("Authorization invalid, please log in again.");
+        sendResponse("Invalid state!");
+        return true;
       }
-      clonedTweetButton.href = "#";
-
-      for (const span of clonedTweetButton.querySelectorAll('span')) {
-        span.innerText = 'Send Report';
+      var localUrl = getLocalUrl(message.url);
+      if (!localUrl) {
+        notifier.alert("Invalid report target");
+        sendResponse("Invalid report target!");
+        return true;
       }
+      const identifier = getIdentifier(localUrl);
 
-      notifier.modal(
-        '<h2>🍅 Report @' + identifier + "</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. It's optional, so if it's obvious, feel free to skip it.</p><textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
-        'modal-reason'
-      );
-      var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
-      var bodyBackgroundColor = document.getElementsByTagName("body")[0].style["background-color"];
-      var textColor = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("color");
-      if (popupElements) {
-        for (let el of popupElements) {
-          el.style["background-color"] = bodyBackgroundColor;
-          el.style["color"] = textColor;
+      // see if they're already reported
+      const dbEntry = await getDatabaseEntry(identifier);
+      if (dbEntry && dbEntry["label"] && dbEntry["label"].includes("transphobe")) {
+        notifier.alert("@" + identifier + " is already souped! 🍅🥫");
+        return false;
+      } else {
+        var clonedTweetButton = document.querySelector("a[aria-label='Tweet']").cloneNode(true);
+        var icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
+        if (icon) {
+          icon.remove();
         }
-      }
-      var textArea = document.getElementById("wiawbe-reason-textarea");
-      if (textArea) {
-        textArea.style["backgroundColor"] = bodyBackgroundColor;
-        textArea.style["color"] = textColor;
-        textArea.style["border-color"] = textColor;
-      }
-      textArea.after(clonedTweetButton);
+        clonedTweetButton.href = "#";
 
-      clonedTweetButton.addEventListener('click', async function() {
-        textArea.disabled = true;
-        var submitReason = textArea.value;
-        var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
-        awnPopupWrapper.classList.add("awn-hiding");
-        setTimeout(() => awnPopupWrapper.remove(), 300);
-        
+        for (const span of clonedTweetButton.querySelectorAll('span')) {
+          span.innerText = 'Send Report';
+        }
+
+        notifier.modal(
+          '<h2>🍅 Report @' + identifier + "</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. It's optional, so if it's obvious, feel free to skip it.</p><textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
+          'modal-reason'
+        );
+        var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
+        var bodyBackgroundColor = document.getElementsByTagName("body")[0].style["background-color"];
+        var textColor = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("color");
+        if (popupElements) {
+          for (let el of popupElements) {
+            el.style["background-color"] = bodyBackgroundColor;
+            el.style["color"] = textColor;
+          }
+        }
+        var textArea = document.getElementById("wiawbe-reason-textarea");
+        if (textArea) {
+          textArea.style["backgroundColor"] = bodyBackgroundColor;
+          textArea.style["color"] = textColor;
+          textArea.style["border-color"] = textColor;
+        }
+        textArea.after(clonedTweetButton);
+
+        clonedTweetButton.addEventListener('click', async function() {
+          textArea.disabled = true;
+          var submitReason = textArea.value;
+          var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
+          awnPopupWrapper.classList.add("awn-hiding");
+          setTimeout(() => awnPopupWrapper.remove(), 300);
+          
+          // Add locally
+          var localKey = await hash(identifier + ":" + database["salt"])
+          localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
+
+          saveLocalEntries();
+          
+          updateAllLabels();
+          sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
+        });
+        return true;
+      }
+    } catch (error) {
+      notifier.alert("Error: " + error);
+    }
+  } else if (message.action == "appeal-label") {
+    try {
+      if (!state) {
+        notifier.alert("Authorization invalid, please log in again.");
+        sendResponse("Invalid state!");
+        return true;
+      }
+      var localUrl = getLocalUrl(message.url);
+      if (!localUrl) {
+        notifier.alert("Invalid appeal target");
+        sendResponse("Invalid report target!");
+        return true;
+      }
+
+      const identifier = getIdentifier(localUrl);
+
+      dbEntry = await getDatabaseEntry(identifier);
+      if (dbEntry || isModerator) {
         // Add locally
         var localKey = await hash(identifier + ":" + database["salt"])
-        localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
+        localEntries[localKey] = {"label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier};
 
         saveLocalEntries();
         
         updateAllLabels();
-        sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
-      });
+        sendLabel("appeal", identifier, sendResponse, localKey);
+      } else {
+        notifier.warning("Nothing to appeal");
+      }
       return true;
+    } catch (error) {
+      notifier.alert("Error: " + error);
     }
-  } else if (message.action == "appeal-label") {
-    if (!state) {
-      sendResponse("Invalid state!");
-      return true;
-    }
-    var localUrl = getLocalUrl(message.url);
-    if (!localUrl) {
-      notifier.alert("Invalid appeal target");
-      sendResponse("Invalid report target!");
-      return true;
-    }
-
-    const identifier = getIdentifier(localUrl);
-
-    dbEntry = await getDatabaseEntry(identifier);
-    if (dbEntry || isModerator) {
-      // Add locally
-      var localKey = await hash(identifier + ":" + database["salt"])
-      localEntries[localKey] = {"label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier};
-
-      saveLocalEntries();
-      
-      updateAllLabels();
-      sendLabel("appeal", identifier, sendResponse, localKey);
-    } else {
-      notifier.warning("Nothing to appeal");
-    }
-    return true;
   } else if (message.action == "update-database") {
     updateDatabase(sendResponse, database["version"]);
   }
