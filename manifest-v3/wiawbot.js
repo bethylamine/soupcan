@@ -772,9 +772,27 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   return false;
 });
 
+var contextInvalidated = false;
+const contextInvalidatedMessage = browser.i18n.getMessage("extensionContextInvalidated");
+var intervals = [];
+function checkForInvalidExtensionContext() {
+  try {
+    browser.storage.local.get([]);
+  } catch (error) {
+    if (!contextInvalidated) {
+      notifier.alert(contextInvalidatedMessage);
+      contextInvalidated = true;
+      intervals.forEach(interval => {
+        clearInterval(interval);
+      });
+    }
+  }
+}
+
 init();
-setInterval(updatePage, 10000);
-setInterval(updateAllLabels, 3000);
-setInterval(sendPendingLabels, 4000);
-setInterval(checkForDatabaseUpdates, 10000);
-setInterval(applyOptions, 100);
+intervals.push(setInterval(checkForInvalidExtensionContext, 1000));
+intervals.push(setInterval(updatePage, 10000));
+intervals.push(setInterval(updateAllLabels, 3000));
+intervals.push(setInterval(sendPendingLabels, 4000));
+intervals.push(setInterval(checkForDatabaseUpdates, 10000));
+intervals.push(setInterval(applyOptions, 100));

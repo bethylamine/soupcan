@@ -162,5 +162,9 @@
     "nothingToAppeal": {
         "message": "Nothing to appeal",
         "description": "Message shown to non-moderators who try to appeal a user who isn't marked."
+    },
+    "extensionContextInvalidated": {
+        "message": "Soupcan extension was reloaded. Please refresh the page for it to take effect.",
+        "description": "Error message to show when the extension was reloaded but the page hasn't been reloaded. (This causes the extension to stop working)"
     }
 }
