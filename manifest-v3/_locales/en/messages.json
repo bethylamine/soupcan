@@ -11,6 +11,10 @@
         "message": "🍅 Report transphobe",
         "description": "Context menu action for reporting a transphobe."
     },
+    "searchTweets": {
+        "message": "🔍 Search tweets for gender-related keywords",
+        "description": "Context menu action for searching a user's tweets for gender-related keywords."
+    },
     "actionAppealLabel": {
         "message": "😇 Appeal label",
         "description": "Context menu action for appealing a user's label."
@@ -62,6 +66,10 @@
     "invalidAppealTarget": {
         "message": "Invalid appeal target",
         "description": "Error message shown when trying to appeal something that is not a valid target (user)."
+    },
+    "invalidTarget": {
+        "message": "Invalid target",
+        "description": "Error message shown when trying to execute an action on something that is not a valid target (user)."
     },
     "databaseDownloading": {
         "message": "Database downloading...",
