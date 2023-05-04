@@ -656,7 +656,7 @@ async function updateDatabase(sendResponse, version) {
 
   return true;
 }
-
+var isButtonClicked=false;
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
@@ -713,11 +713,15 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         textArea.after(clonedTweetButton);
 
         clonedTweetButton.addEventListener('click', async function() {
+          if(isButtonClicked){
+            return;
+          }
+          isButtonClicked=true;
           textArea.disabled = true;
           var submitReason = textArea.value;
           var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
           awnPopupWrapper.classList.add("awn-hiding");
-          setTimeout(() => awnPopupWrapper.remove(), 300);
+          setTimeout(() => isButtonClicked=false,awnPopupWrapper.remove(), 300);
           
           // Add locally
           var localKey = await hash(identifier + ":" + database["salt"])
