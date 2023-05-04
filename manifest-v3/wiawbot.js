@@ -656,7 +656,7 @@ async function updateDatabase(sendResponse, version) {
 
   return true;
 }
-var isButtonClicked=false;
+
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
@@ -713,15 +713,11 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         textArea.after(clonedTweetButton);
 
         clonedTweetButton.addEventListener('click', async function() {
-          if(isButtonClicked){
-            return;
-          }
-          isButtonClicked=true;
           textArea.disabled = true;
           var submitReason = textArea.value;
           var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
           awnPopupWrapper.classList.add("awn-hiding");
-          setTimeout(() => isButtonClicked=false,awnPopupWrapper.remove(), 300);
+          setTimeout(() => awnPopupWrapper.remove(), 300);
           
           // Add locally
           var localKey = await hash(identifier + ":" + database["salt"])
@@ -731,7 +727,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           
           updateAllLabels();
           sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
-        });
+        },{once:true});
         return true;
       }
     } catch (error) {
