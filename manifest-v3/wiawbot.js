@@ -709,6 +709,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           textArea.style["backgroundColor"] = bodyBackgroundColor;
           textArea.style["color"] = textColor;
           textArea.style["border-color"] = textColor;
+          textArea.focus();
         }
         textArea.after(clonedTweetButton);
 
