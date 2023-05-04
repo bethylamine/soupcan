@@ -728,7 +728,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           
           updateAllLabels();
           sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
-        },);
+        });
         return true;
       }
     } catch (error) {
