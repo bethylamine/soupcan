@@ -1,0 +1,170 @@
+{
+    "extensionName": {
+        "message": "Soupcan",
+        "description": "Name of the extension."
+    },
+    "extensionDescription": {
+        "message": "Support trans people and improving your experience on Twitter",
+        "description": "Description of the extension."
+    },
+    "actionReportTransphobe": {
+        "message": "🍅 Report transphobe",
+        "description": "Context menu action for reporting a transphobe."
+    },
+    "actionAppealLabel": {
+        "message": "😇 Appeal label",
+        "description": "Context menu action for appealing a user's label."
+    },
+    "actionRerunSetup": {
+        "message": "📐 Re-run setup",
+        "description": "Context menu action for running the setup process again."
+    },
+    "actionUpdateDatabase": {
+        "message": "🌐 Update database",
+        "description": "Context menu action for updating the extension's database."
+    },
+    "actionModerateReports": {
+        "message": "👩‍⚖️ Moderate reports",
+        "description": "Context menu action to review and moderate user reports."
+    },
+    "reportReasonInstructions": {
+        "message": "<h2>🍅 Report @$ID$</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. It's optional, so if it's obvious, feel free to skip it.</p>",
+        "description": "Instructions given to the user on providing a report reason.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "userAlreadyRed": {
+        "message": "@$ID$ is already souped! 🍅🥫",
+        "description": "Error message when you try to report someone who is already marked.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "sendReportButton": {
+        "message": "Send report",
+        "description": "Button that sends the report in."
+    },
+    "authorizationInvalid": {
+        "message": "Authorization invalid, please log in again.",
+        "description": "Error message when failing to send a command to the server because the credentials are wrong."
+    },
+    "invalidReportTarget": {
+        "message": "Invalid report target!",
+        "description":"Error message shown when trying to report something that is not a valid target (user)."
+    },
+    "invalidAppealTarget": {
+        "message": "Invalid appeal target",
+        "description": "Error message shown when trying to appeal something that is not a valid target (user)."
+    },
+    "databaseDownloading": {
+        "message": "Database downloading...",
+        "description": "Tooltip shown when starting to download the database."
+    },
+    "databaseUpdated": {
+        "message": "Database updated!",
+        "description": "Success tooltip message when the database was downloaded."
+    },
+    "databaseUpdateFailed": {
+        "message": "Database update failed! $ERROR$",
+        "description": "Error message when the database update fails.",
+        "placeholders": {
+            "error" : {
+                "content" : "$1",
+                "example" : "TypeError: Cannot read properties of null (reading 'cloneNode')"
+            }
+        }
+    },
+    "genericError": {
+        "message": "Error: $ERROR",
+        "description": "Generic error message when something fails.",
+        "placeholders": {
+            "error" : {
+                "content" : "$1",
+                "example" : "TypeError: Cannot read properties of null (reading 'cloneNode')"
+            }
+        }
+    },
+    "resendingReport": {
+        "message": "Re-sending pending report for @$ID$...",
+        "description": "Tooltip message shown when re-sending a pending report.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "sendingReport": {
+        "message": "Sending report: @$ID$",
+        "description": "Tooltip message shown when sending a new report.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "reportReceived": {
+        "message": "Report received: @$ID$",
+        "description": "Tooltip message shown when a report was accepted by the server.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "reportSubmissionFailed": {
+        "message": "Failed to submit report:",
+        "description": "Tooltip error message shown when a report could not be submitted."
+    },
+    "sendingAppeal": {
+        "message": "Sending appeal: @$ID$",
+        "description": "Tooltip message shown when sending a new appeal.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "appealReceived": {
+        "message": "Appeal received: @$ID$",
+        "description": "Tooltip message shown when an appeal was accepted by the server.",
+        "placeholders": {
+            "id" : {
+                "content" : "$1",
+                "example" : "bethylamine"
+            }
+        }
+    },
+    "appealSubmissionFailed": {
+        "message": "Failed to submit appeal:",
+        "description": "Tooltip error message shown when an appeal could not be submitted."
+    },
+    "invalidReportType": {
+        "message": "Invalid report type: $TYPE$",
+        "description": "Error message shown if an unexpected report type (not report or appeal) was given.",
+        "placeholders": {
+            "type" : {
+                "content" : "$1",
+                "example" : "trans-friendly"
+            }
+        }
+    },
+    "nothingToAppeal": {
+        "message": "Nothing to appeal",
+        "description": "Message shown to non-moderators who try to appeal a user who isn't marked."
+    },
+    "extensionContextInvalidated": {
+        "message": "Soupcan extension was reloaded. Please refresh the page for it to take effect.",
+        "description": "Error message to show when the extension was reloaded but the page hasn't been reloaded. (This causes the extension to stop working)"
+    }
+}

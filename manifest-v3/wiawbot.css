@@ -1,0 +1,204 @@
+/* Color scheme */
+
+body {
+    --wiawBotTransphobic: #cf2d21;
+    --wiawBotLocallyTransphobic: #faa11b;
+    --wiawBotLocallyAppealed: #15ae9f;
+ }
+
+ /* Marked text labels */
+
+ /* When marked by both Shinigami and Soupcan, use Soupcan styling for consistency */
+ a.wiaw-label-transphobe.assigned-label-transphobic {
+    color: var(--wiawBotTransphobic) !important;
+    font-weight: bold !important;
+}
+
+.wiaw-label-transphobe, a.wiaw-label-transphobe, div.wiaw-label-transphobe {
+    color: var(--wiawBotTransphobic) !important;
+    font-weight: bold !important;
+}
+
+.wiaw-label-local-transphobe, a.wiaw-label-local-transphobe, div.wiaw-label-local-transphobe {
+    color: var(--wiawBotLocallyTransphobic) !important;
+    font-weight: bold !important;
+}
+
+.wiaw-label-local-appeal, a.wiaw-label-local-appeal, div.wiaw-label-local-appeal {
+    color: var(--wiawBotLocallyAppealed) !important;
+    font-weight: bold !important;
+}
+
+/* Mask animation */
+
+@keyframes wait-to-reveal {
+    0% {
+        filter: brightness(20%) blur(30px)
+    }
+    50% {
+        filter: brightness(30%) blur(20px)
+    }
+    100% {
+        filter: brightness(100%) blur(0px)
+    }
+}
+
+/* Changing pointer events to handle hovering card previews */
+
+div[data-testid="card.layoutSmall.media"] div:has(>div[aria-label="Play"]) {
+    pointer-events: none;
+}
+
+div[data-testid="card.layoutSmall.media"] div[aria-label="Play"] {
+    pointer-events: all;
+}
+
+/* Zalgo hiding */
+body.wiawbe-hide-zalgo div[data-testid="UserDescription"] {
+    overflow: hidden;
+}
+
+body.wiawbe-hide-zalgo div[data-testid="UserCell"] div[dir="auto"] {
+    overflow: hidden;
+}
+
+body.wiawbe-hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
+    overflow: hidden;
+}
+
+/* Image masking */
+
+body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after
+{
+    content: "";
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after
+{
+    opacity: 0;
+}
+
+body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover
+{
+    filter: brightness(100%);
+    animation-name: wait-to-reveal;
+    animation-duration: 1s;
+}
+
+/* Video masking */
+
+body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video)::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video)::after
+{
+    content: "";
+    background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+}
+
+body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video):hover::after,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video):hover::after
+{
+    opacity: 0;
+}
+
+body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video):hover,
+body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video):hover
+{
+    filter: brightness(100%);
+    animation-name: wait-to-reveal;
+    animation-duration: 1s;
+}
+
+/* Full tweet masking */
+
+body.wiawbe-mask-all-content article[data-testid="tweet"].wiaw-area-label-transphobe,
+body.wiawbe-mask-all-content article[data-testid="tweet"]:has([class*="transphobe"]):has(span[data-testid="socialContext"])
+{
+    content: "";
+    filter: blur(8px);
+    position: relative;
+    display: inline-block;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+body.wiawbe-mask-all-content article[data-testid="tweet"].wiaw-area-label-transphobe:hover,
+body.wiawbe-mask-all-content article[data-testid="tweet"]:has([class*="transphobe"]):has(span[data-testid="socialContext"]):hover
+{
+    filter: blur(0px);
+    transition: 0.5s;
+}
+
+/* Mark reason on profile page */
+
+.wiawbe-reason {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    top: -25px;
+    position: absolute;
+    width: 100%;
+    text-align: right;
+    font-weight: 400 !important;
+}
+
+a.wiawbe-no-underline {
+    text-decoration: none !important;
+}
+
+ .has-wiaw-label * { color: inherit !important; }
+
+ /* Notifications */
+
+ #awn-toast-container {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif !important;
+ }
+
+ /* Report reason modal */
+ .awn-popup-modal-reason {
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+ }
+
+ .awn-popup-modal-reason h2 {
+    font-weight: 800;
+    font-size: 26px;
+ }
+
+ .awn-popup-modal-reason textarea {
+    width: 100%;
+    font-family: "TwitterChirp",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size: 14px;
+ }
+
+ .awn-popup-modal-reason a {
+    width: 50%;
+    float: right;
+    margin-top: 20px;
+ }
+
+ a.wiaw-username-link {
+    text-decoration: none;
+    cursor: auto;
+    user-select: text;
+ }
