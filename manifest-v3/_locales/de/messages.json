@@ -8,8 +8,12 @@
         "description": "Beschreibung der Browsererweiterung."
     },
     "actionReportTransphobe": {
-        "message": "🍅 melde ein transphobe Person",
+        "message": "🍅 melde eine transphobe Person",
         "description": "Kontext Menü Aktion um transphobe Menschen zu melden."
+    },
+    "searchTweets": {
+        "message": "🔍 Durchsuche Tweets nach Gender-verwandten Keywörtern",
+        "description": "Kontext Menü Aktion um einen user nach Gender-vewandten Keywörtern zu durchsuchen."
     },
     "actionAppealLabel": {
         "message": "😇 Meldung anfechten",
@@ -28,7 +32,7 @@
         "description": "Kontext Menü Aktion um Meldungen zu überprüfen und zu moderieren."
     },
     "reportReasonInstructions": {
-        "message": "<h2>🍅 Melde @$ID$</h2><p>Du kannst hier Belege für deine Meldung hinzufügen (bspw.ielsweise Links zu Tweets, etc.), wenn du denkst, diese sind hilfreich. Wenn du denkst es ist eindeutig genug, dann kannst du das Feld auch leerlassen.</p>",
+        "message": "<h2>🍅 Melde @$ID$</h2><p>Du kannst hier Belege für deine Meldung hinzufügen (bspw. Links zu Tweets, etc.), wenn du denkst, diese sind hilfreich. Wenn du denkst es ist eindeutig genug, dann kannst du das Feld auch leerlassen.</p>",
         "description": "Anleitung für den Benutzenden um eine Begründung anzugeben.",
         "placeholders": {
             "id" : {
@@ -62,6 +66,10 @@
     "invalidAppealTarget": {
         "message": "Ungültige Anfechtungsmeldung",
         "description": "Fehlermeldung wenn es nicht um eine gültige Anfechtungsmeldung handelt."
+    },
+    "invalidTarget": {
+        "message": "Umgültiges Ziel",
+        "description": "Fehlermeldung die angeziegt wird, wenn versucht wird auf einem ungültigen Ziel eine Aktion auszuführen"
     },
     "databaseDownloading": {
         "message": "Datenbank wird heruntergeladen...",
