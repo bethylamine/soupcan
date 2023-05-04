@@ -67,13 +67,10 @@
         "message": "Invalid appeal target",
         "description": "Error message shown when trying to appeal something that is not a valid target (user)."
     },
-<<<<<<< HEAD
-=======
     "invalidTarget": {
         "message": "Invalid target",
         "description": "Error message shown when trying to execute an action on something that is not a valid target (user)."
     },
->>>>>>> d82c88241f157626ee0e4e0e3d5b0baa8e19d08d
     "databaseDownloading": {
         "message": "Database downloading...",
         "description": "Tooltip shown when starting to download the database."
