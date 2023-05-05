@@ -9,11 +9,12 @@ Thank you to [@VehpuS](https://twitter.com/VehpuS) for helping me get started wi
 ## Features
 
 * Highlight users on WhatIsAWomanBot's transphobe database
+* Report transphobes/appeal unfair labels
+* Hide media/tweets from transphobes behind interstitials (prevent shock posting)
 
 ## Future Features
 
 * Be able to highlight hashtags / report transphobic hashtags
-* Hide media/tweets from transphobes behind interstitials (prevent shock posting)
 * Add trans-supportive library tool to provide you with relevant trans-supportive information you can reply with quickly
 * Auto-suggest debunking sources
 
