@@ -68,9 +68,8 @@ body.wiawbe-hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
 
 /* Image masking */
 
-body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"]))::after
+body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']::after,
+body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-tag='media']::after
 {
     content: "";
     background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
@@ -82,58 +81,24 @@ body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe
     pointer-events: none;
 }
 
-body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover::after
+body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']:hover::after,
+body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-tag='media']:hover::after
 {
     opacity: 0;
 }
 
-body.wiawbe-mask-media [class*="transphobe"] :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) :has(>img:not([src*="emoji"]):not([src*="profile_images"])):hover
+body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']:hover,
+body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-tag='media']:hover
 {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
     animation-duration: 1s;
 }
 
-/* Video masking */
+/* Tweet masking */
 
-body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video)::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video)::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video)::after
-{
-    content: "";
-    background-image:url('chrome-extension://__MSG_@@extension_id__/images/mask-image.png');
-    position: relative;
-    display: inline-block;
-    width: 100%;
-    height: 100%;
-    z-index: 2;
-    pointer-events: none;
-}
-
-body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video):hover::after,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video):hover::after
-{
-    opacity: 0;
-}
-
-body.wiawbe-mask-media [class*="transphobe"] div[data-testid="videoComponent"]:has(video):hover,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has([data-testid="User-Name"] a[class*="transphobe"]) div[data-testid="videoComponent"]:has(video):hover,
-body.wiawbe-mask-all-media article[data-testid="tweet"]:has(a[class*="transphobe"] span[data-testid="socialContext"]) div[data-testid="videoComponent"]:has(video):hover
-{
-    filter: brightness(100%);
-    animation-name: wait-to-reveal;
-    animation-duration: 1s;
-}
-
-/* Full tweet masking */
-
-body.wiawbe-mask-all-content article[data-testid="tweet"].wiaw-area-label-transphobe,
-body.wiawbe-mask-all-content article[data-testid="tweet"]:has([class*="transphobe"]):has(span[data-testid="socialContext"])
+body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet'],
+body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet']
 {
     content: "";
     filter: blur(8px);
@@ -145,8 +110,8 @@ body.wiawbe-mask-all-content article[data-testid="tweet"]:has([class*="transphob
     z-index: 2;
 }
 
-body.wiawbe-mask-all-content article[data-testid="tweet"].wiaw-area-label-transphobe:hover,
-body.wiawbe-mask-all-content article[data-testid="tweet"]:has([class*="transphobe"]):has(span[data-testid="socialContext"]):hover
+body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet']:hover,
+body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet']:hover
 {
     filter: blur(0px);
     transition: 0.5s;

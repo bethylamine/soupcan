@@ -71,15 +71,15 @@ function applyOptions() {
       body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("wiawbe-mask-")));
       switch (mm) {
         case "direct-media-only":
-          body.classList.add("wiawbe-mask-media");
+          body.classList.add("wiawbe-mask-direct-media");
           break;
         case "media-incl-retweets":
-          body.classList.add("wiawbe-mask-media");
-          body.classList.add("wiawbe-mask-all-media");
+          body.classList.add("wiawbe-mask-direct-media");
+          body.classList.add("wiawbe-mask-media-incl-retweets");
           break;
         case "all-content":
-          body.classList.add("wiawbe-mask-media");
-          body.classList.add("wiawbe-mask-all-media");
+          body.classList.add("wiawbe-mask-direct-media");
+          body.classList.add("wiawbe-mask-media-incl-retweets");
           body.classList.add("wiawbe-mask-all-content");
           break;
       }
@@ -135,11 +135,95 @@ function checkNode(node) {
     processDiv(node, true)
   }
 
+  processForMasking(node);
+
   if (node.hasChildNodes()) {
     for(var i = 0; i < node.children.length; i++){
       var child = node.children[i];
       checkNode(child);
     }
+  }
+}
+
+function processForMasking(node) {
+  var tweets = node.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
+
+  tweets.forEach(tweet => {
+    applyMasking(tweet);
+  });
+}
+
+function applyAuthorMaskingObserver(authorElement, callback) {
+  if (!authorElement.maskingObserver) {
+    authorElement.maskingObserver = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName == "data-wiawbeidentifier") {
+          callback();
+        }
+      });
+    });
+
+    authorElement.maskingObserver.observe(authorElement, {attributes: true});
+  }
+}
+
+function applyMasking(tweet) {
+  // Check if there is a social context element e.g. ("Username Retweeted")
+  var socialContext = tweet.querySelector("span[data-testid='socialContext']");
+  if (socialContext) {
+    var userLink = socialContext.closest("a");
+    applyAuthorMaskingObserver(userLink, () => applyMasking(tweet));
+    if (userLink.className.includes("transphobe")) {
+      // User in social context is a transphobe
+      tweet.setAttribute("wiawbe-mask-tag", "retweet");
+
+    }
+  }
+
+  // Check for the tweet author
+  var tweetAuthor = tweet.querySelector("div[data-testid='User-Name'] a");
+  if (tweetAuthor) {
+    applyAuthorMaskingObserver(tweetAuthor, () => applyMasking(tweet));
+    if (tweetAuthor.className.includes("transphobe")) {
+      tweet.setAttribute("wiawbe-mask-tag", "tweet");
+    }
+  }
+
+  var videoComponent = tweet.querySelector("div[data-testid='videoComponent']");
+  if (videoComponent) {
+    videoComponent.setAttribute("wiawbe-mask-tag", "media");
+  }
+
+  var tweetPhotos = tweet.querySelectorAll("div[data-testid='tweetPhoto']");
+  if (tweetPhotos) {
+    tweetPhotos.forEach(tweetPhoto => {
+      tweetPhoto.setAttribute("wiawbe-mask-tag", "media");
+    });
+  }
+  
+  // Check for QRT
+  var qrtDiv = tweet.querySelector("div[tabindex='0'][role='link']");
+  if (qrtDiv) {
+    var qrtAuthor = qrtDiv.querySelector("div[data-testid='User-Name']");
+    if (qrtAuthor) {
+      applyAuthorMaskingObserver(qrtAuthor, () => applyMasking(tweet));
+      if (qrtAuthor.className.includes("transphobe")) {
+        // QRT'ed a transphobe
+        qrtDiv.setAttribute("wiawbe-mask-tag", "tweet");
+      }
+    }
+  }
+
+  // Mark the tweet as checked for masking
+  tweet.setAttribute("data-wiawbe-mask-checked", "true");
+
+  // Add observer to catch changes and mask them
+  if (!tweet.observer) {
+    tweet.observer = new MutationObserver(function(mutations) {
+      applyMasking(tweet);
+    });
+
+    tweet.observer.observe(tweet, {attributes: false, childList: true, characterData: false, subtree:true});
   }
 }
 
