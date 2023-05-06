@@ -87,7 +87,7 @@ function start() {
       }).then((response) => {
         if (response) {
           browser.tabs.create({
-            url: "https://twitter.com/search?q=from%3A" + response + "%20(trans%20OR%20transgender%20OR%20gender%20OR%20men%20OR%20man%20OR%20woman%20OR%20women%20OR%20sex%20OR%20male%20OR%20female)&src=typed_query&f=top"
+            url: "https://twitter.com/search?q=from%3A" + response + "%20(trans%20OR%20transgender%20OR%20gender%20OR%20TERF%20OR%20cis)&src=typed_query&f=top"
           });
         }
       });
