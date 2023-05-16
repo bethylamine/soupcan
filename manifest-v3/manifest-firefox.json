@@ -2,6 +2,7 @@
     "name": "__MSG_extensionName__",
     "version": "0.6.7",
     "manifest_version": 3,
+    "default_locale": "en",
     "description": "__MSG_extensionDescription__",
     "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
     "host_permissions": ["*://*.twitter.com/*"],
