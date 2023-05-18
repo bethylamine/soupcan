@@ -71,6 +71,7 @@ function buildTable(reports) {
       listEl.innerHTML = "from " + report.reporter_screen_name + " at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
       if (report["user_reason"]) {
         var preEl = document.createElement("pre");
+        preEl.style.whiteSpace = "pre-wrap";
         preEl.innerText = report["user_reason"];
         listEl.innerHTML += "<br/><b>Reasoning:</b>" + preEl.outerHTML;
       }
