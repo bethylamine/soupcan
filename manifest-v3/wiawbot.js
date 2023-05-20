@@ -104,7 +104,7 @@ function createObserver() {
             processLink(node);
           }
           if (node instanceof HTMLDivElement) {
-            checkNode(node);
+            checkNode(node, true);
             if (isProfilePage()) {
               applyLinkToUsernameOnProfilePage();
             }
@@ -124,7 +124,27 @@ function createObserver() {
   });
 }
 
-function checkNode(node) {
+var NODES_TO_CHECK = ["DIV", "SPAN", "ARTICLE"];
+var nodeCheckCache = {}
+var divCacheId = 1;
+
+function checkNode(node, force = false) {
+  if (!NODES_TO_CHECK.includes(node.nodeName)) {
+    return;
+  }
+
+  node.cacheId = node.cacheId || ('hashID' + (divCacheId++));
+
+  if (!force) {
+    if (node.cacheId in nodeCheckCache) {
+      if (Date.now() - nodeCheckCache[node.cacheId] < 2000) {
+        return;
+      }
+    }
+  }
+
+  nodeCheckCache[node.cacheId] = Date.now() + Math.floor(Math.random() * 2000);
+
   var dt = node.getAttribute("data-testid")
   if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem" || dt == "User-Name" || dt == "UserName" || dt == "conversation") {
     processDiv(node);
@@ -889,7 +909,7 @@ function reloadLocalDb() {
 init();
 intervals.push(setInterval(checkForInvalidExtensionContext, 1000));
 intervals.push(setInterval(updatePage, 10000));
-intervals.push(setInterval(updateAllLabels, 3000));
+intervals.push(setInterval(updateAllLabels, 5000));
 intervals.push(setInterval(sendPendingLabels, 4000));
 intervals.push(setInterval(checkForDatabaseUpdates, 10000));
 intervals.push(setInterval(applyOptions, 100));
