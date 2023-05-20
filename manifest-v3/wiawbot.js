@@ -385,25 +385,9 @@ async function getDatabaseEntry(identifier) {
 
   var finalEntry = databaseEntry;
 
-  if (!databaseEntry) {
-    if (localEntry) {
-      if (localEntry["label"] == "local-transphobe") {
-        finalEntry = localEntry;
-      }
-    }
-  }
-
-  if (!localEntry) {
-    finalEntry = databaseEntry;
-  }
-
-  if (!!databaseEntry && !!localEntry) {
-    // prioritize
-    if (databaseEntry["label"] == "transphobe" && localEntry["label"] == "local-appeal") {
-      finalEntry = localEntry;
-    } else {
-      finalEntry = databaseEntry;
-    }
+  if (!!localEntry) {
+    // Local entry takes precedence over db
+    finalEntry = localEntry;
   }
 
   return finalEntry;
@@ -889,6 +873,19 @@ function checkForInvalidExtensionContext() {
   }
 }
 
+function reloadLocalDb() {
+  browser.storage.local.get(["local_entries"], v => {
+    if (v.local_entries) {
+      newLocalEntries = v.local_entries;
+      for (let key in newLocalEntries) {
+        if (!(key in localEntries)) {
+          localEntries[key] = newLocalEntries[key];
+        }
+      }
+    }
+  });
+}
+
 init();
 intervals.push(setInterval(checkForInvalidExtensionContext, 1000));
 intervals.push(setInterval(updatePage, 10000));
@@ -896,3 +893,4 @@ intervals.push(setInterval(updateAllLabels, 3000));
 intervals.push(setInterval(sendPendingLabels, 4000));
 intervals.push(setInterval(checkForDatabaseUpdates, 10000));
 intervals.push(setInterval(applyOptions, 100));
+intervals.push(setInterval(reloadLocalDb, 1000));
