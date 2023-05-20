@@ -124,15 +124,10 @@ function createObserver() {
   });
 }
 
-var NODES_TO_CHECK = ["DIV", "SPAN", "ARTICLE"];
 var nodeCheckCache = {}
 var divCacheId = 1;
 
 function checkNode(node, force = false) {
-  if (!NODES_TO_CHECK.includes(node.nodeName)) {
-    return;
-  }
-
   node.cacheId = node.cacheId || ('hashID' + (divCacheId++));
 
   if (!force) {
