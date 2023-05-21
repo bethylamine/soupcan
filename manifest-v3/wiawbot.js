@@ -405,7 +405,7 @@ async function getDatabaseEntry(identifier) {
     finalEntry = localEntry;
   }
 
-  if (databaseEntry["label"] == "transphobe" && localEntry["label"] == "local-transphobe") {
+  if (!!databaseEntry && databaseEntry["label"] == "transphobe" && !!localEntry && localEntry["label"] == "local-transphobe") {
     // Report was accepted
     finalEntry = databaseEntry;
   }
