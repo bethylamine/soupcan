@@ -405,6 +405,11 @@ async function getDatabaseEntry(identifier) {
     finalEntry = localEntry;
   }
 
+  if (databaseEntry["label"] == "transphobe" && localEntry["label"] == "local-transphobe") {
+    // Report was accepted
+    finalEntry = databaseEntry;
+  }
+
   return finalEntry;
 }
 
@@ -759,7 +764,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       // see if they're already reported
       const dbEntry = await getDatabaseEntry(identifier);
-      if (dbEntry && dbEntry["label"] && dbEntry["label"].includes("transphobe")) {
+      if (dbEntry && dbEntry["label"] && dbEntry["label"] == "transphobe") {
         notifier.alert(browser.i18n.getMessage("userAlreadyRed", [identifier]));
         return false;
       } else {
