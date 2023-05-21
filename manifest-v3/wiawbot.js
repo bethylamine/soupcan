@@ -748,6 +748,13 @@ async function updateDatabase(sendResponse, version) {
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
+    var initialReason = "";
+    try {
+      initialReason = contextMenuElement.closest("article").querySelector("a[href*='status']").href;
+    } catch {
+
+    }
+
     try {
       if (!state) {
         notifier.alert(browser.i18n.getMessage("authorizationInvalid"));
@@ -797,6 +804,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           textArea.style["backgroundColor"] = bodyBackgroundColor;
           textArea.style["color"] = textColor;
           textArea.style["border-color"] = textColor;
+          textArea.value = initialReason;
           textArea.focus();
         }
         textArea.after(clonedTweetButton);
@@ -892,6 +900,13 @@ function checkForInvalidExtensionContext() {
     }
   }
 }
+
+var contextMenuElement = null;
+
+// Populate DOM element for context menu
+document.addEventListener("contextmenu", function(event){
+  contextMenuElement = event.target;
+}, true);
 
 function reloadLocalDb() {
   browser.storage.local.get(["local_entries"], v => {
