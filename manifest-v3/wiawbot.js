@@ -569,9 +569,13 @@ function updatePage() {
     function removeProfileReason() {
       var profileReason = document.getElementById("wiawbe-profile-reason");
       if (profileReason) {
+        var usernameDiv = profileReason.closest("[data-testid='UserName']");
         profileReason.remove();
+        addReasonToUserNameDiv(usernameDiv);
       }
     }  
+
+    nodeCheckCache = {};
 
     setTimeout(updateAllLabels, 25);
     setTimeout(updateAllLabels, 200);
