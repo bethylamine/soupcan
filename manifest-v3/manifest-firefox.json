@@ -34,5 +34,11 @@
         "open_in_tab": true,
         "page": "options.html"
      },
-    "permissions": ["contextMenus", "storage", "unlimitedStorage"]
+    "permissions": ["contextMenus", "storage", "unlimitedStorage"],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "soupcan@beth.lgbt",
+            "strict_min_version": "109.0"
+        }
+    }
 }
