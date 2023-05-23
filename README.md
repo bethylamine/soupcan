@@ -22,13 +22,19 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 
 ## How to install
 
-For Chrome users, you can install from the Chrome Web Store: https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj
+### Chrome / Edge / Opera / Arc / other Chromium-based browsers
+[![image](https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/mPGKYBIR2uCP0ApchDXE.png)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
+
+### Firefox
+[![image](https://blog.mozilla.org/addons/files/2015/11/get-the-addon.png)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
+
+### From Source (Latest features, may have bugs, no auto-update)
 
 1. Download the repository (either by zip or with git, if you're comfortable) and save it somewhere.
 2. Search for how to load an unpacked extension in your browser of choice, then select the `manifest-v3` directory as the extension.
 3. For firefox, delete `manifest.json` and rename `manifest-firefox.json` to `manifest.json`, and load that.
 
-## How to update
+## How to update (from source)
 
 1. With new features you'll need to update the extension. Download the latest version from here (or if you have it checked
    out with git, just do a git pull) and reload the extension (click the reload button in your extension page)
