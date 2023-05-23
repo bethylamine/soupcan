@@ -45,7 +45,11 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 
 The extension works while Shinigami Eyes is installed, but for the best experience, disable Shinigami Eyes while using this extension.
 
+The extension *should* work with GoodTwitter2.
+
 ## How To Use
+
+Full guide: https://bethylamine.github.io/library/browser-extension/
 
 ### Reporting Users
 
