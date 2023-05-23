@@ -564,18 +564,14 @@ var countedUserCells = 0;
 var usersCounted = [];
 
 async function countTerf(userCell) {
-  console.log("call to count");
-
   var link = userCell.querySelector("a");
   if (link) {
     var href = link.getAttribute("href");
     var entry = await getDatabaseEntry(getIdentifier(href));
     if (href && !usersCounted.includes(href)) {
-      console.log("found " + href);
       countedUserCells++;
       usersCounted.push(href);
       if (entry && entry["label"] && entry["label"].includes("transphobe")) {
-        console.log("added");
         countedTerfs++;
         usersCounted.push(href);
       }
@@ -584,7 +580,6 @@ async function countTerf(userCell) {
 
   var count = document.getElementById("soupcan-count");
   if (count) {
-    console.log("displayed " + countedTerfs + " and " + countedUserCells);
     percentage = 0;
     if (countedUserCells > 0) {
       percentage = Math.max(0, Math.min(100, Math.floor(100 * countedTerfs / countedUserCells)));
@@ -656,8 +651,6 @@ function doCountTerfs(kind) {
       whoToFollowPanel.after(transphobeCountPanel);
 
       document.querySelectorAll("[data-testid='primaryColumn'] [data-testid='UserCell']").forEach(userCell => {
-        console.log("find from query selector");
-        console.log(userCell);
         countTerf(userCell);
       });
       
@@ -669,8 +662,6 @@ function doCountTerfs(kind) {
                 if (node instanceof HTMLDivElement) {
                   var userCell = node.querySelector("[data-testid='UserCell']");
                   if (userCell) {
-                    console.log("find from observer");
-                    console.log(userCell);
                     countTerf(userCell);
                   }
                 }
