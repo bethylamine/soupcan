@@ -307,10 +307,13 @@ function hash(string) {
 }
 
 async function processDiv(div, markArea = false) {
-  var div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/gs, "$1");
+  var div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<\/span><\/div>.*$/gs, "$1");
 
   if (!div_identifier) {
-    return;
+    div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/gs, "$1");
+    if (!div_identifier) {
+      return;
+    }
   }
 
   var database_entry = await getDatabaseEntry(div_identifier);
