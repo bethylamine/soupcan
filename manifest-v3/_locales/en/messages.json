@@ -174,5 +174,21 @@
     "extensionContextInvalidated": {
         "message": "Soupcan extension was reloaded. Please refresh the page for it to take effect.",
         "description": "Error message to show when the extension was reloaded but the page hasn't been reloaded. (This causes the extension to stop working)"
+    },
+    "transphobeCounter": {
+        "message": "Transphobe counter",
+        "description": "Heading for the panel that counts transphobes in a user's followers/following pages."
+    },
+    "counterName_followers": {
+        "message": "Followers",
+        "description": "Subheading for transphobe counter."
+    },
+    "counterName_following": {
+        "message": "Following",
+        "description": "Subheading for transphobe counter."
+    },
+    "scrollInstructions": {
+        "message": "(scroll down to count more)",
+        "description": "Instructions for counting more transphobes in followers/following pages"
     }
 }
