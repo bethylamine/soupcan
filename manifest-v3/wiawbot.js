@@ -1022,14 +1022,16 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       dbEntry = await getDatabaseEntry(identifier);
       if (dbEntry || isModerator) {
-        // Add locally
-        var localKey = await hash(identifier + ":" + database["salt"])
-        localEntries[localKey] = {"label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier};
+        if (confirm(`Are you sure you would like to appeal @${identifier}'s label?`)) {
+          // Add locally
+          var localKey = await hash(identifier + ":" + database["salt"])
+          localEntries[localKey] = {"label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier};
 
-        saveLocalEntries();
-        
-        updateAllLabels();
-        sendLabel("appeal", identifier, sendResponse, localKey);
+          saveLocalEntries();
+
+          updateAllLabels();
+          sendLabel("appeal", identifier, sendResponse, localKey);
+        }
       } else {
         notifier.warning(browser.i18n.getMessage("nothingToAppeal"));
       }
