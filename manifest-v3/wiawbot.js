@@ -1067,7 +1067,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       const identifier = getIdentifier(localUrl);
       sendResponse(identifier);
-      return true;
+      return identifier;
     } catch (error) {
       notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
