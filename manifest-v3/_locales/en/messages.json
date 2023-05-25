@@ -190,5 +190,25 @@
     "scrollInstructions": {
         "message": "(scroll down to count more)",
         "description": "Instructions for counting more transphobes in followers/following pages"
+    },
+    "toast_label_tip": {
+        "message": "Action",
+        "description": "Header shown for a tooltip when an action has been taken"
+    },
+    "toast_label_info": {
+        "message": "Info",
+        "description": "Header shown for a tooltip when information is displayed to the user"
+    },
+    "toast_label_success": {
+        "message": "Success",
+        "description": "Header shown for a tooltip when an action succeeds"
+    },
+    "toast_label_warning": {
+        "message": "Warning",
+        "description": "Header shown for a tooltip when an invalid action is taken"
+    },
+    "toast_label_alert": {
+        "message": "Error",
+        "description": "Header shown for a tooltip when a failure occurs"
     }
 }

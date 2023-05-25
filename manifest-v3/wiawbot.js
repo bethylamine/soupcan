@@ -1,9 +1,5 @@
 var browser = browser || chrome;
 
-var notifier = new AWN({
-  "position": "top-left"
-});
-
 var database = {
   "entries": {}
 }
@@ -20,7 +16,20 @@ var state = "";
 
 var isModerator = false;
 
+var notifier = new AWN();
+
 function init() {
+  notifier = new AWN({
+    "position": "top-left",
+    "labels": {
+      "tip": browser.i18n.getMessage("toast_label_tip"),
+      "info": browser.i18n.getMessage("toast_label_info"),
+      "success": browser.i18n.getMessage("toast_label_success"), 
+      "warning": browser.i18n.getMessage("toast_label_warning"),
+      "alert": browser.i18n.getMessage("toast_label_alert"),
+    }
+  });
+  
   browser.storage.local.get(["database", "local_entries", "state", "is_moderator"], v => {
     if (v.database) {
       database = v.database || {};
@@ -41,6 +50,10 @@ function init() {
 }
 
 function applyOptions() {
+  if (checkForInvalidExtensionContext()) {
+    return;
+  }
+
   browser.storage.local.get(["options"], v => {
     var oldOptions = {...options};
     var different = false;
@@ -589,6 +602,10 @@ async function countTerf(userCell) {
 }
 
 function doCountTerfs(kind) {
+  if (checkForInvalidExtensionContext()) {
+    return;
+  }
+
   if (!kind) {
     // Remove terf count UI
     var el = document.getElementById("soupcan-terf-count");
@@ -734,6 +751,10 @@ function updatePage() {
 }
 
 async function sendLabel(reportType, identifier, sendResponse, localKey, reason = "") {
+  if (checkForInvalidExtensionContext()) {
+    return;
+  }
+
   var successMessage = "";
   var failureMessage = "";
   var endpoint = "";
@@ -782,6 +803,10 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
 }
 
 function sendPendingLabels() {
+  if (checkForInvalidExtensionContext()) {
+    return;
+  }
+
   Object.keys(localEntries).forEach(localKey => {
     const localEntry = localEntries[localKey];
 
@@ -816,12 +841,20 @@ function sendPendingLabels() {
 }
 
 function saveLocalEntries() {
+  if (checkForInvalidExtensionContext()) {
+    return;
+  }
+
   browser.storage.local.set({
     "local_entries": localEntries
   });
 }
 
 async function checkForDatabaseUpdates() {
+  if (checkForInvalidExtensionContext()) {
+    return;
+  }
+
   // See if we haven't checked for database updates in a while.
   if (database["downloading"]) {
     return;
@@ -849,6 +882,10 @@ async function checkForDatabaseUpdates() {
 }
 
 async function updateDatabase(sendResponse, version) {
+  if (checkForInvalidExtensionContext()) {
+    return;
+  }
+
   notifier.info(browser.i18n.getMessage("databaseDownloading"));
   database["downloading"] = true;
   browser.runtime.sendMessage({
@@ -1025,8 +1062,13 @@ var contextInvalidated = false;
 const contextInvalidatedMessage = browser.i18n.getMessage("extensionContextInvalidated");
 var intervals = [];
 function checkForInvalidExtensionContext() {
+  if (contextInvalidated) {
+    return true;
+  }
+
   try {
     browser.storage.local.get([]);
+    return false;
   } catch (error) {
     if (!contextInvalidated) {
       notifier.alert(contextInvalidatedMessage);
@@ -1034,6 +1076,7 @@ function checkForInvalidExtensionContext() {
       intervals.forEach(interval => {
         clearInterval(interval);
       });
+      intervals = [];
     }
   }
 }
