@@ -421,11 +421,30 @@ async function getDatabaseEntry(identifier) {
     finalEntry = localEntry;
   }
 
+  // check for time precedence
+  if (!!databaseEntry && !!localEntry) {
+    if (databaseEntry["time"] && !localEntry["time"]) {
+      finalEntry = databaseEntry;
+    } else if (localEntry["time"] && !databaseEntry["time"]) {
+      finalEntry = localEntry;
+    } else if (databaseEntry["time"] && localEntry["time"]) {
+      if (databaseEntry["time"] > localEntry["time"]) {
+        finalEntry = databaseEntry;
+      } else {
+        finalEntry = localEntry;
+      }
+    }
+  }
+
   if (!!databaseEntry && databaseEntry["label"] == "transphobe" && !!localEntry && localEntry["label"] == "local-transphobe") {
     // Report was accepted
     finalEntry = databaseEntry;
   }
-
+  if (!!databaseEntry && databaseEntry["label"] == "appealed" && !!localEntry && localEntry["label"] == "local-appeal") {
+    // Appeal was accepted
+    finalEntry = databaseEntry;
+  }
+  
   return finalEntry;
 }
 
