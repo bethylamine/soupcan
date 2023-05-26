@@ -70,6 +70,10 @@ body.wiawbe-hide-zalgo [aria-label="Followers you know"] span {
     overflow: hidden;
 }
 
+body.wiawbe-hide-zalgo [aria-label="Followers you know"] div:has(>span) {
+    overflow: hidden;
+}
+
 /* Image masking */
 
 body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']::after,
