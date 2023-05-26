@@ -66,6 +66,10 @@ body.wiawbe-hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
     overflow: hidden;
 }
 
+body.wiawbe-hide-zalgo [aria-label="Followers you know"] span {
+    overflow: hidden;
+}
+
 /* Image masking */
 
 body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']::after,
