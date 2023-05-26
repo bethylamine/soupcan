@@ -9,6 +9,15 @@ browser.storage.local.get(["state"], v => {
   }
 });
 
+function linkify(inputText) {
+  var replacedText, replacePattern1;
+
+  replacePattern1 = /(\b(https?|ftp):\/\/twitter[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim;
+  replacedText = inputText.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>');
+
+  return replacedText;
+}
+
 function buildTable(reports) {
   document.getElementById("reports-table").innerHTML = `
       <table class="table">
@@ -72,7 +81,7 @@ function buildTable(reports) {
       if (report["user_reason"]) {
         var preEl = document.createElement("pre");
         preEl.style.whiteSpace = "pre-wrap";
-        preEl.innerText = report["user_reason"];
+        preEl.innerHTML = linkify(report["user_reason"]);
         listEl.innerHTML += "<br/><b>Reasoning:</b>" + preEl.outerHTML;
       }
       listTag.appendChild(listEl);
