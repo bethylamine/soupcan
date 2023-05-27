@@ -172,7 +172,7 @@
         "description": "Message shown to non-moderators who try to appeal a user who isn't marked."
     },
     "extensionContextInvalidated": {
-        "message": "Soupcan extension was reloaded. Please refresh the page for it to take effect.",
+        "message": "Soupcan was unloaded or refreshed, and will not work until the page is refreshed. Click OK to refresh to page.",
         "description": "Error message to show when the extension was reloaded but the page hasn't been reloaded. (This causes the extension to stop working)"
     },
     "transphobeCounter": {
@@ -210,5 +210,9 @@
     "toast_label_alert": {
         "message": "Error",
         "description": "Header shown for a tooltip when a failure occurs"
+    },
+    "toast_label_confirm": {
+        "message": "Question",
+        "description": "Header shown for a tooltip when an ok/cancel response is required"
     }
 }
