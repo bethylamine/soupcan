@@ -571,6 +571,7 @@ function getLocalUrl(url) {
     "/compose/",
     "/following",
     "/followers",
+    "/creator-subscriptions",
     "/explore/",
     "/i/",
     "/articles/",
