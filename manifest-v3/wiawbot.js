@@ -28,6 +28,8 @@ function init() {
       "warning": browser.i18n.getMessage("toast_label_warning"),
       "alert": browser.i18n.getMessage("toast_label_alert"),
       "confirm": browser.i18n.getMessage("toast_label_confirm"),
+      "confirmOk": browser.i18n.getMessage("toast_label_confirmOk"),
+      "confirmCancel": browser.i18n.getMessage("toast_label_confirmCancel")
     }
   });
   
