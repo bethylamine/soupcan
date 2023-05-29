@@ -4,6 +4,7 @@ body {
     --wiawBotTransphobic: #cf2d21;
     --wiawBotLocallyTransphobic: #faa11b;
     --wiawBotLocallyAppealed: #15ae9f;
+    --wiawBotAppealed: #2bb94f;
  }
 
  /* Marked text labels */
@@ -16,6 +17,11 @@ body {
 
 .wiaw-label-transphobe, a.wiaw-label-transphobe, div.wiaw-label-transphobe {
     color: var(--wiawBotTransphobic) !important;
+    font-weight: bold !important;
+}
+
+.wiaw-label-appealed, a.wiaw-label-appealed, div.wiaw-label-appealed {
+    color: var(--wiawBotAppealed) !important;
     font-weight: bold !important;
 }
 
