@@ -946,11 +946,6 @@ async function updateDatabase(sendResponse, version) {
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   if (message.action == "report-transphobe") {
     var initialReason = "";
-    try {
-      initialReason = contextMenuElement.closest("article").querySelector("a[href*='status']").href;
-    } catch {
-
-    }
 
     try {
       if (!state) {
@@ -965,6 +960,12 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         return true;
       }
       const identifier = getIdentifier(localUrl);
+
+      try {
+        initialReason = contextMenuElement.closest("article").querySelector("a[href*='status'][href*='" + identifier + "']").href;
+      } catch {
+  
+      }
 
       // see if they're already reported
       const dbEntry = await getDatabaseEntry(identifier);
