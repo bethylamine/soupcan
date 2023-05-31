@@ -460,6 +460,12 @@ async function processLink(a) {
   var identifier = null;
 
   var dataIdentifier = a.getAttribute("data-wiawbeidentifier");
+
+  if (a.querySelector("a>time")) {
+    a.removeAttribute("data-wiawbeidentifier");
+    return;
+  }
+
   if (dataIdentifier) {
     var identifier = dataIdentifier;
   } else {
@@ -584,6 +590,8 @@ function getLocalUrl(url) {
     "/help/",
     "/troubleshooting/",
     "/analytics",
+    "/likes",
+    "/retweets"
   ]
 
   for (const reservedSlug of reservedSlugs) {
