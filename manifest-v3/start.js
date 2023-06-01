@@ -6,7 +6,6 @@ var downloadButton = document.getElementById("download-button");
 var closeButton = document.getElementById("close-button");
 var continueButton = document.getElementById("continue-button");
 var loginButton = document.getElementById("login-button");
-var setupInstructions = document.getElementById("setup-instructions");
 var progressBarWrapper = document.getElementById("progress-bar-wrapper");
 var progressBar = document.getElementById("progress-bar");
 var progressRole = document.getElementById("progress-role");
@@ -16,7 +15,7 @@ var header = document.getElementById("header");
 
 downloadButton.addEventListener("click", startDownload);
 closeButton.addEventListener("click", () => window.close());
-continueButton.addEventListener("click", goToEnd);
+continueButton.addEventListener("click", goToLogin);
 loginButton.addEventListener("click", launchTwitterLogin)
 
 const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -64,7 +63,6 @@ function makeid(length) {
 }
 
 function launchTwitterLogin() {
-  setupInstructions.classList.add("d-none");
   var state = makeid(30);
   var url = "https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VGs4NXk4c19MR3M3bFYwNGlhdDA6MTpjaQ&redirect_uri=https%3A%2F%2Fapi.beth.lgbt%2Fextension-login&scope=tweet.read+users.read+offline.access&state=" + state + "&code_challenge=challenge&code_challenge_method=plain"
   window.open(url);
@@ -86,7 +84,7 @@ async function checkLogin(state) {
         browser.storage.local.set({
           "state": state
         });
-        goToDownload();
+        goToEnd();
       } else if (resp == "false") {
         // all bad
       } else {
@@ -101,11 +99,12 @@ async function checkLogin(state) {
   }
 }
 
-function goToDownload() {
-  header.innerText = "Step 2/2: Download";
-  topText.innerHTML = "Now we will need to download the extension database.";
-  loginButton.classList.add("d-none");
-  downloadButton.classList.remove("d-none");
+function goToLogin() {
+  header.innerText = "Twitter Login";
+  topText.innerHTML = "Now you'll need to login to verify your identity.";
+  loginButton.classList.remove("d-none");
+  downloadButton.classList.add("d-none");
+  continueButton.classList.add("d-none");
 }
 
 function goToEnd() {
