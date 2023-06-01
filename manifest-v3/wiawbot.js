@@ -657,7 +657,13 @@ function doCountTerfs(kind) {
       usersCounted = [];
 
       // Create a copy of the "Who to follow" panel as a basis for the transphobe counter panel
-      var whoToFollowPanel = document.querySelector("div[data-testid='sidebarColumn'] div[tabindex='0'] :has(>div>aside)");
+      var whoToFollowPanelAside = document.querySelector("div[data-testid='sidebarColumn'] div[tabindex='0'] div>aside");
+      var whoToFollowPanel = whoToFollowPanelAside.parentElement.parentElement;
+
+      if (!whoToFollowPanel) {
+        return;
+      }
+
       var transphobeCountPanel = whoToFollowPanel.cloneNode(true);
       // Set the id for later reference
       transphobeCountPanel.id = "soupcan-terf-count";
@@ -668,7 +674,7 @@ function doCountTerfs(kind) {
       // Remove "Show more" link
       transphobeCountPanel.querySelector("aside>a").remove();
       // Remove all entries but the first in the panel
-      transphobeCountPanel.querySelectorAll("aside>div:not(:has(h2)) div[data-testid='UserCell']:not(:nth-child(1))").forEach(el => {
+      transphobeCountPanel.querySelectorAll("aside>div div[data-testid='UserCell']:not(:nth-child(1))").forEach(el => {
         el.remove();
       });
       // Remove all "Follows you" badges
@@ -682,7 +688,7 @@ function doCountTerfs(kind) {
       // Remove the pointer cursor from the entry
       transphobeCountPanel.querySelector("div[data-testid='UserCell']").style.cursor = "default";
       // Remove the UserCell attribute to avoid conflicting queries
-      transphobeCountPanel.querySelector("aside>div:not(:has(h2)) div[data-testid='UserCell']").removeAttribute("data-testid");
+      transphobeCountPanel.querySelector("aside>div div[data-testid='UserCell']").removeAttribute("data-testid");
       // Unlink the anchor tags
       transphobeCountPanel.querySelectorAll("a").forEach(anchor => {
         anchor.style.cursor = "default";
@@ -691,7 +697,7 @@ function doCountTerfs(kind) {
       // Change the label
       transphobeCountPanel.querySelector("a span").textContent = browser.i18n.getMessage("counterName_" + kind) + " " + browser.i18n.getMessage("scrollInstructions");
       // Change the subtext
-      var countSpan = transphobeCountPanel.querySelectorAll("a:has(span)")[1].querySelector("span");
+      var countSpan = transphobeCountPanel.querySelectorAll("a")[1].querySelector("span");
       countSpan.id = "soupcan-count";
       countSpan.textContent = "0/0";
 
