@@ -226,5 +226,9 @@
     "toast_label_confirmCancel": {
         "message": "No",
         "description": "Label for cancel/no button in the confirmation dialog"
+    },
+    "serverFailure": {
+        "message": "Server failure",
+        "description": "Short popup message that displays when an action was not successfully processed by the Soupcan server"
     }
 }

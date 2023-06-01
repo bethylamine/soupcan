@@ -847,6 +847,9 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
     "url": "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&reason=" + encodeURI(reason)
   }).then(async response => {
     try {
+      if (response["status"] != 200) {
+        throw new Error(browser.i18n.getMessage("serverFailure"));
+      }
       const jsonData = response["json"];
 
       localEntries[localKey]["status"] = "received";
@@ -885,6 +888,10 @@ function sendPendingLabels() {
           "url": "https://api.beth.lgbt/check-report?state=" + state + "&screen_name=" + localEntry["identifier"]
         }).then(async response => {
           try {
+            if (response["status"] != 200) {
+              throw new Error(browser.i18n.getMessage("serverFailure"));
+            }
+
             const reported = response["text"];
             if (reported == "1") {
               localEntries[localKey]["status"] = "received";
@@ -931,6 +938,10 @@ async function checkForDatabaseUpdates() {
           "action": "fetch",
           "url": "https://api.beth.lgbt/get-db-version"
         }).then(async response => {
+          if (response["status"] != 200) {
+            throw new Error(browser.i18n.getMessage("serverFailure"));
+          }
+
           const version = response["text"];
           const numberVersion = parseInt(version);
           if (!database["version"] || database["version"] < numberVersion) {
@@ -956,6 +967,10 @@ async function updateDatabase(sendResponse, version) {
     "url": "https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json"
   }).then(async response => {
     try {
+      if (response["status"] != 200) {
+        throw new Error(browser.i18n.getMessage("serverFailure"));
+      }
+      
       const jsonData = response["json"];
 
       database = {

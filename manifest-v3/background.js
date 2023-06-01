@@ -132,7 +132,7 @@ const handleFetch = async (url, sendResponse) => {
 
   }
   const text = await response.text();
-  sendResponse({"text": text, "json": json});
+  sendResponse({"status": response.status, "text": text, "json": json});
 };
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
