@@ -5,6 +5,7 @@ const maskTransphobeMediaRadio = document.getElementById("maskTransphobeMedia");
 const maskAllTransphobeMediaRadio = document.getElementById("maskAllTransphobeMedia");
 const maskAllTransphobeContentRadio = document.getElementById("maskAllTransphobeContent");
 const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
+const hideAdsCheckbox = document.getElementById("hideAds");
 
 var inputs = document.getElementsByClassName("form-check-input");
 for (let el of inputs) {
@@ -39,6 +40,10 @@ function loadOptions() {
       }
     }
 
+    if (options["hideAds"]) {
+      hideAdsCheckbox.checked = true;
+    }
+
     if (options["preventZalgoText"]) {
       preventZalgoTextCheckbox.checked = true;
     }
@@ -49,6 +54,7 @@ function saveOptions() {
   options["maskMode"] = document.querySelector('input[name="maskMode"]:checked').value;
   console.log(options["maskMode"]);
 
+  options["hideAds"] = hideAdsCheckbox.checked;
   options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
 
   browser.storage.local.set({

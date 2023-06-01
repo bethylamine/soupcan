@@ -105,6 +105,32 @@ function applyOptions() {
     if (options["preventZalgoText"]) {
       body.classList.add("wiawbe-hide-zalgo");
     }
+
+    applyHideAds();
+  });
+}
+
+function applyHideAds() {
+  // Hide promoted tweets
+  var tweets = document.querySelectorAll("article[data-testid='tweet']");
+
+  tweets.forEach((tweet) => {
+    var promotedPath = tweet.querySelector("path[d*='M19.498 3h-15c-1.381']");
+    if (promotedPath) {
+      if (options["hideAds"]) {      
+        tweet.style.display = "none";
+      } else {
+        tweet.style.display = "";
+      }
+      var parentDiv = tweet.closest("div[data-testid='cellInnerDiv']");
+      if (parentDiv) {
+        if (options["hideAds"]) {      
+          parentDiv.style.display = "none";
+        } else {
+          parentDiv.style.display = "";
+        }
+      }
+    }
   });
 }
 
