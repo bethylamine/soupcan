@@ -193,6 +193,7 @@ function checkNode(node, force = false) {
   }
 
   processForMasking(node);
+  applyHideAds();
 
   if (node.hasChildNodes()) {
     for(var i = 0; i < node.children.length; i++){
@@ -970,7 +971,7 @@ async function updateDatabase(sendResponse, version) {
       if (response["status"] != 200) {
         throw new Error(browser.i18n.getMessage("serverFailure"));
       }
-      
+
       const jsonData = response["json"];
 
       database = {
