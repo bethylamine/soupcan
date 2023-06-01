@@ -31,6 +31,10 @@
         "message": "👩‍⚖️ Moderate reports",
         "description": "Context menu action to review and moderate user reports."
     },
+    "actionOptions": {
+        "message": "⚙ Options",
+        "description": "Context menu action to change extension options."
+    },
     "reportReasonInstructions": {
         "message": "<h2>🍅 Report @$ID$</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. It's optional, so if it's obvious, feel free to skip it.</p>",
         "description": "Instructions given to the user on providing a report reason.",

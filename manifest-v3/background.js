@@ -64,6 +64,11 @@ function start() {
     title: browser.i18n.getMessage("actionUpdateDatabase"),
     contexts: ["page"]
   });
+  browser.menus.create({
+    id: "options",
+    title: browser.i18n.getMessage("actionOptions"),
+    contexts: ["page"]
+  });
 
   browser.contextMenus.onClicked.addListener(function (info, tab) {
     var action = info.menuItemId;
@@ -102,7 +107,11 @@ function start() {
       }).then((response) => {
         console.log("Response is " + response);
       });
-    } else if (action == "moderate") {
+    } else if (action == "options") {
+      browser.tabs.create({
+        url: getURL('options.html')
+      });
+    }else if (action == "moderate") {
       browser.tabs.create({
         url: getURL('moderation.html')
       });
