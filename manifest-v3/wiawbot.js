@@ -1018,7 +1018,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       const identifier = getIdentifier(localUrl);
 
       try {
-        initialReason = contextMenuElement.closest("article").querySelector("a[href*='status'][href*='" + identifier + "']").href;
+        initialReason = contextMenuElement.closest("article").querySelector("a[href*='status'][href*='" + identifier + "' i]").href;
       } catch {
   
       }
