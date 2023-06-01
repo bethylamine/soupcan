@@ -16,6 +16,7 @@ shutil.rmtree("extension-chrome")
 
 shutil.copytree(".", "extension-firefox")
 os.remove(os.path.join("extension-firefox", "manifest.json"))
+os.remove(os.path.join("extension-firefox", "soupcan-chrome.zip"))
 os.rename(os.path.join("extension-firefox", "manifest-firefox.json"), os.path.join("extension-firefox", "manifest.json"))
 shutil.make_archive(base_name="soupcan-ff", format="zip", root_dir="extension-firefox")
 shutil.rmtree("extension-firefox")
