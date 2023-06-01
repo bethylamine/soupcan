@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.6.24",
+    "version": "0.6.25",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -34,7 +34,7 @@
         "open_in_tab": true,
         "page": "options.html"
      },
-    "permissions": ["contextMenus", "storage", "unlimitedStorage"],
+    "permissions": ["contextMenus", "menus", "storage", "unlimitedStorage"],
     "browser_specific_settings": {
         "gecko": {
             "id": "soupcan@beth.lgbt",

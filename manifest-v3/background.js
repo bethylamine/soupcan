@@ -25,13 +25,16 @@ function start() {
           browser.contextMenus.create({
             id: "moderate",
             title: browser.i18n.getMessage("actionModerateReports"),
-            contexts: ["page"],
-            targetUrlPatterns: ["*://*.twitter.com/*"]
+            contexts: ["page"]
           });
         }
       });
     }
   });
+
+  if (!browser.menus) {
+    browser.menus = browser.contextMenus;
+  }
 
   browser.contextMenus.create({
     id: "report-transphobe",
@@ -51,17 +54,15 @@ function start() {
     contexts: ["link"],
     targetUrlPatterns: ["*://*.twitter.com/*"]
   });
-  browser.contextMenus.create({
+  browser.menus.create({
     id: "run-setup",
     title: browser.i18n.getMessage("actionRerunSetup"),
-    contexts: ["page"],
-    targetUrlPatterns: ["*://*.twitter.com/*"]
+    contexts: ["page"]
   });
-  browser.contextMenus.create({
+  browser.menus.create({
     id: "update-database",
     title: browser.i18n.getMessage("actionUpdateDatabase"),
-    contexts: ["page"],
-    targetUrlPatterns: ["*://*.twitter.com/*"]
+    contexts: ["page"]
   });
 
   browser.contextMenus.onClicked.addListener(function (info, tab) {
