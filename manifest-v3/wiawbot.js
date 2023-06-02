@@ -29,7 +29,8 @@ function init() {
       "alert": browser.i18n.getMessage("toast_label_alert"),
       "confirm": browser.i18n.getMessage("toast_label_confirm"),
       "confirmOk": browser.i18n.getMessage("toast_label_confirmOk"),
-      "confirmCancel": browser.i18n.getMessage("toast_label_confirmCancel")
+      "confirmCancel": browser.i18n.getMessage("toast_label_confirmCancel"),
+      "async": browser.i18n.getMessage("toast_label_async"),
     }
   });
   
@@ -824,18 +825,19 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
 
   var successMessage = "";
   var failureMessage = "";
+  var notificationMessage = "";
   var endpoint = "";
 
   if (reportType == "transphobe") {
     endpoint = "report-transphobe";
     successMessage = browser.i18n.getMessage("reportReceived", [identifier]);
     failureMessage = browser.i18n.getMessage("reportSubmissionFailed") + " ";
-    notifier.tip(browser.i18n.getMessage("sendingReport", [identifier]));
+    notificationMessage = browser.i18n.getMessage("sendingReport", [identifier]);
   } else if (reportType == "appeal") {
     endpoint = "appeal-label";
     successMessage = browser.i18n.getMessage("appealReceived", [identifier]);
     failureMessage = browser.i18n.getMessage("appealSubmissionFailed") + " ";
-    notifier.tip(browser.i18n.getMessage("sendingAppeal", [identifier]));
+    notificationMessage = browser.i18n.getMessage("sendingAppeal", [identifier]);
   } else {
     notifier.alert(browser.i18n.getMessage("invalidReportType", [reportType]));
     return;
@@ -844,31 +846,34 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
   localEntries[localKey]["time"] = Date.now();
   saveLocalEntries();
 
-
+  var fetchUrl = "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&reason=" + encodeURI(reason);
   // Report to WIAW
-  browser.runtime.sendMessage({
-    "action": "fetch",
-    "url": "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&reason=" + encodeURI(reason)
-  }).then(async response => {
-    try {
-      if (response["status"] != 200) {
-        throw new Error(browser.i18n.getMessage("serverFailure"));
+  notifier.async(
+    doFetch(fetchUrl),
+    async response => {
+      try {
+        if (response["status"] != 200) {
+          throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
+        }
+        const jsonData = response["json"];
+
+        localEntries[localKey]["status"] = "received";
+
+        saveLocalEntries();
+
+        notifier.success(successMessage);
+        sendResponse(jsonData);
+      } catch (error) {
+        notifier.alert(failureMessage + error);
+        
+        updateAllLabels();
+        sendResponse("Failed");
       }
-      const jsonData = response["json"];
+    },
+    response => { notifier.alert(failureMessage + ": " + response["status"]) },
+    notificationMessage
+  );
 
-      localEntries[localKey]["status"] = "received";
-
-      saveLocalEntries();
-
-      notifier.success(successMessage);
-      sendResponse(jsonData);
-    } catch (error) {
-      notifier.alert(failureMessage + error);
-      
-      updateAllLabels();
-      sendResponse("Failed");
-    }
-  });
   return true;
 }
 
@@ -886,14 +891,16 @@ function sendPendingLabels() {
 
       if (!when || now > when + 10000) { // it's been at least 10 seconds
         const reportType = localEntry["label"].replace("local-", "");
+
+        var fetchUrl = "https://api.beth.lgbt/check-report?state=" + state + "&screen_name=" + localEntry["identifier"];
         // check if the report already went through
         browser.runtime.sendMessage({
           "action": "fetch",
-          "url": "https://api.beth.lgbt/check-report?state=" + state + "&screen_name=" + localEntry["identifier"]
+          "url": fetchUrl
         }).then(async response => {
           try {
             if (response["status"] != 200) {
-              throw new Error(browser.i18n.getMessage("serverFailure"));
+              throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
             }
 
             const reported = response["text"];
@@ -937,13 +944,14 @@ async function checkForDatabaseUpdates() {
   if (database) {
     if (database["last_updated"]) {
       var lastUpdated = database["last_updated"];
+      var fetchUrl = "https://api.beth.lgbt/get-db-version";
       if (Date.now() > lastUpdated + 5 * 60 * 1000) { // 5 minutes
         browser.runtime.sendMessage({
           "action": "fetch",
-          "url": "https://api.beth.lgbt/get-db-version"
+          "url": fetchUrl
         }).then(async response => {
           if (response["status"] != 200) {
-            throw new Error(browser.i18n.getMessage("serverFailure"));
+            throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
           }
 
           const version = response["text"];
@@ -959,44 +967,67 @@ async function checkForDatabaseUpdates() {
   }
 }
 
+/*
+ * Returns a promise for fetching a URL.
+ */
+async function doFetch(url) {
+  return new Promise((resolve, reject) => {
+    function callback(response) {
+      if (response["status"] == 200) {
+        resolve(response);
+      } else {
+        reject(response);
+      }
+    };
+
+    browser.runtime.sendMessage({
+      "action": "fetch",
+      "url": url
+    }, null, callback);
+  });
+}
+
 async function updateDatabase(sendResponse, version) {
   if (checkForInvalidExtensionContext()) {
     return;
   }
 
-  notifier.info(browser.i18n.getMessage("databaseDownloading"));
   database["downloading"] = true;
-  browser.runtime.sendMessage({
-    "action": "fetch",
-    "url": "https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json"
-  }).then(async response => {
-    try {
-      if (response["status"] != 200) {
-        throw new Error(browser.i18n.getMessage("serverFailure"));
+  var fetchUrl = "https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json"
+
+  notifier.async(
+    doFetch(fetchUrl),
+    async response => {
+      try {
+        if (response["status"] != 200) {
+          throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
+        }
+
+        const jsonData = response["json"];
+
+        database = {
+          "version": jsonData["version"],
+          "last_updated": Date.now(),
+          "salt": jsonData["salt"],
+          "entries": jsonData["entries"],
+          "downloading": false,
+        };
+
+        browser.storage.local.set({
+          "database": database
+        });
+        notifier.success(browser.i18n.getMessage("databaseUpdated"));
+        sendResponse("OK");
+      } catch (error) {
+        database["downloading"] = false;
+        notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [error.msg]));
+        sendResponse("Fail");
+        return true;
       }
-
-      const jsonData = response["json"];
-
-      database = {
-        "version": version,
-        "last_updated": Date.now(),
-        "salt": jsonData["salt"],
-        "entries": jsonData["entries"],
-        "downloading": false,
-      };
-
-      browser.storage.local.set({
-        "database": database
-      });
-      notifier.success(browser.i18n.getMessage("databaseUpdated"));
-      sendResponse("OK");
-    } catch (error) {
-      database["downloading"] = false;
-      notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [error]));
-      sendResponse("Fail");
-      return true;
-    }
-  });
+    },
+    response => { notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [response["status"]])); },
+    browser.i18n.getMessage("databaseDownloading")
+  );
 
   return true;
 }

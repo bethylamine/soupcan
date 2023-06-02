@@ -227,6 +227,10 @@
         "message": "No",
         "description": "Label for cancel/no button in the confirmation dialog"
     },
+    "toast_label_async": {
+        "message": "Please wait...",
+        "description": "Label for when waiting on a request sent to the server"
+    },
     "serverFailure": {
         "message": "Server failure",
         "description": "Short popup message that displays when an action was not successfully processed by the Soupcan server"
