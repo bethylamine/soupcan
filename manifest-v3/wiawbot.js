@@ -617,7 +617,6 @@ function getLocalUrl(url) {
     "/help/",
     "/troubleshooting/",
     "/analytics",
-    "/likes",
     "/retweets"
   ]
 
@@ -625,6 +624,10 @@ function getLocalUrl(url) {
     if (url.includes(reservedSlug)) {
       return null;
     }
+  }
+
+  if (url.includes("/status") && url.includes("/likes")) {
+    return null;
   }
 
   return url;
