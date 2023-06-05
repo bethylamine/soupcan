@@ -142,12 +142,14 @@ function createObserver() {
         updatePage();
       }
       if (mutation.type == 'childList') {
+        processForMasking();
         for (const node of mutation.addedNodes) {
           if (node instanceof HTMLAnchorElement) {
             processLink(node);
           }
           if (node instanceof HTMLDivElement) {
             checkNode(node, true);
+            applyHideAds();
             if (isProfilePage()) {
               applyLinkToUsernameOnProfilePage();
             }
@@ -170,7 +172,7 @@ function createObserver() {
 var nodeCheckCache = {}
 var divCacheId = 1;
 
-function checkNode(node, force = false) {
+function checkNode(node, force = false, depth = 0) {
   node.cacheId = node.cacheId || ('hashID' + (divCacheId++));
 
   if (!force) {
@@ -185,27 +187,25 @@ function checkNode(node, force = false) {
 
   var dt = node.getAttribute("data-testid")
   if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem" || dt == "User-Name" || dt == "UserName" || dt == "conversation") {
-    processDiv(node);
+    processDiv(node, false, depth);
   }
 
   if (dt == "tweet") {
     // mark the tweet as a labelled area
-    processDiv(node, true)
+    processDiv(node, true, depth)
   }
-
-  processForMasking(node);
-  applyHideAds();
 
   if (node.hasChildNodes()) {
     for(var i = 0; i < node.children.length; i++){
       var child = node.children[i];
-      checkNode(child);
+      checkNode(child, force, depth + 1);
     }
   }
 }
 
-function processForMasking(node) {
-  var tweets = node.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
+function processForMasking() {
+  console.log("Processing for masking");
+  var tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
 
   tweets.forEach(tweet => {
     applyMasking(tweet);
@@ -287,6 +287,9 @@ function applyMasking(tweet) {
 }
 
 function updateAllLabels() {
+  processForMasking();
+  applyHideAds();
+
   for (const a of document.getElementsByTagName('a')) {
     processLink(a);
   }
@@ -350,7 +353,7 @@ function hash(string) {
   });
 }
 
-async function processDiv(div, markArea = false) {
+async function processDiv(div, markArea = false, depth = -1) {
   var div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<\/span><\/div>.*$/gs, "$1");
 
   if (!div_identifier) {
@@ -359,6 +362,8 @@ async function processDiv(div, markArea = false) {
       return;
     }
   }
+
+  console.log("Processing div at depth " + depth + " with div_identifier " + div_identifier);
 
   var database_entry = await getDatabaseEntry(div_identifier);
 
