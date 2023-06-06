@@ -6,15 +6,51 @@ const maskAllTransphobeMediaRadio = document.getElementById("maskAllTransphobeMe
 const maskAllTransphobeContentRadio = document.getElementById("maskAllTransphobeContent");
 const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
 const hideAdsCheckbox = document.getElementById("hideAds");
+const contentMatchingThresholdDescriptionText = document.getElementById("contentMatchingThresholdDescription");
+const contentMatchingSlider = document.getElementById("contentMatchingRange");
 
-var inputs = document.getElementsByClassName("form-check-input");
+var inputs = document.getElementsByTagName("input");
 for (let el of inputs) {
-  el.addEventListener("change", saveOptions);
+  el.addEventListener("change", () => {
+    updateContentMatchingThresholdDescription();
+    saveOptions();
+  });
 };
+
+contentMatchingSlider.addEventListener("mousemove", () => {
+  updateContentMatchingThresholdDescription();
+});
 
 var options = {}
 
 loadOptions();
+updateContentMatchingThresholdDescription();
+
+function updateContentMatchingThresholdDescription() {
+  var thresholdDescription = "";
+  switch (contentMatchingSlider.value) {
+    case "0":
+      thresholdDescription = "No content matching";
+      break;
+    case "1":
+      thresholdDescription = "<b>Severe</b>: Surgery gore, suicide imagery";
+      break;
+    case "2":
+      thresholdDescription = "<b>High</b>: Surgery-related imagery, other shock or triggering content";
+      break;
+    case "3":
+      thresholdDescription = "<b>Medium</b>: Nazi imagery, pornography or fetish imagery shared for the purpose of transphobia";
+      break;
+    case "4":
+      thresholdDescription = "<b>Distasteful</b>: Soyjack memes, transphobic comics, nonconsensual pre-transition images";
+      break;
+    case "5":
+      thresholdDescription = "<b>Low</b>: All other images shared multiple times for the purpose of transphobia";
+      break;
+  }
+
+  contentMatchingThresholdDescriptionText.innerHTML = thresholdDescription;
+}
 
 function loadOptions() {
   browser.storage.local.get(["options"], v => {
@@ -56,6 +92,11 @@ function saveOptions() {
 
   options["hideAds"] = hideAdsCheckbox.checked;
   options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
+  if (contentMatchingSlider.value == 0) {
+    options["contentMatchingThreshold"] = 0;
+  } else {
+    options["contentMatchingThreshold"] = 6 - contentMatchingSlider.value;
+  }
 
   browser.storage.local.set({
     "options": options

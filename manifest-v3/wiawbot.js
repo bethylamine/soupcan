@@ -20,7 +20,7 @@ var notifier = new AWN();
 
 function init() {
   notifier = new AWN({
-    "position": "top-left",
+    "position": "bottom-right",
     "labels": {
       "tip": browser.i18n.getMessage("toast_label_tip"),
       "info": browser.i18n.getMessage("toast_label_info"),
@@ -101,6 +101,10 @@ function applyOptions() {
           break;
       }
     }
+
+    if (options["contentMatchingThreshold"]) {
+      contentMatchingThreshold = options["contentMatchingThreshold"];
+    }
     
     body.classList.remove("wiawbe-hide-zalgo");
     if (options["preventZalgoText"]) {
@@ -109,6 +113,96 @@ function applyOptions() {
 
     applyHideAds();
   });
+}
+
+var content_match_cache = {};
+
+function getImageKey(url) {
+  return url.split('?')[0].replace("https://pbs.twimg.com/media/", "");
+}
+
+var contentMatchingThreshold = 0;
+
+async function checkImage(imgEl) {
+  if (contentMatchingThreshold == 0) {
+    return;
+  }
+
+  if (!database["content_match_data"]) {
+    // No database
+    return;
+  }
+
+  // Check for transphobic imagery
+  if (imgEl.src.includes("/media")) {
+    let imageContainer = imgEl.closest("[aria-label='Image']");
+    if (imageContainer == null) {
+      return;
+    }
+
+    if (getImageKey(imgEl.src) in content_match_cache) {
+      // already processed
+      const cacheVal = content_match_cache[getImageKey(imgEl.src)];
+      imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
+      imgEl.setAttribute("data-soupcan-imghash", cacheVal["imgHash"]);
+      return;
+    }
+
+    // Mark it pending until we have a result
+    imageContainer.setAttribute("wiawbe-content-match", "pending");
+
+    let canvas = document.createElement("canvas");
+    canvas.width = 16;
+    canvas.height = 16;
+    let ctx = canvas.getContext('2d');
+    imgEl.setAttribute("crossorigin", "Anonymous");
+    imgEl.onload = () => {
+      ctx.drawImage(imgEl, 0, 0, 16, 16);
+
+      // get the image data
+      var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var d = imgData.data;
+      var imgHash = "";
+      // loop through all pixels
+      // each pixel is decomposed in its 4 rgba values
+      for (var i = 0; i < d.length; i += 4) {
+        // get the medium of the 3 first values ( (r+g+b)/3 )
+        var med = (d[i] + d[i + 1] + d[i + 2]) / 3;
+        // set it to each value (r = g = b = med)
+        d[i] = d[i + 1] = d[i + 2] = med;
+        // we don't touch the alpha
+        imgHash += String.fromCharCode(48 + (med / 6));
+        
+      }
+      imgEl.setAttribute("data-soupcan-imghash", imgHash);
+      var contentMatched = false;
+      var severity = -1;
+      for (let tImg of database["content_match_data"]) {
+        const diff = compareImageHash(imgHash, tImg["hash"]);
+        if (diff < 800) {
+          contentMatched = true;
+          severity = tImg["severity"];
+          break;
+        }
+      }
+
+      if (contentMatched) {
+        if (severity >= 1 && severity >= contentMatchingThreshold) {
+          imageContainer.setAttribute("wiawbe-content-match", "true");
+        } else {
+          imageContainer.setAttribute("wiawbe-content-match", "false");
+        }
+        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "true", "severity": severity, "imgHash": imgHash};
+      } else {
+        imageContainer.setAttribute("wiawbe-content-match", "false");
+        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "false", "severity": -1, "imgHash": imgHash};
+      }
+    }
+
+    if (imgEl.completed) {
+      imgEl.onload();
+    }
+  }
 }
 
 function applyHideAds() {
@@ -153,6 +247,9 @@ function createObserver() {
             if (isProfilePage()) {
               applyLinkToUsernameOnProfilePage();
             }
+          }
+          if (node instanceof HTMLImageElement) {
+            checkImage(node);
           }
           if (node instanceof HTMLElement) {
             for (const subnode of node.querySelectorAll('a')) {
@@ -204,7 +301,7 @@ function checkNode(node, force = false, depth = 0) {
 }
 
 function processForMasking() {
-  console.log("Processing for masking");
+  //console.log("Processing for masking");
   var tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
 
   tweets.forEach(tweet => {
@@ -363,7 +460,7 @@ async function processDiv(div, markArea = false, depth = -1) {
     }
   }
 
-  console.log("Processing div at depth " + depth + " with div_identifier " + div_identifier);
+  //console.log("Processing div at depth " + depth + " with div_identifier " + div_identifier);
 
   var database_entry = await getDatabaseEntry(div_identifier);
 
@@ -1015,6 +1112,7 @@ async function updateDatabase(sendResponse, version) {
           "last_updated": Date.now(),
           "salt": jsonData["salt"],
           "entries": jsonData["entries"],
+          "content_match_data": jsonData["content_matching"],
           "downloading": false,
         };
 

@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.6.30",
+    "version": "0.7.0",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -12,7 +12,7 @@
     "content_scripts": [{
         "all_frames": true,
         "css": ["awesome-notifications/style.css", "wiawbot.css"],
-        "js": ["awesome-notifications/index.var.js", "wiawbot.js"],
+        "js": ["image-hash-comparator.js", "awesome-notifications/index.var.js", "wiawbot.js"],
         "matches": ["*://*.twitter.com/*" ]
     }],
     "action": {
