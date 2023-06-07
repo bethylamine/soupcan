@@ -179,8 +179,10 @@ async function checkImage(imgEl) {
       var severity = -1;
       for (let tImg of database["content_match_data"]) {
         const diff = compareImageHash(imgHash, tImg["hash"]);
-        if (diff < 800) {
+        if (diff < 600) {
           contentMatched = true;
+          imgEl.setAttribute("data-soupcan-matched-imghash", tImg["hash"]);
+          imgEl.setAttribute("data-soupcan-matched-diff", diff);
           severity = tImg["severity"];
           break;
         }

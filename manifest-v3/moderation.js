@@ -1,8 +1,11 @@
 var browser = browser || chrome;
 
+var state = null;
+
 browser.storage.local.get(["state"], v => {
 
   if (v.state) {
+    state = v.state;
     handleFetch("https://api.beth.lgbt/moderation/reports?state=" + v.state, response => {
       buildTable(response["json"]);
     });
@@ -23,8 +26,9 @@ function buildTable(reports) {
       <table class="table">
       <thead>
         <tr>
-          <th scope="col">Reported user</th>
-          <th scope="col">Reports</th>
+          <th scope="col">Reported transphobe</th>
+          <th scope="col">Who reported?</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody id="reports-table-body">
@@ -77,7 +81,7 @@ function buildTable(reports) {
       if (report.reporter_screen_name == "(not recorded)") {
         report.reporter_screen_name = "Twitter user " + report.reporter_id;
       }
-      listEl.innerHTML = "from " + report.reporter_screen_name + " at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
+      listEl.innerHTML = "Report from @" + report.reporter_screen_name + " at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
       if (report["user_reason"]) {
         var preEl = document.createElement("pre");
         preEl.style.whiteSpace = "pre-wrap";
@@ -87,7 +91,33 @@ function buildTable(reports) {
       listTag.appendChild(listEl);
     });
     reportsCell.appendChild(listTag);
+
     row.appendChild(reportsCell);
+    var actionsCell = document.createElement("td");
+    var actionsListEl = document.createElement("ul");
+    var deleteReportLi = document.createElement("li");
+    var deleteReportLink = document.createElement("a");
+    deleteReportLink.href = "javascript:;";
+    deleteReportLink.addEventListener("click", function() {
+      if (confirm(`Are you sure you would like to remove all (${reports.length}) reports for @${screenName}? This action will be logged.`)) {
+        var reason = prompt("Please enter a reason:");
+        if (reason) {
+          var fetchUrl = `https://api.beth.lgbt/moderation/reports/delete?state=${state}&screen_name=${screenName}&reason=${encodeURIComponent(reason)}`;
+          handleFetch(fetchUrl, response => {
+            alert(response["text"]);
+            location.reload();
+          });
+          alert("Sending request, this may take a second (click OK.)");
+        }
+      }
+    })  ;
+    deleteReportLink.innerHTML = "Delete&nbsp;report";
+    deleteReportLi.appendChild(deleteReportLink);
+    actionsListEl.appendChild(deleteReportLi);
+    actionsCell.appendChild(actionsListEl);
+    //if (confirm(`Are you sure you would like to appeal @${identifier}'s label?`))
+
+    row.appendChild(actionsCell);
 
     tableBody.appendChild(row);
   });
