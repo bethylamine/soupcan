@@ -123,6 +123,33 @@ function getImageKey(url) {
 
 var contentMatchingThreshold = 0;
 
+async function checkVideo(videoEl) {
+  if (contentMatchingThreshold == 0) {
+    return;
+  }
+
+  if (!database["content_match_data"]) {
+    // No database
+    return;
+  }
+
+  var videoContainer = videoEl.closest("[data-testid='videoComponent']");
+  videoContainer.setAttribute("wiawbe-content-match", "pending");
+  var posterUrl = videoEl.getAttribute("poster");
+  var tmpImgEl = document.createElement("img");
+  tmpImgEl.src = posterUrl;
+
+  var fragment = document.createDocumentFragment();
+  var tmpImgContainer = document.createElement("div");
+  tmpImgContainer.setAttribute("aria-label", "Image");
+  tmpImgContainer.appendChild(tmpImgEl);
+  fragment.appendChild(tmpImgContainer);
+
+  await checkImage(tmpImgEl);
+
+  videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"))
+}
+
 async function checkImage(imgEl) {
   if (contentMatchingThreshold == 0) {
     return;
@@ -134,7 +161,7 @@ async function checkImage(imgEl) {
   }
 
   // Check for transphobic imagery
-  if (imgEl.src.includes("/media")) {
+  if (imgEl.src.includes("/media") || imgEl.src.includes("/tweet_video_thumb")) {
     let imageContainer = imgEl.closest("[aria-label='Image']");
     if (imageContainer == null) {
       return;
@@ -253,6 +280,7 @@ function createObserver() {
           if (node instanceof HTMLImageElement) {
             checkImage(node);
           }
+
           if (node instanceof HTMLElement) {
             for (const subnode of node.querySelectorAll('a')) {
               processLink(subnode);
@@ -350,6 +378,10 @@ function applyMasking(tweet) {
   var videoComponent = tweet.querySelector("div[data-testid='videoComponent']");
   if (videoComponent) {
     videoComponent.setAttribute("wiawbe-mask-tag", "media");
+    var videoEl = videoComponent.querySelector("video");
+    if (videoEl) {
+      checkVideo(videoEl);
+    }
   }
 
   var tweetPhotos = tweet.querySelectorAll("div[data-testid='tweetPhoto']");
