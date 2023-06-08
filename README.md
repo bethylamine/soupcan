@@ -20,13 +20,12 @@ Thank you to [@VehpuS](https://twitter.com/VehpuS) for helping me get started wi
 
 If you have any cool ideas, please pop a message into the **Issues** tab, or message me, [@bethylamine](https://twitter.com/bethylamine), on Twitter.
 
-## How to install
+## Install
 
-### Chrome / Edge / Opera / Arc / other Chromium-based browsers
-[![image](https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/mPGKYBIR2uCP0ApchDXE.png)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
+[![Available from Chrome Webstore](https://github.com/bethylamine/soupcan/assets/130214958/ec9307b9-f47d-4556-9863-de809624b9a8)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
+[![Available from Firefox Add-ons](https://github.com/bethylamine/soupcan/assets/130214958/ef5111a7-9a17-471e-b312-09aa72641967)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
 
-### Firefox
-[![image](https://blog.mozilla.org/addons/files/2015/11/get-the-addon.png)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
+For Edge, Opera, Arc and other Chromium-based browsers, use the Chrome version.
 
 ### From Source (Latest features, may have bugs, no auto-update)
 
