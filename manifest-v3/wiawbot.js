@@ -147,7 +147,9 @@ async function checkVideo(videoEl) {
 
   await checkImage(tmpImgEl);
 
-  videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"))
+  videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"));
+  videoEl.setAttribute("data-soupcan-imghash", tmpImgEl.getAttribute("data-soupcan-imghash"));
+  videoEl.setAttribute("data-soupcan-matched-imghash", tmpImgEl.getAttribute("data-soupcan-matched-imghash"));
 }
 
 async function checkImage(imgEl) {
@@ -204,13 +206,17 @@ async function checkImage(imgEl) {
       imgEl.setAttribute("data-soupcan-imghash", imgHash);
       var contentMatched = false;
       var severity = -1;
+      var note = ""
       for (let tImg of database["content_match_data"]) {
-        const diff = compareImageHash(imgHash, tImg["hash"]);
-        if (diff < 600) {
+        const imgHashResult = compareImageHash(imgHash, tImg["hash"]);
+        const diff = imgHashResult["diffs"];
+        const entropy = imgHashResult["entropy"]
+        if (diff < 200 + entropy * 100) {
           contentMatched = true;
           imgEl.setAttribute("data-soupcan-matched-imghash", tImg["hash"]);
           imgEl.setAttribute("data-soupcan-matched-diff", diff);
           severity = tImg["severity"];
+          note = tImg["note"];
           break;
         }
       }
@@ -218,8 +224,10 @@ async function checkImage(imgEl) {
       if (contentMatched) {
         if (severity >= 1 && severity >= contentMatchingThreshold) {
           imageContainer.setAttribute("wiawbe-content-match", "true");
+          imageContainer.setAttribute("wiawbe-content-match-note", note);
         } else {
           imageContainer.setAttribute("wiawbe-content-match", "false");
+          imageContainer.setAttribute("wiawbe-content-match-note", "");
         }
         content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "true", "severity": severity, "imgHash": imgHash};
       } else {
@@ -235,6 +243,16 @@ async function checkImage(imgEl) {
 }
 
 function applyHideAds() {
+  // Hide "Get Verified" panel
+  var getVerifiedAside = document.querySelector("aside[aria-label='Get Verified']");
+  if (getVerifiedAside && getVerifiedAside.parentElement) {
+    if (options["hideAds"]) {
+      getVerifiedAside.parentElement.style.display = "none";
+    } else {
+      getVerifiedAside.parentElement.style.display = "";
+    }
+  }
+
   // Hide promoted tweets
   var tweets = document.querySelectorAll("article[data-testid='tweet']");
 

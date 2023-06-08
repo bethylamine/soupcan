@@ -30,22 +30,22 @@ function updateContentMatchingThresholdDescription() {
   var thresholdDescription = "";
   switch (contentMatchingSlider.value) {
     case "0":
-      thresholdDescription = "No content matching";
+      thresholdDescription = "<b>Disabled</b>: No content matching";
       break;
-    case "1":
+    case "5":
       thresholdDescription = "<b>Severe</b>: Surgery gore, suicide imagery";
       break;
-    case "2":
+    case "4":
       thresholdDescription = "<b>High</b>: Surgery-related imagery, other shock or triggering content";
       break;
     case "3":
       thresholdDescription = "<b>Medium</b>: Nazi imagery, pornography or fetish imagery shared for the purpose of transphobia";
       break;
-    case "4":
+    case "2":
       thresholdDescription = "<b>Distasteful</b>: Soyjack memes, transphobic comics, nonconsensual pre-transition images";
       break;
-    case "5":
-      thresholdDescription = "<b>Low</b>: All other images shared multiple times for the purpose of transphobia";
+    case "1":
+      thresholdDescription = "<b>Low</b>: All images shared for the purpose of transphobia";
       break;
   }
 
@@ -83,20 +83,20 @@ function loadOptions() {
     if (options["preventZalgoText"]) {
       preventZalgoTextCheckbox.checked = true;
     }
+
+    if (options["contentMatchingThreshold"]) {
+      contentMatchingSlider.value = `${options["contentMatchingThreshold"]}`;
+      updateContentMatchingThresholdDescription();
+    }
   });
 }
 
 function saveOptions() {
   options["maskMode"] = document.querySelector('input[name="maskMode"]:checked').value;
-  console.log(options["maskMode"]);
 
   options["hideAds"] = hideAdsCheckbox.checked;
   options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
-  if (contentMatchingSlider.value == 0) {
-    options["contentMatchingThreshold"] = 0;
-  } else {
-    options["contentMatchingThreshold"] = 6 - contentMatchingSlider.value;
-  }
+  options["contentMatchingThreshold"] = contentMatchingSlider.value;
 
   browser.storage.local.set({
     "options": options
