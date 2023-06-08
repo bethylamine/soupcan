@@ -26,7 +26,6 @@ body {
 
 .wiaw-label-appealed, a.wiaw-label-appealed, div.wiaw-label-appealed {
     color: var(--wiawBotAppealed) !important;
-    font-weight: bold !important;
 }
 
 .wiaw-label-local-transphobe, a.wiaw-label-local-transphobe, div.wiaw-label-local-transphobe {
