@@ -20,41 +20,23 @@ Thank you to [@VehpuS](https://twitter.com/VehpuS) for helping me get started wi
 
 If you have any cool ideas, please pop a message into the **Issues** tab, or message me, [@bethylamine](https://twitter.com/bethylamine), on Twitter.
 
-## How to install
+## Install
 
-### Chrome / Edge / Opera / Arc / other Chromium-based browsers
-[![image](https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/mPGKYBIR2uCP0ApchDXE.png)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
+[![Available from Chrome Webstore](chrome.png)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
+[![Available from Firefox Add-ons](firefox.png)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
 
-### Firefox
-[![image](https://blog.mozilla.org/addons/files/2015/11/get-the-addon.png)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
-
-### From Source (Latest features, may have bugs, no auto-update)
-
-1. Download the repository (either by zip or with git, if you're comfortable) and save it somewhere.
-2. Search for how to load an unpacked extension in your browser of choice, then select the `manifest-v3` directory as the extension.
-3. For firefox, delete `manifest.json` and rename `manifest-firefox.json` to `manifest.json`, and load that.
-
-## How to update (from source)
-
-1. With new features you'll need to update the extension. Download the latest version from here (or if you have it checked
-   out with git, just do a git pull) and reload the extension (click the reload button in your extension page)
-   
-![image](https://user-images.githubusercontent.com/130214958/235387341-f1449b9d-7a41-46a0-95e3-b51aa3a6a498.png)
+For Edge, Opera, Arc and other Chromium-based browsers, use the Chrome version.
 
 ## Conflicts
 
 The extension works while Shinigami Eyes is installed, but for the best experience, disable Shinigami Eyes while using this extension.
 
-The extension *should* work with GoodTwitter2.
+The extension should also work with GoodTwitter2.
 
 ## How To Use
 
-Full guide: https://bethylamine.github.io/library/browser-extension/
+Click to watch Youtube video
 
-### Reporting Users
+[![Soupcan Installation and Instructions video link](https://img.youtube.com/vi/jIz15cWBDpQ/0.jpg)](https://www.youtube.com/watch?v=jIz15cWBDpQ)
 
-Right click on the username and select soupcan click on "report user"
-
-### Appealing User Labels
-
-Right click on the username and select soupcan click on "appeal label"
+Full guide here: https://bethylamine.github.io/library/browser-extension/
