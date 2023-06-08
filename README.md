@@ -22,8 +22,8 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 
 ## Install
 
-[![Available from Chrome Webstore](assets/chrome.png)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
-[![Available from Firefox Add-ons](assets/firefox.png)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
+[![Available from Chrome Webstore](chrome.png)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
+[![Available from Firefox Add-ons](firefox.png)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
 
 For Edge, Opera, Arc and other Chromium-based browsers, use the Chrome version.
 
