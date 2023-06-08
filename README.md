@@ -37,6 +37,6 @@ The extension should also work with GoodTwitter2.
 
 Click to watch Youtube video
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/jIz15cWBDpQ/0.jpg)](https://www.youtube.com/watch?v=jIz15cWBDpQ)
+[![Soupcan Installation and Instructions video link](https://img.youtube.com/vi/jIz15cWBDpQ/0.jpg)](https://www.youtube.com/watch?v=jIz15cWBDpQ)
 
 Full guide here: https://bethylamine.github.io/library/browser-extension/
