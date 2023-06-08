@@ -27,33 +27,16 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 
 For Edge, Opera, Arc and other Chromium-based browsers, use the Chrome version.
 
-### From Source (Latest features, may have bugs, no auto-update)
-
-1. Download the repository (either by zip or with git, if you're comfortable) and save it somewhere.
-2. Search for how to load an unpacked extension in your browser of choice, then select the `manifest-v3` directory as the extension.
-3. For firefox, delete `manifest.json` and rename `manifest-firefox.json` to `manifest.json`, and load that.
-
-## How to update (from source)
-
-1. With new features you'll need to update the extension. Download the latest version from here (or if you have it checked
-   out with git, just do a git pull) and reload the extension (click the reload button in your extension page)
-   
-![image](https://user-images.githubusercontent.com/130214958/235387341-f1449b9d-7a41-46a0-95e3-b51aa3a6a498.png)
-
 ## Conflicts
 
 The extension works while Shinigami Eyes is installed, but for the best experience, disable Shinigami Eyes while using this extension.
 
-The extension *should* work with GoodTwitter2.
+The extension should also work with GoodTwitter2.
 
 ## How To Use
 
-Full guide: https://bethylamine.github.io/library/browser-extension/
+Click to watch Youtube video
 
-### Reporting Users
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/jIz15cWBDpQ/0.jpg)](https://www.youtube.com/watch?v=jIz15cWBDpQ)
 
-Right click on the username and select soupcan click on "report user"
-
-### Appealing User Labels
-
-Right click on the username and select soupcan click on "appeal label"
+Full guide here: https://bethylamine.github.io/library/browser-extension/
