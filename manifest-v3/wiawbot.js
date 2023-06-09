@@ -173,6 +173,7 @@ async function checkImage(imgEl) {
       // already processed
       const cacheVal = content_match_cache[getImageKey(imgEl.src)];
       imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
+      imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
       imgEl.setAttribute("data-soupcan-imghash", cacheVal["imgHash"]);
       return;
     }
@@ -229,10 +230,10 @@ async function checkImage(imgEl) {
           imageContainer.setAttribute("wiawbe-content-match", "false");
           imageContainer.setAttribute("wiawbe-content-match-note", "");
         }
-        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "true", "severity": severity, "imgHash": imgHash};
+        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "true", "severity": severity, "imgHash": imgHash, "note": note};
       } else {
         imageContainer.setAttribute("wiawbe-content-match", "false");
-        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "false", "severity": -1, "imgHash": imgHash};
+        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "false", "severity": -1, "imgHash": imgHash, "note": ""};
       }
     }
 
@@ -274,6 +275,20 @@ function applyHideAds() {
       }
     }
   });
+
+  // Hide promoted trends
+  var trends = document.querySelectorAll("div[data-testid='trend']");
+  trends.forEach((trend) => {
+    var promotedPath = trend.querySelector("path[d*='M19.498 3h-15c-1.381 0-2.5 1.12-2.5 2.5v13c0']");
+    if (promotedPath) {
+      if (options["hideAds"]) {
+        trend.style.display = "none";
+      } else {
+        trend.style.display = "";
+      }
+    }
+  })
+
 }
 
 function createObserver() {
