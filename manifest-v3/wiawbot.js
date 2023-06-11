@@ -133,11 +133,11 @@ async function checkVideo(videoEl) {
     return;
   }
 
-  if (videoEl.getAttribute("data-soupcan-imghash")) {
+  var videoContainer = videoEl.closest("[data-testid='videoComponent']");
+  if (videoContainer.getAttribute("wiawbe-content-match")) {
     return;
   }
 
-  var videoContainer = videoEl.closest("[data-testid='videoComponent']");
   videoContainer.setAttribute("wiawbe-content-match", "pending");
   var posterUrl = videoEl.getAttribute("poster");
   var tmpImgEl = document.createElement("img");
@@ -172,17 +172,20 @@ async function checkImage(imgEl, callback) {
     return;
   }
 
-  // Check for transphobic imagery
-  if (imgEl.src.includes("/media") || imgEl.src.includes("/tweet_video_thumb") || imgEl.src.includes("ext_tw_video_thumb")) {
-    let imageContainer = imgEl.closest("[aria-label='Image']");
-    if (imageContainer == null) {
-      return;
-    }
-    if (imageContainer.getAttribute("wiawbe-content-match")) {
-      // already has attribute
-      return;
-    }
+  let imageContainer = imgEl.closest("[aria-label='Image']");
+  if (imageContainer == null) {
+    return;
+  }
+  if (imageContainer.getAttribute("wiawbe-content-match")) {
+    // already has attribute
+    return;
+  }
 
+  // Check for transphobic imagery
+  if (imgEl.src.includes("/media") ||
+      imgEl.src.includes("/tweet_video_thumb") ||
+      imgEl.src.includes("ext_tw_video_thumb") ||
+      imgEl.src.includes("amplify_video_thumb")) {
     if (getImageKey(imgEl.src) in content_match_cache) {
       // already processed
       const cacheVal = content_match_cache[getImageKey(imgEl.src)];
@@ -191,6 +194,7 @@ async function checkImage(imgEl, callback) {
         imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
         imgEl.setAttribute("data-soupcan-imghash", cacheVal["imgHash"]);
         imgEl.setAttribute("data-soupcan-border-total", "none");
+        callback();
         return;
       }
     }
@@ -311,6 +315,11 @@ async function checkImage(imgEl, callback) {
     if (imgEl.completed) {
       imgEl.onload();
     }
+  } else {
+    // Not a supported image URL
+    content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "false", "severity": -1, "imgHash": "", "note": ""};
+    imageContainer.setAttribute("wiawbe-content-match", "false");
+    callback();
   }
 }
 
