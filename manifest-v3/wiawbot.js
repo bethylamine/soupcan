@@ -133,6 +133,10 @@ async function checkVideo(videoEl) {
     return;
   }
 
+  if (videoEl.getAttribute("data-soupcan-imghash")) {
+    return;
+  }
+
   var videoContainer = videoEl.closest("[data-testid='videoComponent']");
   videoContainer.setAttribute("wiawbe-content-match", "pending");
   var posterUrl = videoEl.getAttribute("poster");
@@ -145,14 +149,15 @@ async function checkVideo(videoEl) {
   tmpImgContainer.appendChild(tmpImgEl);
   fragment.appendChild(tmpImgContainer);
 
-  await checkImage(tmpImgEl);
-
-  videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"));
-  videoEl.setAttribute("data-soupcan-imghash", tmpImgEl.getAttribute("data-soupcan-imghash"));
-  videoEl.setAttribute("data-soupcan-matched-imghash", tmpImgEl.getAttribute("data-soupcan-matched-imghash"));
+  checkImage(tmpImgEl, () => {
+    videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"));
+    videoContainer.setAttribute("wiawbe-content-match-note", tmpImgContainer.getAttribute("wiawbe-content-match-note"));
+    videoEl.setAttribute("data-soupcan-imghash", tmpImgEl.getAttribute("data-soupcan-imghash"));
+    videoEl.setAttribute("data-soupcan-matched-imghash", tmpImgEl.getAttribute("data-soupcan-matched-imghash"));
+  });
 }
 
-async function checkImage(imgEl) {
+async function checkImage(imgEl, callback) {
   if (contentMatchingThreshold == 0) {
     return;
   }
@@ -162,20 +167,32 @@ async function checkImage(imgEl) {
     return;
   }
 
+  if (imgEl.getAttribute("wiawbe-content-match")) {
+    // already has attribute
+    return;
+  }
+
   // Check for transphobic imagery
-  if (imgEl.src.includes("/media") || imgEl.src.includes("/tweet_video_thumb")) {
+  if (imgEl.src.includes("/media") || imgEl.src.includes("/tweet_video_thumb") || imgEl.src.includes("ext_tw_video_thumb")) {
     let imageContainer = imgEl.closest("[aria-label='Image']");
     if (imageContainer == null) {
+      return;
+    }
+    if (imageContainer.getAttribute("wiawbe-content-match")) {
+      // already has attribute
       return;
     }
 
     if (getImageKey(imgEl.src) in content_match_cache) {
       // already processed
       const cacheVal = content_match_cache[getImageKey(imgEl.src)];
-      imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
-      imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
-      imgEl.setAttribute("data-soupcan-imghash", cacheVal["imgHash"]);
-      return;
+      if (cacheVal["imgHash"]) {
+        imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
+        imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
+        imgEl.setAttribute("data-soupcan-imghash", cacheVal["imgHash"]);
+        imgEl.setAttribute("data-soupcan-border-total", "none");
+        return;
+      }
     }
 
     // Mark it pending until we have a result
@@ -202,23 +219,73 @@ async function checkImage(imgEl) {
         d[i] = d[i + 1] = d[i + 2] = med;
         // we don't touch the alpha
         imgHash += String.fromCharCode(48 + (med / 6));
-        
       }
+
+      // Check if imgHash shows borders on top and bottom
+
+      var total = 0;
+      for (var x = 0; x < 64; x++) {
+        total += (imgHash.charCodeAt(x) - 48);
+      }
+      for (var x = 192; x < 256; x++) {
+        total += (imgHash.charCodeAt(x) - 48);
+      }
+
+      const blackBorderThreshold = 50;
+
+      if (total >= blackBorderThreshold) {
+        // check for iPhone screenshot pattern
+        total = 0;
+        for (var x = 32; x < 48; x++) {
+          total += (imgHash.charCodeAt(x) - 48) * 8;
+        }  
+      }
+
+      var imgHash2 = "";
+      if (total < blackBorderThreshold) {
+        // Likely a screenshot with the actual image in the middle. Calculate a second
+        // hash for this inner portion
+
+        ctx.drawImage(imgEl, 0, -9, 16, 34);
+        imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        d = imgData.data;
+
+        for (var i = 0; i < d.length; i += 4) {
+          // get the medium of the 3 first values ( (r+g+b)/3 )
+          var med = (d[i] + d[i + 1] + d[i + 2]) / 3;
+          // set it to each value (r = g = b = med)
+          d[i] = d[i + 1] = d[i + 2] = med;
+          // we don't touch the alpha
+          imgHash2 += String.fromCharCode(48 + (med / 6));
+        }
+      }
+
+      imgEl.setAttribute("data-soupcan-border-total", total);
+
       imgEl.setAttribute("data-soupcan-imghash", imgHash);
+      imgEl.setAttribute("data-soupcan-imghash2", imgHash2);
       var contentMatched = false;
       var severity = -1;
       var note = ""
       for (let tImg of database["content_match_data"]) {
-        const imgHashResult = compareImageHash(imgHash, tImg["hash"]);
-        const diff = imgHashResult["diffs"];
-        const entropy = imgHashResult["entropy"]
-        if (diff < 200 + entropy * 100) {
-          contentMatched = true;
-          imgEl.setAttribute("data-soupcan-matched-imghash", tImg["hash"]);
-          imgEl.setAttribute("data-soupcan-matched-diff", diff);
-          severity = tImg["severity"];
-          note = tImg["note"];
-          break;
+        for (var h = 0; h < 2; h++) {
+          if (h == 1) {
+            imgHash = imgHash2;
+          }
+          if (!imgHash) {
+            break;
+          }
+          const imgHashResult = compareImageHash(imgHash, tImg["hash"]);
+          const diff = imgHashResult["diffs"];
+          const entropy = imgHashResult["entropy"]
+          if (diff < 200 + entropy * 100) {
+            contentMatched = true;
+            imgEl.setAttribute("data-soupcan-matched-imghash", tImg["hash"]);
+            imgEl.setAttribute("data-soupcan-matched-diff", diff);
+            severity = tImg["severity"];
+            note = tImg["note"];
+            break;
+          }
         }
       }
 
@@ -234,6 +301,10 @@ async function checkImage(imgEl) {
       } else {
         imageContainer.setAttribute("wiawbe-content-match", "false");
         content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "false", "severity": -1, "imgHash": imgHash, "note": ""};
+      }
+
+      if (callback) {
+        callback();
       }
     }
 
@@ -364,7 +435,6 @@ function checkNode(node, force = false, depth = 0) {
 }
 
 function processForMasking() {
-  //console.log("Processing for masking");
   var tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
 
   tweets.forEach(tweet => {
@@ -443,6 +513,8 @@ function applyMasking(tweet) {
   // Add observer to catch changes and mask them
   if (!tweet.observer) {
     tweet.observer = new MutationObserver(function(mutations) {
+      // This is necessary to apply masking to tweets that are loaded asynchronously
+      // e.g. images that only appeared *after* the first applyMasking() call
       applyMasking(tweet);
     });
 
@@ -526,8 +598,6 @@ async function processDiv(div, markArea = false, depth = -1) {
       return;
     }
   }
-
-  //console.log("Processing div at depth " + depth + " with div_identifier " + div_identifier);
 
   var database_entry = await getDatabaseEntry(div_identifier);
 
