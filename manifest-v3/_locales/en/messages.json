@@ -32,7 +32,7 @@
         "description": "Context menu action to review and moderate user reports."
     },
     "actionOptions": {
-        "message": "⚙ Options",
+        "message": "⚙️ Options",
         "description": "Context menu action to change extension options."
     },
     "reportReasonInstructions": {
