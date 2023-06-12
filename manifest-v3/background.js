@@ -77,14 +77,14 @@ function start() {
         "action": "appeal-label",
         "url": info.linkUrl
       }).then((response) => {
-        console.log("Response is " + response);
+        // ?
       });
     } else if (action == "report-transphobe") {
       browser.tabs.sendMessage(tab.id, {
         "action": "report-transphobe",
         "url": info.linkUrl
       }).then((response) => {
-        console.log("Response is " + response);
+        // ?
       });
     } else if (action == "search-tweets") {
       browser.tabs.sendMessage(tab.id, {
@@ -105,7 +105,7 @@ function start() {
       browser.tabs.sendMessage(tab.id, {
         "action": "update-database"
       }).then((response) => {
-        console.log("Response is " + response);
+        // ?
       });
     } else if (action == "options") {
       browser.tabs.create({

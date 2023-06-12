@@ -18,6 +18,9 @@ var isModerator = false;
 
 var notifier = new AWN();
 
+var cbTheme = "";
+var cbUseSymbols = false;
+
 function init() {
   notifier = new AWN({
     "position": "bottom-right",
@@ -104,6 +107,40 @@ function applyOptions() {
 
     if (options["contentMatchingThreshold"]) {
       contentMatchingThreshold = options["contentMatchingThreshold"];
+    }
+
+    function checkTheme() {
+      // Check if Twitter is using light or dark mode
+      var backgroundColor = window.getComputedStyle(body, null).getPropertyValue("background-color");
+    
+      body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("soupcan-theme-")));
+      if (backgroundColor.includes("FFFFFF") || backgroundColor.includes("255, 255, 255")) {
+        body.classList.add("soupcan-theme-light");
+      } else {
+        body.classList.add("soupcan-theme-dark");
+      }
+    }
+
+    checkTheme();
+
+    var bodyStyleObserver = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName == "style") {
+          checkTheme();
+        }
+      });
+    });
+
+    bodyStyleObserver.observe(body, {attributes: true});
+
+    if (options["cbTheme"]) {
+      cbTheme = options["cbTheme"];
+      body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("soupcan-cb-")));
+      body.classList.add("soupcan-cb-" + cbTheme);
+    }
+
+    if (options["cbUseSymbols"]) {
+      cbUseSymbols = options["cbUseSymbols"];
     }
     
     body.classList.remove("wiawbe-hide-zalgo");
@@ -785,6 +822,10 @@ async function processLink(a) {
     a.removeAttribute("data-wiawbeidentifier");
   }
 
+  if (cbUseSymbols) {
+    applySymbols(a);
+  }
+
   if (!a.observer) {
     a.observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
@@ -794,6 +835,9 @@ async function processLink(a) {
               a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
               mutation.target.classList.add('has-wiaw-label');
               mutation.target.classList.add('wiaw-label-' + a.wiawLabel);
+              if (cbUseSymbols) {
+                applySymbols(a);
+              }
             }
           }
         }
@@ -801,6 +845,25 @@ async function processLink(a) {
     });
 
     a.observer.observe(a, {attributes: true});
+  }
+}
+
+function applySymbols(linkEl) {
+  var innerSpan = linkEl.querySelector("span");
+  if (innerSpan) {
+    if (innerSpan.childNodes.length === 1 && innerSpan.childNodes[0].nodeType === 3) {
+      // leaf node
+      if (innerSpan.innerText.includes("@")) {
+        // has @ symbol (username)
+        if (linkEl.className.includes("label-transphobe")) {
+          innerSpan.innerText = innerSpan.innerText.replace(/@/, "⊗");
+        } else if (linkEl.className.includes("label-local-transphobe")) {
+          innerSpan.innerText = innerSpan.innerText.replace(/@/, "⊖");
+        } else if (linkEl.className.includes("label-local-appeal")) {
+          innerSpan.innerText = innerSpan.innerText.replace(/@/, "⊡");
+        }
+      }
+    }
   }
 }
 

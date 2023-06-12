@@ -1,0 +1,35 @@
+@font-face {
+    font-family: 'TwitterChirp';
+    src: 
+         url('fonts/Chirp-Regular.woff2') format('woff2')
+}
+
+.mm-example {
+    cursor: default;
+    user-select: none;
+    position: relative;
+    display: inline-block;
+    font-family: var(--twitter-font-family);
+    font-size: 15px;
+    line-height: 20px;
+}
+
+.mm-example .text {
+    position: absolute;
+}
+
+#light-mode-example .text {
+    color: #0f1419;
+}
+
+#dark-mode-example .text {
+    color: #f7f9f9;
+}
+
+#light-mode-example .text.text-gray {
+    color: rgb(83, 100, 113);
+}
+
+#dark-mode-example .text.text-gray {
+    color: rgb(139, 152, 165);
+}

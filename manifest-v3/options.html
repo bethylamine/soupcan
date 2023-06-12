@@ -5,72 +5,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Soupcan options</title>
     <link href="bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link href="options.css" rel="stylesheet">
+    <link href="wiawbot.css" rel="stylesheet">
   </head>
   <body>
-    <div class="col-lg-8 mx-auto p-4 py-md-5">
-        <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
-          <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
-            <img class="bi me-2" width="32" height="32" src="icon32.png" />
-            <span class="fs-4">Soupcan</span>
-          </a>
-        </header>
-      
-        <main>
-          <h1 id="header" class="text-body-emphasis">Options</h1>
-
-          <h4>Media content matching</h4>
-          <p>This feature scans all photos for shock imagery (e.g. gore photos), transphobic memes and other reposted images and masks them.</p>
-          <div class="form-check">
-            <label for="contentMatchingRange" class="form-label"><b>Severity</b></label>
-            <p>Choose which content you want to block. Each step also blocks every higher severity level.</p>
-            <input type="range" class="form-range" min="0" max="5" step="1" value="0" id="contentMatchingRange">
-            <p id="contentMatchingThresholdDescription"></p>
-          </div>
-          <h4>Content from red users</h4>
-          <div class="form-check">
-            <input class="form-check-input" name="maskMode" type="radio" value="none" id="maskNone">
-            <label class="form-check-label" for="maskNone">
-              None
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" name="maskMode" type="radio" value="direct-media-only" id="maskTransphobeMedia">
-            <label class="form-check-label" for="maskTransphobeMedia">
-              Mask media from red users (hover over with mouse to reveal)
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" name="maskMode" type="radio" value="media-incl-retweets" id="maskAllTransphobeMedia">
-            <label class="form-check-label" for="maskAllTransphobeMedia">
-              Also mask all retweeted media from red users
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" name="maskMode" type="radio" value="all-content" id="maskAllTransphobeContent">
-            <label class="form-check-label" for="maskAllTransphobeContent">
-              Completely mask all content from red users
-            </label>
-          </div>
-
-          <h4>Extra features</h4>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" value="" id="hideAds">
-            <label class="form-check-label" for="hideAds">
-              Hide ads / promoted tweets
-            </label>
-          </div>
-          <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" value="" id="preventZalgoText">
-            <label class="form-check-label" for="preventZalgoText">
-              Prevent <a href="https://en.wikipedia.org/wiki/Zalgo_text">Zalgo text</a>
-            </label>
-          </div>
-
-        </main>
-        <footer class="pt-5 my-5 text-body-secondary border-top">
-          Created by Beth &middot; &copy; 2023
-        </footer>
+    <main class="d-flex flex-nowrap vh-100">
+      <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px;">
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+          <img class="bi pe-none me-2" src="icon32.png" alt="Soupcan Logo"/>
+          <span class="fs-4">Soupcan Options</span>
+        </a>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto">
+          <li class="nav-item">
+            <a class="nav-link text-white active" id="general-tab" data-bs-toggle="tab" href="#general" role="tab" aria-controls="home" aria-selected="true">
+              General
+            </a>
+          </li>
+          <li>
+            <a class="nav-link text-white" id="media-masking-tab" data-bs-toggle="tab" href="#media-masking" role="tab" aria-controls="media-masking" aria-selected="false">
+              Content masking
+            </a>
+          </li>
+          <li>
+            <a class="nav-link text-white" id="accessibility-tab" data-bs-toggle="tab" href="#accessibility" role="tab" aria-controls="accessibility" aria-selected="false">
+              Accessibility
+            </a>
+          </li>
+        </ul>
       </div>
+
+      <div class="d-flex flex-column p-4 w-100">
+        <div class="tab-content" id="myTabContent">
+
+          <!-- General options tab -->
+          <div class="tab-pane fade show active" id="general" role="tabpanel" aria-labelledby="general-tab">
+            <h1>General</h1>
+
+            <hr/>
+
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" value="" id="hideAds">
+              <label class="form-check-label" for="hideAds">
+                Hide ads / promoted tweets
+              </label>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" value="" id="preventZalgoText">
+              <label class="form-check-label" for="preventZalgoText">
+                Prevent <a href="https://en.wikipedia.org/wiki/Zalgo_text">Zalgo text</a>
+              </label>
+            </div>
+          </div>
+
+          <!-- Media masking tab -->
+          <div class="tab-pane fade" id="media-masking" role="tabpanel" aria-labelledby="media-masking-tab">
+            <h1>Content masking</h1>
+
+            <hr/>
+
+            <h4>Media matching (Beta)</h4>
+            <p>This feature scans all photos for shock imagery (e.g. gore photos), transphobic memes and other reposted images and masks them.</p>
+
+            <div class="m-4">
+              <div class="form-check">
+                <input class="form-check-input" name="media-matching" type="checkbox" value="-1" id="media-matching-off">
+                <label class="form-check-label" for="media-matching-off">
+                  Off
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="media-matching" type="checkbox" value="5" id="media-matching-5">
+                <label class="form-check-label" for="media-matching-5">
+                  Most severe images e.g. gory surgery pictures and suicide imagery
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="media-matching" type="checkbox" value="4" id="media-matching-4">
+                <label class="form-check-label" for="media-matching-4">
+                  Surgery-related images (e.g. top surgery scars) and other shock or triggering content
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="media-matching" type="checkbox" value="3" id="media-matching-3">
+                <label class="form-check-label" for="media-matching-3">
+                  Nazi imagery, pornography or fetish imagery shared by transphobes
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="media-matching" type="checkbox" value="2" id="media-matching-2">
+                <label class="form-check-label" for="media-matching-2">
+                  Wojak memes, transphobic comics, non-consensual pre-transition pictures
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="media-matching" type="checkbox" value="1" id="media-matching-1">
+                <label class="form-check-label" for="media-matching-1">
+                  Any images that are transphobic.
+                </label>
+              </div>
+            </div>  
+
+            <hr/>
+            <h4>Content from red users</h4>
+
+            <div class="m-4">
+              <div class="form-check">
+                <input class="form-check-input" name="maskMode" type="radio" value="none" id="maskNone">
+                <label class="form-check-label" for="maskNone">
+                  Off
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="maskMode" type="radio" value="direct-media-only" id="maskTransphobeMedia">
+                <label class="form-check-label" for="maskTransphobeMedia">
+                  Mask media posted directly by red users
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="maskMode" type="radio" value="media-incl-retweets" id="maskAllTransphobeMedia">
+                <label class="form-check-label" for="maskAllTransphobeMedia">
+                  Mask media from red users or retweeted by red users
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" name="maskMode" type="radio" value="all-content" id="maskAllTransphobeContent">
+                <label class="form-check-label" for="maskAllTransphobeContent">
+                  Mask all content (including tweet text) from red users
+                </label>
+              </div>
+            </div>  
+          </div>
+
+          <!-- Accessibility tab -->
+          <div class="tab-pane fade" id="accessibility" role="tabpanel" aria-labelledby="accessibility-tab">
+            <h1>Accessibility</h1>
+
+            <hr/>
+
+            <h3>Color blindness scheme</h3>
+            <select id="color-blind-theme" class="form-select m-4" aria-label="Color blind theming">
+              <option selected value="off">Off</option>
+              <option value="deuteranopia">Deuteranopia</option>
+              <option value="protanopia">Protanopia</option>
+              <option value="tritanopia">Tritanopia</option>
+            </select>
+
+            <div class="form-check form-switch m-4">
+              <input class="form-check-input" type="checkbox" value="" id="useSymbols">
+              <label class="form-check-label" for="useSymbols">
+                Replace @ symbols to differentiate markings
+              </label>
+            </div>
+    
+            <ul class="list-group m-4">
+              <li class="list-group-item">
+                <h5 class="mb-1">Light mode example</h5>
+                <span id="light-mode-example" class="mm-example soupcan-theme-light">
+                  <img src="images/example-light-mode.png" alt="Example light mode screenshot" draggable="false" />
+                </span>
+              </li>
+              
+              <li class="list-group-item">
+                <h5 class="mb-1">Dark mode example</h5>
+                <span id="dark-mode-example" class="mm-example soupcan-theme-dark">
+                  <img src="images/example-dark-mode.png" alt="Example dark mode screenshot" draggable="false" />
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+      </div>
+    </main>
 
     <script src="bootstrap.bundle.min.js"></script>
     <script src="options.js" type="module"></script>
