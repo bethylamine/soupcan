@@ -18,7 +18,7 @@ var isModerator = false;
 
 var notifier = new AWN();
 
-var cbTheme = "";
+var cbTheme = "off";
 var cbUseSymbols = false;
 
 function init() {
@@ -54,6 +54,11 @@ function init() {
 
   applyOptions();
   createObserver();
+}
+
+function changeSoupcanTheme(body, theme) {
+  body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("soupcan-theme-")));
+  body.classList.add("soupcan-theme-" + theme);
 }
 
 function applyOptions() {
@@ -110,14 +115,18 @@ function applyOptions() {
     }
 
     function checkTheme() {
+      changeSoupcanTheme(body, "light"); // default to light mode if all else fails
+
       // Check if Twitter is using light or dark mode
-      var backgroundColor = window.getComputedStyle(body, null).getPropertyValue("background-color");
-    
-      body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("soupcan-theme-")));
-      if (backgroundColor.includes("FFFFFF") || backgroundColor.includes("255, 255, 255")) {
-        body.classList.add("soupcan-theme-light");
-      } else {
-        body.classList.add("soupcan-theme-dark");
+      var computedStyle = window.getComputedStyle(body, null);
+      if (computedStyle) {
+        var backgroundColor = computedStyle.getPropertyValue("background-color");
+      
+        if (backgroundColor.includes("FFFFFF") || backgroundColor.includes("255, 255, 255")) {
+          changeSoupcanTheme(body, "light");
+        } else {
+          changeSoupcanTheme(body, "dark");
+        }
       }
     }
 
@@ -135,9 +144,10 @@ function applyOptions() {
 
     if (options["cbTheme"]) {
       cbTheme = options["cbTheme"];
-      body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("soupcan-cb-")));
-      body.classList.add("soupcan-cb-" + cbTheme);
     }
+
+    body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("soupcan-cb-")));
+    body.classList.add("soupcan-cb-" + cbTheme);
 
     if (options["cbUseSymbols"]) {
       cbUseSymbols = options["cbUseSymbols"];
