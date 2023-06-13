@@ -1,5 +1,4 @@
 *.pem
 **/.pem
 packaged_extensions/
-loader.html
-reproducer.html
+local/
