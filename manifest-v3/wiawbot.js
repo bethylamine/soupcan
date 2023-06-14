@@ -196,7 +196,7 @@ async function checkVideo(videoEl) {
   tmpImgContainer.appendChild(tmpImgEl);
   fragment.appendChild(tmpImgContainer);
 
-  checkImage(tmpImgEl, () => {
+  safeCheckImage(tmpImgEl, () => {
     videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"));
     videoContainer.setAttribute("wiawbe-content-match-note", tmpImgContainer.getAttribute("wiawbe-content-match-note"));
     videoEl.setAttribute("data-soupcan-imghash", tmpImgEl.getAttribute("data-soupcan-imghash"));
@@ -204,10 +204,29 @@ async function checkVideo(videoEl) {
   });
 }
 
-async function checkImage(imgEl, callback) {
-  if (contentMatchingThreshold <= 1) {
+async function safeCheckImage(imgEl, callback) {
+  if (contentMatchingThreshold <= 0) {
     return;
   }
+
+  let imageContainer = imgEl.closest("[aria-label='Image']");
+  if (imageContainer == null) {
+    return;
+  }
+
+  try {
+    // Mark it pending until we have a result
+    imageContainer.setAttribute("wiawbe-content-match", "pending");
+
+    await checkImage(imgEl, callback);
+  } catch (error) {
+    console.log(error);
+    imageContainer.setAttribute("wiawbe-content-match", "");
+    callback();
+  }
+}
+
+async function checkImage(imgEl, callback) {
 
   if (!database["content_match_data"]) {
     // No database
@@ -223,7 +242,7 @@ async function checkImage(imgEl, callback) {
   if (imageContainer == null) {
     return;
   }
-  if (imageContainer.getAttribute("wiawbe-content-match")) {
+  if (imageContainer.getAttribute("wiawbe-content-match") in ["true", "false"]) {
     // already has attribute
     return;
   }
@@ -245,9 +264,6 @@ async function checkImage(imgEl, callback) {
         return;
       }
     }
-
-    // Mark it pending until we have a result
-    imageContainer.setAttribute("wiawbe-content-match", "pending");
 
     let canvas = document.createElement("canvas");
     canvas.width = 16;
@@ -438,7 +454,7 @@ function createObserver() {
             }
           }
           if (node instanceof HTMLImageElement) {
-            checkImage(node);
+            safeCheckImage(node);
           }
 
           if (node instanceof HTMLElement) {
