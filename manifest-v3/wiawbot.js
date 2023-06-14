@@ -171,7 +171,7 @@ function getImageKey(url) {
 var contentMatchingThreshold = 0;
 
 async function checkVideo(videoEl) {
-  if (contentMatchingThreshold == 0) {
+  if (contentMatchingThreshold <= 0) {
     return;
   }
 
@@ -205,7 +205,7 @@ async function checkVideo(videoEl) {
 }
 
 async function checkImage(imgEl, callback) {
-  if (contentMatchingThreshold == 0) {
+  if (contentMatchingThreshold <= 1) {
     return;
   }
 
