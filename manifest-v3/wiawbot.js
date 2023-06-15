@@ -110,8 +110,8 @@ function applyOptions() {
       }
     }
 
-    if (options["contentMatchingThreshold"]) {
-      contentMatchingThreshold = options["contentMatchingThreshold"];
+    if (options["mediaMatching"]) {
+      mediaMatching = options["mediaMatching"];
     }
 
     function checkTheme() {
@@ -168,20 +168,15 @@ function getImageKey(url) {
   return url.split('?')[0].replace("https://pbs.twimg.com/media/", "");
 }
 
-var contentMatchingThreshold = 0;
+var mediaMatching = false;
 
 async function checkVideo(videoEl) {
-  if (contentMatchingThreshold <= 0) {
-    return;
-  }
-
-  if (!database["content_match_data"]) {
-    // No database
+  if (!mediaMatching || !database["media_matching_data"]) {
     return;
   }
 
   var videoContainer = videoEl.closest("[data-testid='videoComponent']");
-  if (videoContainer.getAttribute("wiawbe-content-match")) {
+  if (["true", "false"].includes(videoContainer.getAttribute("wiawbe-content-match"))) {
     return;
   }
 
@@ -205,7 +200,7 @@ async function checkVideo(videoEl) {
 }
 
 async function safeCheckImage(imgEl, callback) {
-  if (contentMatchingThreshold <= 0) {
+  if (!mediaMatching || !database["media_matching_data"]) {
     return;
   }
 
@@ -214,25 +209,22 @@ async function safeCheckImage(imgEl, callback) {
     return;
   }
 
-  try {
+  // try {
     // Mark it pending until we have a result
     imageContainer.setAttribute("wiawbe-content-match", "pending");
 
     await checkImage(imgEl, callback);
-  } catch (error) {
-    console.log(error);
-    imageContainer.setAttribute("wiawbe-content-match", "");
-    callback();
-  }
+  // }
+  //  catch (error) {
+  //   console.log(error);
+  //   imageContainer.setAttribute("wiawbe-content-match", "");
+  //   if (callback) {
+  //     callback();
+  //   }
+  // }
 }
 
 async function checkImage(imgEl, callback) {
-
-  if (!database["content_match_data"]) {
-    // No database
-    return;
-  }
-
   if (imgEl.getAttribute("wiawbe-content-match")) {
     // already has attribute
     return;
@@ -242,7 +234,7 @@ async function checkImage(imgEl, callback) {
   if (imageContainer == null) {
     return;
   }
-  if (imageContainer.getAttribute("wiawbe-content-match") in ["true", "false"]) {
+  if (["true", "false"].includes(imageContainer.getAttribute("wiawbe-content-match"))) {
     // already has attribute
     return;
   }
@@ -252,9 +244,11 @@ async function checkImage(imgEl, callback) {
       imgEl.src.includes("/tweet_video_thumb") ||
       imgEl.src.includes("ext_tw_video_thumb") ||
       imgEl.src.includes("amplify_video_thumb")) {
-    if (getImageKey(imgEl.src) in content_match_cache) {
+
+    let imgCacheKey = getImageKey(imgEl.src);
+    if (imgCacheKey in content_match_cache) {
       // already processed
-      const cacheVal = content_match_cache[getImageKey(imgEl.src)];
+      const cacheVal = content_match_cache[imgCacheKey];
       if (cacheVal["imgHash"]) {
         imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
         imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
@@ -265,123 +259,25 @@ async function checkImage(imgEl, callback) {
       }
     }
 
-    let canvas = document.createElement("canvas");
-    canvas.width = 16;
-    canvas.height = 16;
-    let ctx = canvas.getContext('2d');
-    imgEl.setAttribute("crossorigin", "Anonymous");
-    imgEl.onload = () => {
-      ctx.drawImage(imgEl, 0, 0, 16, 16);
-
-      // get the image data
-      var imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      var d = imgData.data;
-      var imgHash = "";
-      // loop through all pixels
-      // each pixel is decomposed in its 4 rgba values
-      for (var i = 0; i < d.length; i += 4) {
-        // get the medium of the 3 first values ( (r+g+b)/3 )
-        var med = (d[i] + d[i + 1] + d[i + 2]) / 3;
-        // set it to each value (r = g = b = med)
-        d[i] = d[i + 1] = d[i + 2] = med;
-        // we don't touch the alpha
-        imgHash += String.fromCharCode(48 + (med / 6));
-      }
-
-      // Check if imgHash shows borders on top and bottom
-
-      var total = 0;
-      for (var x = 0; x < 64; x++) {
-        total += (imgHash.charCodeAt(x) - 48);
-      }
-      for (var x = 192; x < 256; x++) {
-        total += (imgHash.charCodeAt(x) - 48);
-      }
-
-      const blackBorderThreshold = 50;
-
-      if (total >= blackBorderThreshold) {
-        // check for iPhone screenshot pattern
-        total = 0;
-        for (var x = 32; x < 48; x++) {
-          total += (imgHash.charCodeAt(x) - 48) * 8;
-        }  
-      }
-
-      var imgHash2 = "";
-      if (total < blackBorderThreshold) {
-        // Likely a screenshot with the actual image in the middle. Calculate a second
-        // hash for this inner portion
-
-        ctx.drawImage(imgEl, 0, -9, 16, 34);
-        imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        d = imgData.data;
-
-        for (var i = 0; i < d.length; i += 4) {
-          // get the medium of the 3 first values ( (r+g+b)/3 )
-          var med = (d[i] + d[i + 1] + d[i + 2]) / 3;
-          // set it to each value (r = g = b = med)
-          d[i] = d[i + 1] = d[i + 2] = med;
-          // we don't touch the alpha
-          imgHash2 += String.fromCharCode(48 + (med / 6));
-        }
-      }
-
-      imgEl.setAttribute("data-soupcan-border-total", total);
-
-      imgEl.setAttribute("data-soupcan-imghash", imgHash);
-      imgEl.setAttribute("data-soupcan-imghash2", imgHash2);
-      var contentMatched = false;
-      var severity = -1;
-      var note = ""
-      for (let tImg of database["content_match_data"]) {
-        for (var h = 0; h < 2; h++) {
-          if (h == 1) {
-            imgHash = imgHash2;
-          }
-          if (!imgHash) {
-            break;
-          }
-          const imgHashResult = compareImageHash(imgHash, tImg["hash"]);
-          const diff = imgHashResult["diffs"];
-          const entropy = imgHashResult["entropy"]
-          if (diff < 200 + entropy * 100) {
-            contentMatched = true;
-            imgEl.setAttribute("data-soupcan-matched-imghash", tImg["hash"]);
-            imgEl.setAttribute("data-soupcan-matched-diff", diff);
-            severity = tImg["severity"];
-            note = tImg["note"];
-            break;
-          }
-        }
-      }
-
-      if (contentMatched) {
-        if (severity >= 1 && severity >= contentMatchingThreshold) {
-          imageContainer.setAttribute("wiawbe-content-match", "true");
-          imageContainer.setAttribute("wiawbe-content-match-note", note);
-        } else {
-          imageContainer.setAttribute("wiawbe-content-match", "false");
-          imageContainer.setAttribute("wiawbe-content-match-note", "");
-        }
-        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "true", "severity": severity, "imgHash": imgHash, "note": note};
-      } else {
-        imageContainer.setAttribute("wiawbe-content-match", "false");
-        content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "false", "severity": -1, "imgHash": imgHash, "note": ""};
-      }
-
-      if (callback) {
-        callback();
-      }
-    }
-
-    if (imgEl.completed) {
-      imgEl.onload();
+    // check with pHash
+    const matchMediaResult = await matchMedia(imgEl);
+    if (matchMediaResult.match) {
+      // matched
+      let note = "cw/ " + matchMediaResult.label.cws + "\n(" + matchMediaResult.label.description + ")";
+      imageContainer.setAttribute("wiawbe-content-match", "true");
+      imageContainer.setAttribute("wiawbe-content-match-note", note);
+      content_match_cache[imgCacheKey] = {"match-attribute": "true", "note": note};
+    } else {
+      imageContainer.setAttribute("wiawbe-content-match", "false");
+      content_match_cache[imgCacheKey] = {"match-attribute": "false", "note": ""};
     }
   } else {
     // Not a supported image URL
-    content_match_cache[getImageKey(imgEl.src)] = {"match-attribute": "false", "severity": -1, "imgHash": "", "note": ""};
+    content_match_cache[imgCacheKey] = {"match-attribute": "false", "note": ""};
     imageContainer.setAttribute("wiawbe-content-match", "false");
+  }
+
+  if (callback) {
     callback();
   }
 }
@@ -1348,6 +1244,7 @@ async function updateDatabase(sendResponse, version) {
           "salt": jsonData["salt"],
           "entries": jsonData["entries"],
           "content_match_data": jsonData["content_matching"],
+          "media_matching_data": jsonData["media_matching"],
           "downloading": false,
         };
 

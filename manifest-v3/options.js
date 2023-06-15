@@ -7,18 +7,9 @@ const maskAllTransphobeContentRadio = document.getElementById("maskAllTransphobe
 const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
 const hideAdsCheckbox = document.getElementById("hideAds");
 
-const mmOff = document.getElementById("media-matching-off");
-const mm1 = document.getElementById("media-matching-1");
-const mm2 = document.getElementById("media-matching-2");
-const mm3 = document.getElementById("media-matching-3");
-const mm4 = document.getElementById("media-matching-4");
-const mm5 = document.getElementById("media-matching-5");
+const useMediaMatching = document.getElementById("useMediaMatching");
 
-const mmEls = [
-  mmOff, mm1, mm2, mm3, mm4, mm5
-]
-
-const mmExamples = [
+const themeExamples = [
   document.getElementById("light-mode-example"),
   document.getElementById("dark-mode-example")
 ]
@@ -26,7 +17,6 @@ const mmExamples = [
 var inputs = document.getElementsByTagName("input");
 for (let el of inputs) {
   el.addEventListener("change", () => {
-    updateMediaMatchingOptions();
     saveOptions();
   });
 };
@@ -34,10 +24,10 @@ for (let el of inputs) {
 var colorBlindThemeSelect = document.getElementById("color-blind-theme");
 
 colorBlindThemeSelect.addEventListener("change", () => {
-  for (let mmEx of mmExamples) {
-    mmEx.classList.remove.apply(mmEx.classList, Array.from(mmEx.classList).filter(v => v.startsWith("soupcan-cb-")));
+  for (let themeEx of themeExamples) {
+    themeEx.classList.remove.apply(themeEx.classList, Array.from(themeEx.classList).filter(v => v.startsWith("soupcan-cb-")));
     if (colorBlindThemeSelect.value != "off") {
-      mmEx.classList.add("soupcan-cb-" + colorBlindThemeSelect.value);
+      themeEx.classList.add("soupcan-cb-" + colorBlindThemeSelect.value);
     }
   }
   saveOptions();
@@ -47,30 +37,26 @@ var useSymbolsCheckbox = document.getElementById("useSymbols");
 var useSymbols = false;
 useSymbolsCheckbox.addEventListener("change", () => {
   useSymbols = useSymbolsCheckbox.checked;
-  loadMmExamples();
+  loadThemeExamples();
   saveOptions();
 });
 
 var options = {}
 var contentMatchingThreshold = -1;
 
+useMediaMatching.addEventListener("change", () => {
+  saveOptions();
+});
+
 loadOptions();
 
-for (let mmEl of mmEls) {
-  mmEl.addEventListener("change", () => {
-    contentMatchingThreshold = mmEl.value;
-    updateMediaMatchingOptions();
-    saveOptions();
-  });
-}
+loadThemeExamples();
 
-loadMmExamples();
-
-function loadMmExamples() {
-  for (let mmEx of mmExamples) {
+function loadThemeExamples() {
+  for (let themeEx of themeExamples) {
     var i = 0;
-    while (i < mmEx.childNodes.length) {
-      var node = mmEx.childNodes[i];
+    while (i < themeEx.childNodes.length) {
+      var node = themeEx.childNodes[i];
       if (node instanceof HTMLImageElement) {
         i++;
         continue;
@@ -84,7 +70,7 @@ function loadMmExamples() {
     newEl.style.left = "63px"; // -1
     newEl.style.top = "12px";  // -7
     newEl.innerText = "Transphobe Reported By You";
-    mmEx.appendChild(newEl);
+    themeEx.appendChild(newEl);
 
     newEl = document.createElement("span");
     newEl.classList.add("text");
@@ -93,7 +79,7 @@ function loadMmExamples() {
     newEl.style.top = "31px";
     newEl.style.setProperty("font-weight", "normal", "important");
     newEl.innerText = (useSymbols ? "⊖" : "@") + "ImTransphobic";
-    mmEx.appendChild(newEl);
+    themeEx.appendChild(newEl);
 
     newEl = document.createElement("span");
     newEl.classList.add("text");
@@ -101,7 +87,7 @@ function loadMmExamples() {
     newEl.style.top = "70px";
     newEl.style.setProperty("font-weight", "normal", "important");
     newEl.innerText = "Check this out!";
-    mmEx.appendChild(newEl);
+    themeEx.appendChild(newEl);
 
     newEl = document.createElement("span");
     newEl.classList.add("text");
@@ -109,7 +95,7 @@ function loadMmExamples() {
     newEl.style.left = "53px";
     newEl.style.top = "122px";
     newEl.innerText = "Extra large transphobe";
-    mmEx.appendChild(newEl);
+    themeEx.appendChild(newEl);
 
     newEl = document.createElement("span");
     newEl.classList.add("text");
@@ -118,7 +104,7 @@ function loadMmExamples() {
     newEl.style.top = "122px";
     newEl.style.setProperty("font-weight", "normal", "important");
     newEl.innerText = (useSymbols ? "⊗" : "@") + "BigTransphobe · Jun 5";
-    mmEx.appendChild(newEl);
+    themeEx.appendChild(newEl);
 
 
     newEl = document.createElement("span");
@@ -128,32 +114,7 @@ function loadMmExamples() {
     newEl.style.top = "153px";
     newEl.style.setProperty("font-weight", "normal", "important");
     newEl.innerHTML = "Replying to @regularPerson and <span class='wiaw-label-local-appeal'>" + (useSymbols ? "⊡" : "@") +  "appealedByYou</span>";
-    mmEx.appendChild(newEl);
-  }
-}
-
-function updateMediaMatchingOptions() {
-  for (let mmEl of mmEls) {
-    mmEl.checked = false;
-  }
-
-  if (contentMatchingThreshold <= 0) {
-    // Off
-    mmOff.checked = true;
-  } else {
-    if (contentMatchingThreshold < 2) {
-      mm1.checked = true;
-    }
-    if (contentMatchingThreshold < 3) {
-      mm2.checked = true;
-    }
-    if (contentMatchingThreshold < 4) {
-      mm3.checked = true;
-    }
-    if (contentMatchingThreshold < 5) {
-      mm4.checked = true;
-    }
-    mm5.checked = true;
+    themeEx.appendChild(newEl);
   }
 }
 
@@ -189,11 +150,6 @@ function loadOptions() {
       preventZalgoTextCheckbox.checked = true;
     }
 
-    if (options["contentMatchingThreshold"]) {
-      contentMatchingThreshold = `${options["contentMatchingThreshold"]}`;
-      updateMediaMatchingOptions();
-    }
-
     if (options["cbTheme"]) {
       colorBlindThemeSelect.value = options["cbTheme"];
     }
@@ -203,7 +159,11 @@ function loadOptions() {
       useSymbolsCheckbox.checked = useSymbols;
     }
 
-    loadMmExamples();
+    if (options["mediaMatching"]) {
+      useMediaMatching.checked = options["mediaMatching"];
+    }
+
+    loadThemeExamples();
   });
 }
 
@@ -214,6 +174,7 @@ function saveOptions() {
   options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
   options["contentMatchingThreshold"] = contentMatchingThreshold;
 
+  options["mediaMatching"] = useMediaMatching.checked;
   options["cbTheme"] = colorBlindThemeSelect.value;
   options["cbUseSymbols"] = useSymbols;
 

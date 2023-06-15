@@ -169,7 +169,7 @@ body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-ta
 
 [wiawbe-content-match='true']::after
 {
-    content: 'Content match: ' attr(wiawbe-content-match-note);
+    content: attr(wiawbe-content-match-note);
     color: #FFFFFF;
     white-space: pre-wrap;
     text-shadow: 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1);
