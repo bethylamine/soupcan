@@ -216,7 +216,6 @@ async function safeCheckImage(imgEl, callback) {
     await checkImage(imgEl, callback);
   }
    catch (error) {
-    console.log(error);
     imageContainer.setAttribute("wiawbe-content-match", "error");
     if (callback) {
       callback();

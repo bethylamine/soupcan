@@ -2,6 +2,19 @@
 
 const MAX_MATCH_DISTANCE = 8;
 
+function createCanvas(width, height) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
+}
+
+async function createAndLoadImg(src) {
+    const imgEl = document.createElement("img");
+    await loadImage(imgEl, src);
+    return imgEl;
+}
+
 function noMatch() {
     return {
         match: false
@@ -24,15 +37,13 @@ async function matchMedia(imageElement) {
         return noMatch();
     }
 
-    let naturalImageElement = document.createElement("img");
-    naturalImageElement.setAttribute("crossorigin", "Anonymous");
+    imageElement.setAttribute("crossorigin", "Anonymous");
 
     if (!imageElement.complete || imageElement.naturalHeight === 0) {
         await loadImage(imageElement);
     }
 
-    await loadImage(naturalImageElement, imageElement.src);
-    return await matchLoadedMedia(naturalImageElement);
+    return await matchLoadedMedia(imageElement);
 }
 
 function matchResult(label) {
@@ -42,14 +53,127 @@ function matchResult(label) {
     }
 }
 
-async function preprocessForHashing(imageElement) {
-    // Check if it looks like a mobile screenshot
+function cropForMobile(canvas) {
+    let portraitRatio = canvas.height / canvas.width;
+    if (portraitRatio > 1.7 && portraitRatio < 2.2) {
+        // Use a smaller canvas for checking
+        const SMALL_CANVAS_WIDTH = Math.min(128, canvas.width);
+
+        let smallCanvas = createCanvas(SMALL_CANVAS_WIDTH, Math.floor(SMALL_CANVAS_WIDTH * portraitRatio));
+        const sCtx = smallCanvas.getContext("2d", {willReadFrequently: true});
+        sCtx.drawImage(canvas, 0, 0, smallCanvas.width, smallCanvas.height);
+
+        // Grab pixel data
+        let imageData = sCtx.getImageData(0, 0, smallCanvas.width, smallCanvas.height).data;
+
+        let row = 0;
+        let col = 0
+        let rowSolid = 0;
+        let rowsSolid = [];
+
+        // Scan for solid rows down the image
+        for(let i = 0; i < imageData.length; i += 4) {
+            const red = imageData[i];
+            const green = imageData[i + 1];
+            const blue = imageData[i + 2];
+            const alpha = imageData[i + 3];
+
+            if (red + green + blue < 10 || alpha == 0) {
+                rowSolid++;
+            } else if (red + green + blue > 725 || alpha == 0) {
+                rowSolid++;
+            }
+
+            col++;
+            if (col >= smallCanvas.width) {
+                if (rowSolid > Math.floor(SMALL_CANVAS_WIDTH * 0.9)) {
+                    rowsSolid.push(row);
+                }
+
+                col = 0;
+                row++;
+                rowSolid = 0;
+            }
+        }
+
+        // Determine the ratio of solid borders to solid center rows
+        let solidBorders = 0;
+        let solidCenters = 0;
+
+        for (let y = 0; y < Math.floor(smallCanvas.height * 0.25); y++) {
+            if (rowsSolid.includes(y)) {
+                solidBorders++;
+            }
+        }
+        for (let y = Math.floor(smallCanvas.height * 0.75); y < smallCanvas.height; y++) {
+            if (rowsSolid.includes(y)) {
+                solidBorders++;
+            }
+        }
+        for (let y = Math.floor(smallCanvas.height * 0.25); y < Math.floor(smallCanvas.height * 0.75); y++) {
+            if (rowsSolid.includes(y)) {
+                solidCenters++;
+            }
+        }
+
+        if (solidBorders > solidCenters * 3) {
+            // detected screenshot, find inside image boundaries
+            let topVal = 0;
+            for (let y = 0; y < rowsSolid.length - 1; y++) {
+                if (rowsSolid[y + 1] < rowsSolid[y] + 5) {
+                    topVal = y + 1;
+                } else {
+                    break;
+                }
+            }
+            let botVal = 0;
+            for (let y = rowsSolid.length - 1; y > 1; y--) {
+                if (rowsSolid[y - 1] > rowsSolid[y] - 5) {
+                    botVal = y - 1;
+                } else {
+                    break;
+                }
+            }
+
+            let topRow = rowsSolid[topVal];
+            let botRow = rowsSolid[botVal];
+
+            let hScaleFactor = (canvas.height / smallCanvas.height);
+            let newHeight = Math.floor((botRow - topRow) * hScaleFactor);
+
+            let originalCanvas = canvas;
+            canvas = createCanvas(canvas.width, newHeight);
+            const newCtx = canvas.getContext("2d", {willReadFrequently: true});
+            newCtx.drawImage(originalCanvas, 0, -Math.floor(topRow * hScaleFactor));
+        }
+
+    }
     
+    return canvas;
+}
+
+async function preprocessForHashing(imageElement) {
+    // Create canvas for image processing
+    let canvas = createCanvas(imageElement.naturalWidth, imageElement.naturalHeight);
+
+    // Fill the canvas black
+    const ctx = canvas.getContext("2d", {willReadFrequently: true});
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the image on top
+    ctx.drawImage(imageElement, 0, 0);
+
+    // Check if it's a mobile screenshot, and if so, crop it
+    canvas = cropForMobile(canvas);
+
+    // Create and load an image element to return
+    return createAndLoadImg(canvas.toDataURL());
 }
 
 async function matchLoadedMedia(imageElement) {
     const preprocessedImageElement = await preprocessForHashing(imageElement);
-    const hash = await phash(imageElement);
+    const hash = await phash(preprocessedImageElement);
     const hashHex = hash.toHexString();
 
     if (hashHex in database["media_matching_data"]) {
