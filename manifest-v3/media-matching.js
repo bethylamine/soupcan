@@ -11,6 +11,7 @@ function createCanvas(width, height) {
 
 async function createAndLoadImg(src) {
     const imgEl = document.createElement("img");
+    imgEl.setAttribute("crossorigin", "Anonymous");
     await loadImage(imgEl, src);
     return imgEl;
 }
@@ -36,8 +37,6 @@ async function matchMedia(imageElement) {
     if (!database || !database["media_matching_data"]) {
         return noMatch();
     }
-
-    imageElement.setAttribute("crossorigin", "Anonymous");
 
     if (!imageElement.complete || imageElement.naturalHeight === 0) {
         await loadImage(imageElement);
@@ -68,31 +67,48 @@ function cropForMobile(canvas) {
 
         let row = 0;
         let col = 0
-        let rowSolid = 0;
-        let rowsSolid = [];
+        let solidPixelsInRow = 0;
+        let solidRows = [];
+        let rowColor = -1;
 
         // Scan for solid rows down the image
         for(let i = 0; i < imageData.length; i += 4) {
-            const red = imageData[i];
-            const green = imageData[i + 1];
-            const blue = imageData[i + 2];
-            const alpha = imageData[i + 3];
+            if (solidPixelsInRow >= 0) {
+                const red = imageData[i];
+                const green = imageData[i + 1];
+                const blue = imageData[i + 2];
+                const alpha = imageData[i + 3];
 
-            if (red + green + blue < 10 || alpha == 0) {
-                rowSolid++;
-            } else if (red + green + blue > 725 || alpha == 0) {
-                rowSolid++;
+                let newRowColor = 999;
+
+                if (red + green + blue < 10 || alpha == 0) {
+                    solidPixelsInRow++;
+                    newRowColor = red + green + blue;
+                } else if (red + green + blue > 725 || alpha == 0) {
+                    solidPixelsInRow++;
+                    newRowColor = red + green + blue;
+                }
+
+                if (rowColor < 0) {
+                    rowColor = newRowColor;
+                } else {
+                    if (Math.abs(newRowColor - rowColor) < 10) {
+                        rowColor = newRowColor;
+                    } else {
+                        solidPixelsInRow = -1;
+                    }
+                }
             }
 
             col++;
             if (col >= smallCanvas.width) {
-                if (rowSolid > Math.floor(SMALL_CANVAS_WIDTH * 0.9)) {
-                    rowsSolid.push(row);
+                if (solidPixelsInRow > Math.floor(SMALL_CANVAS_WIDTH * 0.9)) {
+                    solidRows.push(row);
                 }
 
                 col = 0;
                 row++;
-                rowSolid = 0;
+                solidPixelsInRow = 0;
             }
         }
 
@@ -101,17 +117,17 @@ function cropForMobile(canvas) {
         let solidCenters = 0;
 
         for (let y = 0; y < Math.floor(smallCanvas.height * 0.25); y++) {
-            if (rowsSolid.includes(y)) {
+            if (solidRows.includes(y)) {
                 solidBorders++;
             }
         }
         for (let y = Math.floor(smallCanvas.height * 0.75); y < smallCanvas.height; y++) {
-            if (rowsSolid.includes(y)) {
+            if (solidRows.includes(y)) {
                 solidBorders++;
             }
         }
         for (let y = Math.floor(smallCanvas.height * 0.25); y < Math.floor(smallCanvas.height * 0.75); y++) {
-            if (rowsSolid.includes(y)) {
+            if (solidRows.includes(y)) {
                 solidCenters++;
             }
         }
@@ -119,24 +135,24 @@ function cropForMobile(canvas) {
         if (solidBorders > solidCenters * 3) {
             // detected screenshot, find inside image boundaries
             let topVal = 0;
-            for (let y = 0; y < rowsSolid.length - 1; y++) {
-                if (rowsSolid[y + 1] < rowsSolid[y] + 5) {
+            for (let y = 0; y < solidRows.length - 1; y++) {
+                if (solidRows[y + 1] < solidRows[y] + Math.floor(SMALL_CANVAS_WIDTH / 10)) {
                     topVal = y + 1;
                 } else {
                     break;
                 }
             }
             let botVal = 0;
-            for (let y = rowsSolid.length - 1; y > 1; y--) {
-                if (rowsSolid[y - 1] > rowsSolid[y] - 5) {
+            for (let y = solidRows.length - 1; y > 1; y--) {
+                if (solidRows[y - 1] > solidRows[y] - Math.floor(SMALL_CANVAS_WIDTH / 5)) {
                     botVal = y - 1;
                 } else {
                     break;
                 }
             }
 
-            let topRow = rowsSolid[topVal];
-            let botRow = rowsSolid[botVal];
+            let topRow = solidRows[topVal];
+            let botRow = solidRows[botVal];
 
             let hScaleFactor = (canvas.height / smallCanvas.height);
             let newHeight = Math.floor((botRow - topRow) * hScaleFactor);
@@ -171,7 +187,10 @@ async function preprocessForHashing(imageElement) {
     return createAndLoadImg(canvas.toDataURL());
 }
 
-async function matchLoadedMedia(imageElement) {
+async function matchLoadedMedia(domImgElement) {
+    // Hold image in hidden element
+    let imageElement = await createAndLoadImg(domImgElement.src);
+
     const preprocessedImageElement = await preprocessForHashing(imageElement);
     const hash = await phash(preprocessedImageElement);
     const hashHex = hash.toHexString();
