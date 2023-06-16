@@ -945,14 +945,16 @@ function doCountTerfs(kind) {
       usersCounted = [];
 
       // Create a copy of the "Who to follow" panel as a basis for the transphobe counter panel
-      var whoToFollowPanelAside = document.querySelector("div[data-testid='sidebarColumn'] div[tabindex='0'] div>aside");
-      var whoToFollowPanel = whoToFollowPanelAside.parentElement.parentElement;
+      var whatsHappeningDiv = document.querySelector("div[data-testid='sidebarColumn'] div[tabindex='0'] div>section[aria-labelledby]");
+      var whatsHappeningPanel = whatsHappeningDiv.parentElement.parentElement;
 
-      if (!whoToFollowPanel) {
+      if (!whatsHappeningPanel || !whatsHappeningPanel.querySelector("a") || whatsHappeningPanel.querySelectorAll("div[tabindex='0'] div>div>div>span").length < 4) {
+        // Not fully loaded
+        setTimeout(() => doCountTerfs(kind), 250);
         return;
       }
 
-      var transphobeCountPanel = whoToFollowPanel.cloneNode(true);
+      var transphobeCountPanel = whatsHappeningPanel.cloneNode(true);
       // Set the id for later reference
       transphobeCountPanel.id = "soupcan-terf-count";
       // Make the panel the right size
@@ -960,37 +962,54 @@ function doCountTerfs(kind) {
       // Change the heading
       transphobeCountPanel.querySelector("h2 span").innerText = "🥫 " + browser.i18n.getMessage("transphobeCounter");
       // Remove "Show more" link
-      transphobeCountPanel.querySelector("aside>a").remove();
+      transphobeCountPanel.querySelector("a").remove();
       // Remove all entries but the first in the panel
-      transphobeCountPanel.querySelectorAll("aside>div div[data-testid='UserCell']:not(:nth-child(1))").forEach(el => {
-        el.remove();
+      let first = true;
+      transphobeCountPanel.querySelectorAll("section>div div[role='link']").forEach(el => {
+        if (!first) {
+          el.remove();
+        }
+        first = false;
       });
-      // Remove all "Follows you" badges
-      transphobeCountPanel.querySelectorAll("[data-testid='userFollowIndicator']").forEach(el => {
-        el.remove();
-      });
-      // Remove the avatar from the entry
-      transphobeCountPanel.querySelector("div[data-testid='UserCell']>div>div").remove();
-      // Remove the follow button from the entry
-      transphobeCountPanel.querySelector("div[data-testid='UserCell']>div>div>div>div:not([dir]):nth-last-child(2)").remove();
-      // Remove the pointer cursor from the entry
-      transphobeCountPanel.querySelector("div[data-testid='UserCell']").style.cursor = "default";
-      // Remove the UserCell attribute to avoid conflicting queries
-      transphobeCountPanel.querySelector("aside>div div[data-testid='UserCell']").removeAttribute("data-testid");
+      // Remove picture
+      transphobeCountPanel.querySelector("div[style*='padding-bottom']").parentElement.parentElement.remove();
+      // Remove the testid attribute to avoid conflicting queries
+      transphobeCountPanel.querySelector("section>div div[role='link']").removeAttribute("data-testid");
       // Unlink the anchor tags
-      transphobeCountPanel.querySelectorAll("a").forEach(anchor => {
+      transphobeCountPanel.querySelectorAll("div[role='link']").forEach(anchor => {
         anchor.style.cursor = "default";
         anchor.style["pointer-events"] = "none";
       });
-      // Change the label
-      transphobeCountPanel.querySelector("a span").textContent = browser.i18n.getMessage("counterName_" + kind) + " " + browser.i18n.getMessage("scrollInstructions");
+      // Change the labels
+      let labelNumber = 0;
+      console.log("Count",transphobeCountPanel.querySelectorAll("div[tabindex='0'] div>div>div>span"));
+      transphobeCountPanel.querySelectorAll("div[tabindex='0'] div>div>div>span").forEach(el => {
+        switch (labelNumber) {
+          case 0:
+            el.childNodes[0].nodeValue = browser.i18n.getMessage("counterName_" + kind);
+            break;
+          case 1:
+            break;        
+          case 2:
+            el.childNodes[0].nodeValue = browser.i18n.getMessage("scrollInstructions");
+            el.parentElement.parentElement.style.maxWidth = "100%";
+            break;
+          case 3:
+            el.id = "soupcan-count";
+            el.childNodes[0].nodeValue = "0/0";
+            break;
+        }
+        labelNumber++;
+      });
+      console.log("Label number",labelNumber);
+      // transphobeCountPanel.querySelector("div span").textContent = browser.i18n.getMessage("counterName_" + kind) + " " + browser.i18n.getMessage("scrollInstructions");
       // Change the subtext
-      var countSpan = transphobeCountPanel.querySelectorAll("a")[1].querySelector("span");
-      countSpan.id = "soupcan-count";
-      countSpan.textContent = "0/0";
+      // var countSpan = transphobeCountPanel.querySelectorAll("a")[1].querySelector("span");
+      // countSpan.id = "soupcan-count";
+      // countSpan.textContent = "0/0";
 
-      // Add it to the page after the "Who to follow" panel
-      whoToFollowPanel.after(transphobeCountPanel);
+      // Add it to the page before the "What's happening" panel
+      whatsHappeningPanel.before(transphobeCountPanel);
 
       document.querySelectorAll("[data-testid='primaryColumn'] [data-testid='UserCell']").forEach(userCell => {
         countTerf(userCell);
