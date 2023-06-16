@@ -22,11 +22,45 @@
           <p id="top-text" class="fs-5 col-md-12">Welcome to your trans-supportive Twitter extension.</p>
 
           <p id="instructions" class="fs-5 col-md-12 d-none">New to the extension? Check the <a href="https://bethylamine.github.io/library/browser-extension/" target="_blank">extension page</a> on Beth's website for more information. <a href="https://twitter.com/intent/user?screen_name=bethylamine">Follow me</a> on Twitter for the latest updates!</a></p>
+          <div id="tos" class="d-none">
+            <ol>
+              <li>
+                Only report transphobes for these reasons:
+                <ul>
+                  <li>Intentional misgendering</li>
+                  <li>Calling transgender a mental illness or delusion</li>
+                  <li>Using transphobic slurs in a derogatory way</li>
+                  <li>Comparing trans women to blackface</li>
+                  <li>Self-declared 'gender-critical', 'terf' or transphobic</li>
+                </ul>
+                And <b>NOT</b> these reasons alone:
+                <ul>
+                  <li>Being mean to trans people</li>
+                  <li>Disagreeing, e.g. with policies or being ignorant</li>
+                  <li>One tweet alone is not enough, unless it's severe (multiple of the above in one tweet.) It could be a joke in poor taste, or context could be missing. Use the <b>Soupcan > Search Tweets</b> tool to investigate multiple tweets to identify a pattern.</li>
+                </ul>
+              </li>
+              <li>
+                Do not attempt to hack or subvert the service or interfere with its operation for other users in any way.
+              </li>
+              <li>
+                Use the appeal feature to unmark users who are not transphobic, or if you reported them accidentally.
+              </li>
+            </ol>
+
+            <div class="form-check">
+              <input class="form-check-input" name="agree" type="checkbox" value="none" id="agree">
+              <label class="form-check-label" for="agree">
+                I have read and agree to everything here
+              </label>
+            </div>
+          </div>
 
           <button id="download-button" type="button" class="btn btn-primary">Start Download</button>
           <button id="login-button" type="button" class="btn btn-primary d-none">Login with Twitter</button>
           <button id="close-button" type="button" class="btn btn-primary d-none">Close Tab</button>
           <button id="continue-button" type="button" class="btn btn-primary d-none">Continue</button>
+          <button id="continue-button-2" type="button" class="btn btn-primary d-none" disabled>Continue</button>
 
           <div id="progress-bar-wrapper" class="d-none">
             <div id="progress-role" class="progress" role="progressbar" aria-label="Download progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">

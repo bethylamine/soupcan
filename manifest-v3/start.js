@@ -5,6 +5,7 @@ var browser = browser || chrome;
 var downloadButton = document.getElementById("download-button");
 var closeButton = document.getElementById("close-button");
 var continueButton = document.getElementById("continue-button");
+var continueButton2 = document.getElementById("continue-button-2");
 var loginButton = document.getElementById("login-button");
 var progressBarWrapper = document.getElementById("progress-bar-wrapper");
 var progressBar = document.getElementById("progress-bar");
@@ -12,10 +13,16 @@ var progressRole = document.getElementById("progress-role");
 var topText = document.getElementById("top-text");
 var instructions = document.getElementById("instructions");
 var header = document.getElementById("header");
+var tos = document.getElementById("tos");
+var agree = document.getElementById("agree");
 
 downloadButton.addEventListener("click", startDownload);
 closeButton.addEventListener("click", () => window.close());
 continueButton.addEventListener("click", goToLogin);
+continueButton2.addEventListener("click", goToEnd);
+agree.addEventListener("change", () => {
+  continueButton2.disabled = !agree.checked;
+})
 loginButton.addEventListener("click", launchTwitterLogin)
 
 const params = new Proxy(new URLSearchParams(window.location.search), {
@@ -27,6 +34,8 @@ if (params.download) {
 }
 
 var result = {};
+
+let twitterPopup;
 
 async function startDownload() {
   progressBarWrapper.classList.remove("d-none");
@@ -62,10 +71,16 @@ function makeid(length) {
   return result;
 }
 
+function popupWindow(url, windowName, win, w, h) {
+  const y = win.top.outerHeight / 2 + win.top.screenY - ( h / 2);
+  const x = win.top.outerWidth / 2 + win.top.screenX - ( w / 2);
+  return win.open(url, windowName, `toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=${w}, height=${h}, top=${y}, left=${x}`);
+}
+
 function launchTwitterLogin() {
   var state = makeid(30);
   var url = "https://twitter.com/i/oauth2/authorize?response_type=code&client_id=VGs4NXk4c19MR3M3bFYwNGlhdDA6MTpjaQ&redirect_uri=https%3A%2F%2Fapi.beth.lgbt%2Fextension-login&scope=tweet.read+users.read+offline.access&state=" + state + "&code_challenge=challenge&code_challenge_method=plain"
-  window.open(url);
+  twitterPopup = popupWindow(url, "twitterLogin", window, 500, 700);
 
   checkLogin(state);
 }
@@ -84,7 +99,10 @@ async function checkLogin(state) {
         browser.storage.local.set({
           "state": state
         });
-        goToEnd();
+        if (twitterPopup) {
+          twitterPopup.close();
+        }
+        goToAcceptTos();
       } else if (resp == "false") {
         // all bad
       } else {
@@ -107,18 +125,25 @@ function goToLogin() {
   continueButton.classList.add("d-none");
 }
 
+function goToAcceptTos() {
+  header.innerText = "Terms of Service";
+  topText.innerHTML = "Please read the following carefully, failure to do so may result in being banned.";
+  tos.classList.remove("d-none");
+  loginButton.classList.add("d-none");
+  continueButton.classList.add("d-none");
+  continueButton2.classList.remove("d-none");
+}
+
 function goToEnd() {
   header.innerText = "You're all set!";
   topText.innerHTML = "Note: If you're on Firefox, make sure you give the extension permission to access twitter either through Manage Extension or 'Always Allow on twitter.com':<br/><br/><img src='images/ff-perms1.png'/><img src='images/ff-perms2.png'/><br/><br/>You're ready to start enjoying your new Twitter experience. You may close this page now.";
   closeButton.classList.remove("d-none");
   instructions.classList.remove("d-none");
-  loginButton.classList.add("d-none");
-  continueButton.classList.add("d-none");
+
 }
 
 function showDownloadResult() {
   progressBarWrapper.classList.add("d-none");
-  var number = Object.keys(result).length;
   topText.innerText = `Success! The database was loaded.`;
   header.innerText = "Results";
   continueButton.classList.remove("d-none");
