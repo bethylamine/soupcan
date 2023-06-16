@@ -209,19 +209,19 @@ async function safeCheckImage(imgEl, callback) {
     return;
   }
 
-  // try {
+  try {
     // Mark it pending until we have a result
     imageContainer.setAttribute("wiawbe-content-match", "pending");
 
     await checkImage(imgEl, callback);
-  // }
-  //  catch (error) {
-  //   console.log(error);
-  //   imageContainer.setAttribute("wiawbe-content-match", "");
-  //   if (callback) {
-  //     callback();
-  //   }
-  // }
+  }
+   catch (error) {
+    console.log(error);
+    imageContainer.setAttribute("wiawbe-content-match", "error");
+    if (callback) {
+      callback();
+    }
+  }
 }
 
 async function checkImage(imgEl, callback) {
@@ -239,13 +239,14 @@ async function checkImage(imgEl, callback) {
     return;
   }
 
+  let imgCacheKey = getImageKey(imgEl.src);
+
   // Check for transphobic imagery
   if (imgEl.src.includes("/media") ||
       imgEl.src.includes("/tweet_video_thumb") ||
       imgEl.src.includes("ext_tw_video_thumb") ||
       imgEl.src.includes("amplify_video_thumb")) {
 
-    let imgCacheKey = getImageKey(imgEl.src);
     if (imgCacheKey in content_match_cache) {
       // already processed
       const cacheVal = content_match_cache[imgCacheKey];
