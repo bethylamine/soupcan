@@ -90,6 +90,11 @@ class CombinedBloomFilter {
     }
 }
 
+const SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS = [
+    SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS_1,
+    SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS_2
+]
+
 const shinigami = new CombinedBloomFilter();
 shinigami.parts = [];
 for (let bloomFilter of SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS) {

@@ -17,7 +17,8 @@
             "image-hash-comparator.js",
             "awesome-notifications/index.var.js",
             "media-matching.js",
-            "shinigami_eyes_data.js",
+            "shinigami_eyes_data1.js",
+            "shinigami_eyes_data2.js",
             "shinigami.js",
             "wiawbot.js"
         ],
