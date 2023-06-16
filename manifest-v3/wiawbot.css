@@ -87,6 +87,12 @@ body {
     font-weight: bold !important;
 }
 
+/* When marked in Shinigami Eyes */
+.wiaw-label-transphobe-se, a.wiaw-label-transphobe-se, div.wiaw-label-transphobe-se {
+    color: var(--wiawBotTransphobic) !important;
+    font-weight: bold !important;
+}
+
 .wiaw-label-appealed, a.wiaw-label-appealed, div.wiaw-label-appealed {
     color: var(--wiawBotAppealed) !important;
 }

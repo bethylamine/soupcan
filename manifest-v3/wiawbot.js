@@ -558,10 +558,10 @@ function hash(string) {
 }
 
 async function processDiv(div, markArea = false, depth = -1) {
-  var div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<\/span><\/div>.*$/gs, "$1");
+  var div_identifier = div.innerHTML.replace(/^.*?>[@⊗⊖⊡]([A-Za-z0-9_]+)<\/span><\/div>.*$/gs, "$1");
 
   if (!div_identifier) {
-    div_identifier = div.innerHTML.replace(/^.*?>@([A-Za-z0-9_]+)<.*$/gs, "$1");
+    div_identifier = div.innerHTML.replace(/^.*?>[@⊗⊖⊡]([A-Za-z0-9_]+)<.*$/gs, "$1");
     if (!div_identifier) {
       return;
     }
@@ -588,6 +588,7 @@ async function processDiv(div, markArea = false, depth = -1) {
       div.classList.add(hasLabelToApply);
       div.classList.add(labelToApply);
       div.setAttribute("data-wiawbeidentifier", div_identifier);
+      applySymbols(div);
     }
   } else {
     div.classList.remove(hasLabelToApply);
@@ -635,22 +636,12 @@ function addReasonToUserNameDiv(div) {
   }
 }
 
-async function identifierRed(identifier) {
-  var dbEntry = await getDatabaseEntry(identifier);
-  if (dbEntry) {
-    if (dbEntry["label"].includes("transphobe")) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 async function getDatabaseEntry(identifier) {
   var hashedIdentifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
 
   var databaseEntry = database["entries"][hashedIdentifier];
   var localEntry = localEntries[hashedIdentifier];
+  var isTransphobeInShinigamiEyes = shinigami.test(identifier);
 
   var finalEntry = databaseEntry;
 
@@ -678,9 +669,36 @@ async function getDatabaseEntry(identifier) {
     // Report was accepted
     finalEntry = databaseEntry;
   }
+  if (!!databaseEntry && databaseEntry["label"] == "transphobe" && !!localEntry && localEntry["label"] == "transphobe-se") {
+    // Shinigami Eyes report was accepted
+    finalEntry = databaseEntry;
+  }
   if (!!databaseEntry && databaseEntry["label"] == "appealed" && !!localEntry && localEntry["label"] == "local-appeal") {
     // Appeal was accepted
     finalEntry = databaseEntry;
+  }
+
+  if (!finalEntry) {
+    if (isTransphobeInShinigamiEyes) {
+      // Create an entry to show they are marked in Shinigami
+      finalEntry = {
+        "screen_name": identifier,
+        "label": "transphobe-se",
+        "reason": "Detected by Shinigami Eyes",
+        "time": Date.now()
+      };
+
+      localEntries[hashedIdentifier] = finalEntry;
+      saveLocalEntries();
+
+      // Report to server
+      try {
+        var fetchUrl = "https://api.beth.lgbt/report-shinigami?screen_name=" + identifier;
+        doFetch(fetchUrl);
+      } catch (error) {
+        // ignore
+      }
+    }
   }
   
   return finalEntry;
@@ -770,19 +788,25 @@ async function processLink(a) {
   }
 }
 
-function applySymbols(linkEl) {
-  var innerSpan = linkEl.querySelector("span");
-  if (innerSpan) {
-    if (innerSpan.childNodes.length === 1 && innerSpan.childNodes[0].nodeType === 3) {
-      // leaf node
-      if (innerSpan.innerText.includes("@")) {
-        // has @ symbol (username)
-        if (linkEl.className.includes("label-transphobe")) {
-          innerSpan.innerText = innerSpan.innerText.replace(/@/, "⊗");
-        } else if (linkEl.className.includes("label-local-transphobe")) {
-          innerSpan.innerText = innerSpan.innerText.replace(/@/, "⊖");
-        } else if (linkEl.className.includes("label-local-appeal")) {
-          innerSpan.innerText = innerSpan.innerText.replace(/@/, "⊡");
+function applySymbols(element) {
+  if (!cbUseSymbols) {
+    return;
+  }
+  const innerSpans = element.querySelectorAll("span");
+  for (let innerSpan of innerSpans) {
+    if (innerSpan) {
+      if (innerSpan.childNodes.length === 1 && innerSpan.childNodes[0].nodeType === 3) {
+        // leaf node
+        if (innerSpan.innerText.includes("@")) {
+          // has @ symbol (username)
+          let textNode = innerSpan.childNodes[0]
+          if (element.className.includes("label-transphobe")) {
+            textNode.nodeValue = innerSpan.innerText.replace(/@/, "⊗");
+          } else if (element.className.includes("label-local-transphobe")) {
+            textNode.nodeValue = innerSpan.innerText.replace(/@/, "⊖");
+          } else if (element.className.includes("label-local-appeal")) {
+            textNode.nodeValue = innerSpan.innerText.replace(/@/, "⊡");
+          }
         }
       }
     }
@@ -1206,7 +1230,7 @@ async function checkForDatabaseUpdates() {
 async function doFetch(url) {
   return new Promise((resolve, reject) => {
     function callback(response) {
-      if (response["status"] == 200) {
+      if ([200, 201, 202].includes(response["status"])) {
         resolve(response);
       } else {
         reject(response);
@@ -1294,7 +1318,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       // see if they're already reported
       const dbEntry = await getDatabaseEntry(identifier);
-      if (dbEntry && dbEntry["label"] && dbEntry["label"] == "transphobe") {
+      if (dbEntry && dbEntry["label"] && dbEntry["label"].startsWith("transphobe")) {
         notifier.alert(browser.i18n.getMessage("userAlreadyRed", [identifier]));
         return false;
       } else {

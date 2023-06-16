@@ -46,7 +46,7 @@
         }
     },
     "userAlreadyRed": {
-        "message": "@$ID$ is already souped! 🍅🥫",
+        "message": "@$ID$ is already reported, there is no need to report again. 🍅🥫",
         "description": "Error message when you try to report someone who is already marked.",
         "placeholders": {
             "id" : {

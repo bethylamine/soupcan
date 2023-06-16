@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.9.3",
+    "version": "0.10.0",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -12,7 +12,15 @@
     "content_scripts": [{
         "all_frames": true,
         "css": ["awesome-notifications/style.css", "wiawbot.css"],
-        "js": ["dist/imagehash-web.min.js", "image-hash-comparator.js", "awesome-notifications/index.var.js", "media-matching.js", "wiawbot.js"],
+        "js": [
+            "dist/imagehash-web.min.js",
+            "image-hash-comparator.js",
+            "awesome-notifications/index.var.js",
+            "media-matching.js",
+            "shinigami_eyes_data.js",
+            "shinigami.js",
+            "wiawbot.js"
+        ],
         "matches": ["*://*.twitter.com/*" ]
     }],
     "action": {
