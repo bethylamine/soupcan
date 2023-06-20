@@ -33,3 +33,11 @@
 #dark-mode-example .text.text-gray {
     color: rgb(139, 152, 165);
 }
+
+.tab-content {
+    min-width: 380px;
+}
+
+.list-group {
+    overflow: hidden;
+}
