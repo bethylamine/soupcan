@@ -961,8 +961,10 @@ function doCountTerfs(kind) {
       transphobeCountPanel.querySelector("div").style["min-height"] = "0";
       // Change the heading
       transphobeCountPanel.querySelector("h2 span").innerText = "🥫 " + browser.i18n.getMessage("transphobeCounter");
-      // Remove "Show more" link
-      transphobeCountPanel.querySelector("a").remove();
+      // Remove links
+      for (let linkEl of transphobeCountPanel.querySelectorAll("a")) {
+        linkEl.remove();
+      }
       // Remove all entries but the first in the panel
       let first = true;
       transphobeCountPanel.querySelectorAll("section>div div[role='link']").forEach(el => {
@@ -982,7 +984,6 @@ function doCountTerfs(kind) {
       });
       // Change the labels
       let labelNumber = 0;
-      console.log("Count",transphobeCountPanel.querySelectorAll("div[tabindex='0'] div>div>div>span"));
       transphobeCountPanel.querySelectorAll("div[tabindex='0'] div>div>div>span").forEach(el => {
         switch (labelNumber) {
           case 0:
@@ -1001,7 +1002,24 @@ function doCountTerfs(kind) {
         }
         labelNumber++;
       });
-      console.log("Label number",labelNumber);
+      // Remove unnecessary labels
+      let textDivsToRemove = [];
+      for (let textDiv of transphobeCountPanel.querySelectorAll("div[tabindex='0'] div>div>div>div")) {
+        let allChildNodes = true;
+        for (let textChildDiv of textDiv.childNodes) {
+          if (textChildDiv.nodeType !== 3) {
+            allChildNodes = false;
+          }
+        }
+        if (allChildNodes) {
+          textDivsToRemove.push(textDiv);
+        }
+      }
+
+      for (let textDivToRemove of textDivsToRemove) {
+        textDivToRemove.remove();
+      }
+
       // transphobeCountPanel.querySelector("div span").textContent = browser.i18n.getMessage("counterName_" + kind) + " " + browser.i18n.getMessage("scrollInstructions");
       // Change the subtext
       // var countSpan = transphobeCountPanel.querySelectorAll("a")[1].querySelector("span");

@@ -1,6 +1,6 @@
 "use strict";
 
-const MAX_MATCH_DISTANCE = 8;
+const MAX_MATCH_DISTANCE = 12;
 
 function createCanvas(width, height) {
     const canvas = document.createElement("canvas");
@@ -79,15 +79,7 @@ function cropForMobile(canvas) {
                 const blue = imageData[i + 2];
                 const alpha = imageData[i + 3];
 
-                let newRowColor = 999;
-
-                if (red + green + blue < 10 || alpha == 0) {
-                    solidPixelsInRow++;
-                    newRowColor = red + green + blue;
-                } else if (red + green + blue > 725 || alpha == 0) {
-                    solidPixelsInRow++;
-                    newRowColor = red + green + blue;
-                }
+                let newRowColor = red + green + blue + alpha;
 
                 if (rowColor < 0) {
                     rowColor = newRowColor;
@@ -207,7 +199,7 @@ async function matchLoadedMedia(domImgElement) {
             if (distance <= MAX_MATCH_DISTANCE) {
                 // Found a match
                 return matchResult(database["media_matching_data"][dbHashHex])
-            }
+            } 
         }
         return noMatch();
     }
