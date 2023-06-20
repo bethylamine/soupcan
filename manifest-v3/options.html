@@ -10,33 +10,38 @@
     <script src="theme.js"></script>
   </head>
   <body>
-    <main class="d-flex flex-nowrap vh-100">
-      <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style="width: 280px; max-width: 40%;">
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-          <img class="bi pe-none me-2" src="icon32.png" alt="Soupcan Logo"/>
-          <span class="fs-4">Soupcan Options</span>
-        </a>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto">
-          <li class="nav-item">
-            <a class="nav-link text-white active" id="general-tab" data-bs-toggle="tab" href="#general" role="tab" aria-controls="home" aria-selected="true">
-              General
-            </a>
-          </li>
-          <li>
-            <a class="nav-link text-white" id="media-masking-tab" data-bs-toggle="tab" href="#media-masking" role="tab" aria-controls="media-masking" aria-selected="false">
-              Content masking
-            </a>
-          </li>
-          <li>
-            <a class="nav-link text-white" id="accessibility-tab" data-bs-toggle="tab" href="#accessibility" role="tab" aria-controls="accessibility" aria-selected="false">
-              Accessibility
-            </a>
-          </li>
-        </ul>
-      </div>
 
-      <div class="d-flex flex-column p-4 w-100">
+      <nav class="navbar navbar-expand-md navbar-dark bg-dark" style="z-index:999">
+        <div class="navbar-brand">
+          <img class="img-fluid" src="icon32.png" alt="Soupcan Logo"/>
+          <span class="fs-4">Soupcan Options</span>
+        </div>
+        <button class="navbar-toggler ml-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link text-white active" id="general-tab" data-bs-toggle="tab" href="#general" role="tab" aria-controls="home" aria-selected="true">
+                General
+              </a>
+            </li>
+            <li>
+              <a class="nav-link text-white" id="media-masking-tab" data-bs-toggle="tab" href="#media-masking" role="tab" aria-controls="media-masking" aria-selected="false">
+                Content masking
+              </a>
+            </li>
+            <li>
+              <a class="nav-link text-white" id="accessibility-tab" data-bs-toggle="tab" href="#accessibility" role="tab" aria-controls="accessibility" aria-selected="false">
+                Accessibility
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="container">
+
+      <div class="d-flex flex-column">
         <div class="tab-content" id="myTabContent">
 
           <!-- General options tab -->
@@ -105,7 +110,6 @@
               </div>
             </div>  
           </div>
-
           <!-- Accessibility tab -->
           <div class="tab-pane fade" id="accessibility" role="tabpanel" aria-labelledby="accessibility-tab">
             <h1>Accessibility</h1>
@@ -144,10 +148,10 @@
             </ul>
           </div>
         </div>
-
+        </div>
 
       </div>
-    </main>
+
 
     <script src="bootstrap.bundle.min.js"></script>
     <script src="options.js" type="module"></script>
