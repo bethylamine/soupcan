@@ -31,18 +31,18 @@ function start() {
 
     if (v.state) {
       handleFetch("https://api.beth.lgbt/moderation/is-moderator?state=" + v.state, response => {
-      if (response["text"] == "1") {
-        browser.storage.local.set({
-          "is_moderator": true
-        });
-        if (!iOS()) {
-          browser.contextMenus.create({
-            id: "moderate",
-            title: browser.i18n.getMessage("actionModerateReports"),
-            contexts: ["page"]
+        if (response["text"] == "1") {
+          browser.storage.local.set({
+            "is_moderator": true
           });
+          if (!iOS()) {
+            browser.contextMenus.create({
+              id: "moderate",
+              title: browser.i18n.getMessage("actionModerateReports"),
+              contexts: ["page"]
+            });
+          }
         }
-      }
       });
     }
   });
