@@ -86,6 +86,7 @@ function cropForMobile(canvas) {
                 } else {
                     if (Math.abs(newRowColor - rowColor) < 10) {
                         rowColor = newRowColor;
+                        solidPixelsInRow++;
                     } else {
                         solidPixelsInRow = -1;
                     }
@@ -134,17 +135,22 @@ function cropForMobile(canvas) {
                     break;
                 }
             }
-            let botVal = 0;
-            for (let y = solidRows.length - 1; y > 1; y--) {
-                if (solidRows[y - 1] > solidRows[y] - Math.floor(SMALL_CANVAS_WIDTH / 5)) {
-                    botVal = y - 1;
-                } else {
-                    break;
-                }
-            }
 
             let topRow = solidRows[topVal];
-            let botRow = solidRows[botVal];
+            
+            let botVal = 0;
+            let botRow = Math.floor(smallCanvas.height) - topRow;
+
+            if (solidRows.includes(Math.floor(smallCanvas.height) - 1)) {
+                for (let y = solidRows.length - 1; y > 1; y--) {
+                    if (solidRows[y - 1] > solidRows[y] - Math.floor(SMALL_CANVAS_WIDTH / 5)) {
+                        botVal = y - 1;
+                    } else {
+                        break;
+                    }
+                }
+                botRow = solidRows[botVal];
+            }
 
             let hScaleFactor = (canvas.height / smallCanvas.height);
             let newHeight = Math.floor((botRow - topRow) * hScaleFactor);
