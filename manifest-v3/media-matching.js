@@ -1,6 +1,6 @@
 "use strict";
 
-const MAX_MATCH_DISTANCE = 10;
+const MAX_MATCH_DISTANCE = 8;
 
 function createCanvas(width, height) {
     const canvas = document.createElement("canvas");
