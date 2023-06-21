@@ -1,6 +1,6 @@
 "use strict";
 
-const MAX_MATCH_DISTANCE = 12;
+const MAX_MATCH_DISTANCE = 10;
 
 function createCanvas(width, height) {
     const canvas = document.createElement("canvas");
@@ -137,7 +137,7 @@ function cropForMobile(canvas) {
             }
 
             let topRow = solidRows[topVal];
-            
+
             let botVal = 0;
             let botRow = Math.floor(smallCanvas.height) - topRow;
 
