@@ -125,7 +125,7 @@ function cropForMobile(canvas) {
             }
         }
 
-        if (solidBorders > solidCenters * 3) {
+        if (solidRows.length > Math.floor(smallCanvas.height * 0.1) && solidBorders > solidCenters * 3) {
             // detected screenshot, find inside image boundaries
             let topVal = 0;
             for (let y = 0; y < solidRows.length - 1; y++) {
