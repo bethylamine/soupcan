@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.10.11",
+    "version": "0.10.12",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -49,5 +49,9 @@
           "resources": ["images/*.png"],
           "matches": ["*://*.twitter.com/*"]
         }
-    ]
+    ],
+    "//": "Chrome extension ID: hcneafegcikghlbibfmlgadahjfckonj",
+    "externally_connectable": {
+        "matches": ["*://*.twitter.com/*"]
+    }
 }

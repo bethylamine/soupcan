@@ -69,6 +69,11 @@ function start() {
     title: browser.i18n.getMessage("actionOptions"),
     contexts: ["page"]
   });
+  browser.menus.create({
+    id: "test-bb-message",
+    title: "(Debug) Send test BlueBlocker message",
+    contexts: ["page"]
+  });
 
   browser.contextMenus.onClicked.addListener(function (info, tab) {
     var action = info.menuItemId;
@@ -111,7 +116,25 @@ function start() {
       browser.tabs.create({
         url: getURL('options.html')
       });
-    }else if (action == "moderate") {
+    } else if (action == "test-bb-message") {
+      let blueBlockerExtensionIds = [
+        "jgpjphkbfjhlbajmmcoknjjppoamhpmm", // Chrome
+        "{119be3f3-597c-4f6a-9caf-627ee431d374}" // Firefox
+      ];
+
+      for (let extensionId of blueBlockerExtensionIds) {
+        browser.runtime.sendMessage(
+          extensionId,
+          {
+            action: "BLOCK",
+            user_id: "0000000000",
+            name: "NameNotAvailable",
+            screen_name: "test_transphobe_screen_name",
+            reason: "Test transphobe report"
+          }
+        );
+      }
+    } else if (action == "moderate") {
       browser.tabs.create({
         url: getURL('moderation.html')
       });

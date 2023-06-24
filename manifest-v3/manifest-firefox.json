@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.10.11",
+    "version": "0.10.12",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -46,8 +46,12 @@
     "permissions": ["contextMenus", "menus", "storage", "unlimitedStorage"],
     "browser_specific_settings": {
         "gecko": {
+            "//": "Firefox extension ID:",
             "id": "soupcan@beth.lgbt",
             "strict_min_version": "109.0"
         }
+    },
+    "externally_connectable": {
+        "matches": ["*://*.twitter.com/*"]
     }
 }
