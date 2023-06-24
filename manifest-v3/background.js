@@ -32,11 +32,13 @@ function start() {
           browser.storage.local.set({
             "is_moderator": true
           });
-          browser.contextMenus.create({
-            id: "moderate",
-            title: browser.i18n.getMessage("actionModerateReports"),
-            contexts: ["page"]
-          });
+          if (!iOS()) {
+            browser.contextMenus.create({
+              id: "moderate",
+              title: browser.i18n.getMessage("actionModerateReports"),
+              contexts: ["page"]
+            });
+          }
         }
       });
     }
@@ -46,44 +48,41 @@ function start() {
     browser.menus = browser.contextMenus;
   }
 
-  browser.contextMenus.create({
-    id: "report-transphobe",
-    title: browser.i18n.getMessage("actionReportTransphobe"),
-    contexts: ["link"],
-    targetUrlPatterns: ["*://*.twitter.com/*"]
-  });
-  browser.contextMenus.create({
-    id: "appeal-label",
-    title: browser.i18n.getMessage("actionAppealLabel"),
-    contexts: ["link"],
-    targetUrlPatterns: ["*://*.twitter.com/*"]
-  });
-  browser.contextMenus.create({
-    id: "search-tweets",
-    title: browser.i18n.getMessage("searchTweets"),
-    contexts: ["link"],
-    targetUrlPatterns: ["*://*.twitter.com/*"]
-  });
-  browser.menus.create({
-    id: "run-setup",
-    title: browser.i18n.getMessage("actionRerunSetup"),
-    contexts: ["page"]
-  });
-  browser.menus.create({
-    id: "update-database",
-    title: browser.i18n.getMessage("actionUpdateDatabase"),
-    contexts: ["page"]
-  });
-  browser.menus.create({
-    id: "options",
-    title: browser.i18n.getMessage("actionOptions"),
-    contexts: ["page"]
-  });
-  browser.menus.create({
-    id: "test-bb-message",
-    title: "(Debug) Send test BlueBlocker message",
-    contexts: ["page"]
-  });
+  if (!iOS()) {
+    browser.contextMenus.create({
+      id: "report-transphobe",
+      title: browser.i18n.getMessage("actionReportTransphobe"),
+      contexts: ["link"],
+      targetUrlPatterns: ["*://*.twitter.com/*"]
+    });
+    browser.contextMenus.create({
+      id: "appeal-label",
+      title: browser.i18n.getMessage("actionAppealLabel"),
+      contexts: ["link"],
+      targetUrlPatterns: ["*://*.twitter.com/*"]
+    });
+    browser.contextMenus.create({
+      id: "search-tweets",
+      title: browser.i18n.getMessage("searchTweets"),
+      contexts: ["link"],
+      targetUrlPatterns: ["*://*.twitter.com/*"]
+    });
+    browser.menus.create({
+      id: "run-setup",
+      title: browser.i18n.getMessage("actionRerunSetup"),
+      contexts: ["page"]
+    });
+    browser.menus.create({
+      id: "update-database",
+      title: browser.i18n.getMessage("actionUpdateDatabase"),
+      contexts: ["page"]
+    });
+    browser.menus.create({
+      id: "options",
+      title: browser.i18n.getMessage("actionOptions"),
+      contexts: ["page"]
+    });
+  }
 
   browser.contextMenus.onClicked.addListener(function (info, tab) {
     var action = info.menuItemId;
@@ -126,21 +125,6 @@ function start() {
       browser.tabs.create({
         url: getURL('options.html')
       });
-    } else if (action == "test-bb-message") {
-
-
-      for (let extensionId of blueBlockerExtensionIds) {
-        browser.runtime.sendMessage(
-          extensionId,
-          {
-            action: "BLOCK",
-            user_id: "0000000000",
-            name: "NameNotAvailable",
-            screen_name: "test_transphobe_screen_name",
-            reason: "Test transphobe report"
-          }
-        );
-      }
     } else if (action == "moderate") {
       browser.tabs.create({
         url: getURL('moderation.html')
