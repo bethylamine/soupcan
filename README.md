@@ -9,7 +9,7 @@ Thank you to [@VehpuS](https://twitter.com/VehpuS) for helping me get started wi
 ## Features
 
 * Highlight users on WhatIsAWomanBot's transphobe database
-* Report transphobes/appeal unfair labels
+* Report transphobes/appeal unfair labels (not available on iOS Safari)
 * Hide media/tweets from transphobes behind interstitials (prevent shock posting)
 
 ## Future Features
