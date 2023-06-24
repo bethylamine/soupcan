@@ -84,7 +84,7 @@ function cropForMobile(canvas) {
                 if (rowColor < 0) {
                     rowColor = newRowColor;
                 } else {
-                    if (Math.abs(newRowColor - rowColor) < 10) {
+                    if (Math.abs(newRowColor - rowColor) < 30) {
                         rowColor = newRowColor;
                         solidPixelsInRow++;
                     } else {

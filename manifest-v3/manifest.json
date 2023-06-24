@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.10.12",
+    "version": "0.10.13",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -31,7 +31,8 @@
             "32": "icon32.png",
             "48": "icon48.png"
         },
-        "default_title": "Soupcan"
+        "default_title": "Soupcan",
+        "default_popup": "options.html"
     },
     "icons": {
         "16": "icon16.png",
@@ -43,7 +44,7 @@
         "open_in_tab": true,
         "page": "options.html"
      },
-    "permissions": ["contextMenus", "storage", "unlimitedStorage"],
+    "permissions": ["contextMenus", "storage", "management", "unlimitedStorage"],
     "web_accessible_resources": [
         {
           "resources": ["images/*.png"],
