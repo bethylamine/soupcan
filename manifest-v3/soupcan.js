@@ -1,13 +1,5 @@
 var browser = browser || chrome;
 
-var database = {
-  "entries": {}
-}
-
-var localEntries = {
-
-};
-
 var options = {
 
 };
@@ -37,13 +29,9 @@ function init() {
     }
   });
   
-  browser.storage.local.get(["database", "local_entries", "state", "is_moderator"], v => {
-    if (v.database) {
-      database = v.database || {};
-    }
-    if (v.local_entries) {
-      localEntries = v.local_entries || {};
-    }
+  initDatabase();
+
+  browser.storage.local.get(["state", "is_moderator"], v => {
     if (v.state) {
       state = v.state;
     }
@@ -1472,6 +1460,15 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     }
   } else if (message.action == "update-database") {
     updateDatabase(sendResponse, database["version"]);
+  } else if (message.action == "check-transphobe") {
+    let dbEntry = getDatabaseEntry(message.screen_name);
+
+    return {
+      screen_name: dbEntry.identifier,
+      status: dbEntry.includes("transphobe") ? "transphobic" : "normal",
+      reason: dbEntry.reason,
+      reported_at: dbEntry.time
+    }
   }
   return false;
 });

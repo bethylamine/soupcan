@@ -1,6 +1,16 @@
 var browser = browser || chrome;
 
+importScripts("shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js");
+
+const blueBlockerExtensionIds = [
+  "jgpjphkbfjhlbajmmcoknjjppoamhpmm", // Chrome
+  "{119be3f3-597c-4f6a-9caf-627ee431d374}", // Firefox
+  "jphoieibjlbddgacnjpfjphmpambipfl" // local testing
+];
+
 function start() {
+  initDatabase();
+
   browser.storage.local.get(["database", "state"], v => {
     if (!v.database) {
       if (!v.state) {
@@ -117,10 +127,7 @@ function start() {
         url: getURL('options.html')
       });
     } else if (action == "test-bb-message") {
-      let blueBlockerExtensionIds = [
-        "jgpjphkbfjhlbajmmcoknjjppoamhpmm", // Chrome
-        "{119be3f3-597c-4f6a-9caf-627ee431d374}" // Firefox
-      ];
+
 
       for (let extensionId of blueBlockerExtensionIds) {
         browser.runtime.sendMessage(
@@ -146,6 +153,20 @@ function getURL(path) {
   return chrome.runtime.getURL(path);
 }
 
+async function doFetch(url) {
+  return new Promise((resolve, reject) => {
+    function callback(response) {
+      if ([200, 201, 202].includes(response["status"])) {
+        resolve(response);
+      } else {
+        reject(response);
+      }
+    };
+
+    handleFetch(url, callback);
+  });
+}
+
 const handleFetch = async (url, sendResponse) => {
   const response = await fetch(url);
   var json = "";
@@ -164,6 +185,31 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true;
   }
   return false;
+});
+
+// BlueBlocker integration
+browser.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+  console.log("Got external message",message,sender);
+  if (blueBlockerExtensionIds.includes(sender.id)) {
+    if (message.action == "check_twitter_user") {
+      if (message.screen_name) {
+        let dbEntry = await getDatabaseEntry(message.screen_name);
+
+        if (dbEntry) {
+          sendResponse({
+            status: dbEntry["label"].includes("transphobe") ? "transphobic" : "normal",
+            reason: dbEntry.reason,
+            reported_at: dbEntry.time
+          });
+        } else {
+          sendResponse({
+            screen_name: message.screen_name,
+            status: "not_found",
+          });
+        }
+      }
+    }
+  }
 });
 
 start();

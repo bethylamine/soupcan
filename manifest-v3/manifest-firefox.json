@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.10.13",
+    "version": "0.11.0",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -11,7 +11,7 @@
     },
     "content_scripts": [{
         "all_frames": true,
-        "css": ["awesome-notifications/style.css", "wiawbot.css"],
+        "css": ["awesome-notifications/style.css", "soupcan.css"],
         "js": [
             "dist/imagehash-web.min.js",
             "awesome-notifications/index.var.js",
@@ -20,7 +20,8 @@
             "shinigami_eyes_data1.js",
             "shinigami_eyes_data2.js",
             "shinigami.js",
-            "wiawbot.js"
+            "database.js",
+            "soupcan.js"
         ],
         "matches": ["*://*.twitter.com/*" ]
     }],
@@ -51,8 +52,5 @@
             "id": "soupcan@beth.lgbt",
             "strict_min_version": "109.0"
         }
-    },
-    "externally_connectable": {
-        "matches": ["*://*.twitter.com/*"]
     }
 }
