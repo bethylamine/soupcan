@@ -14,8 +14,8 @@
         "css": ["awesome-notifications/style.css", "wiawbot.css"],
         "js": [
             "dist/imagehash-web.min.js",
-            "image-hash-comparator.js",
             "awesome-notifications/index.var.js",
+            "util.js",
             "media-matching.js",
             "shinigami_eyes_data1.js",
             "shinigami_eyes_data2.js",

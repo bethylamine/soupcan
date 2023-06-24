@@ -581,7 +581,13 @@ async function processDiv(div, markArea = false, depth = -1) {
 
   if (database_entry) {
     div.wiawLabel = database_entry["label"]
-    div.wiawReason =  database_entry["reason"];
+    div.wiawReason = database_entry["reason"];
+    if (database_entry["time"]) {
+      if (database_entry["time"] < 99900000000) {
+        database_entry["time"] *= 1000; // convert seconds to milliseconds
+      }
+      div.wiawReason += " " + timeSince(database_entry["time"]);
+    }
     var labelToApply = labelPrefix + div.wiawLabel;
     if (div.wiawLabel && !div.classList.contains(labelToApply)) {
       div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
