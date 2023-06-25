@@ -8,6 +8,19 @@ const blueBlockerExtensionIds = [
   "jphoieibjlbddgacnjpfjphmpambipfl" // local testing
 ];
 
+function iOS() {
+  return [
+    'iPad Simulator',
+    'iPhone Simulator',
+    'iPod Simulator',
+    'iPad',
+    'iPhone',
+    'iPod'
+  ].includes(navigator.platform) || navigator.maxTouchPoints &&
+  navigator.maxTouchPoints > 2 &&
+  /MacIntel/.test(navigator.platform);
+}
+
 function start() {
   initDatabase();
 
