@@ -76,7 +76,11 @@ function buildTable(reports) {
     var reportsCell = document.createElement("td");
     const reports = grouped_reports[screenName];
     var listTag = document.createElement("ol");
+    let totalTrust = 0;
+
     reports.forEach(report => {
+      report.reporter_trust = Math.floor(report.reporter_trust);
+      
       var listEl = document.createElement("li");
       if (report.reporter_screen_name == "(not recorded)") {
         report.reporter_screen_name = "Twitter user " + report.reporter_id;
@@ -95,6 +99,11 @@ function buildTable(reports) {
       } else {
         badgeClasses += "bg-dark";
       }
+
+      if (report.reporter_trust > 0) {
+        totalTrust += report.reporter_trust;
+      }
+
       listEl.innerHTML = "Report from <a href='https://twitter.com/" + report.reporter_screen_name + "'>@" + report.reporter_screen_name + "</a> <span class='trust " + badgeClasses + "'>" + report.reporter_trust + "%</span> at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
       if (report["user_reason"]) {
         var preEl = document.createElement("pre");
@@ -105,6 +114,11 @@ function buildTable(reports) {
       listTag.appendChild(listEl);
     });
     reportsCell.appendChild(listTag);
+
+    if (totalTrust >= 100) {
+      console.log("Total trust is ", totalTrust);
+      row.classList.add("table-success");
+    }
 
     row.appendChild(reportsCell);
     var actionsCell = document.createElement("td");
