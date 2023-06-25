@@ -23,6 +23,7 @@ function linkify(inputText) {
 
 function buildTable(reports) {
   document.getElementById("reports-table").innerHTML = `
+      <h4 id='reports-table-heading'></h4>
       <table class="table">
       <thead>
         <tr>
@@ -35,6 +36,8 @@ function buildTable(reports) {
       </tbody>
     </table>`;
   var grouped_reports = {};
+
+  document.getElementById("reports-table-heading").innerText = reports.length + " reports shown.";
 
   reports.forEach(report => {
     var screenName = report["transphobe_screen_name"];
@@ -71,7 +74,7 @@ function buildTable(reports) {
   report_screen_names.forEach(screenName => {
     var row = document.createElement("tr");
     var screenNameCell = document.createElement("td");
-    screenNameCell.innerHTML = "<a target='_blank' href='https://twitter.com/" + screenName + "'>@" + screenName + "</a>";
+    screenNameCell.innerHTML = "<a target='_blank' class='badge bg-danger' href='https://twitter.com/" + screenName + "'>@" + screenName + "</a>";
     row.appendChild(screenNameCell);
     var reportsCell = document.createElement("td");
     const reports = grouped_reports[screenName];
@@ -80,7 +83,7 @@ function buildTable(reports) {
 
     reports.forEach(report => {
       report.reporter_trust = Math.floor(report.reporter_trust);
-      
+
       var listEl = document.createElement("li");
       if (report.reporter_screen_name == "(not recorded)") {
         report.reporter_screen_name = "Twitter user " + report.reporter_id;
