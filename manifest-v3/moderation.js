@@ -81,7 +81,21 @@ function buildTable(reports) {
       if (report.reporter_screen_name == "(not recorded)") {
         report.reporter_screen_name = "Twitter user " + report.reporter_id;
       }
-      listEl.innerHTML = "Report from @" + report.reporter_screen_name + " at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
+      let badgeClasses = "badge ";
+      if (report.reporter_trust < 0) {
+        badgeClasses += "bg-danger";
+      } else if (report.reporter_trust <= 20) {
+        badgeClasses += "bg-secondary";
+      } else if (report.reporter_trust <= 40) {
+        badgeClasses += "bg-info text-dark";
+      } else if (report.reporter_trust <= 50) {
+        badgeClasses += "bg-primary";
+      } else if (report.reporter_trust <= 100) {
+        badgeClasses += "bg-success";
+      } else {
+        badgeClasses += "bg-dark";
+      }
+      listEl.innerHTML = "Report from <a href='https://twitter.com/" + report.reporter_screen_name + "'>@" + report.reporter_screen_name + "</a> <span class='trust " + badgeClasses + "'>" + report.reporter_trust + "%</span> at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
       if (report["user_reason"]) {
         var preEl = document.createElement("pre");
         preEl.style.whiteSpace = "pre-wrap";
