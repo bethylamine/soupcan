@@ -1,10 +1,12 @@
+import { shinigami } from "./shinigami.js";
+
 let database = {
   "entries": {}
 }
 
 let localEntries = {};
 
-function initDatabase() {
+export function initDatabase() {
   browser.storage.local.get(["database", "local_entries"], v => {
     if (v.database) {
       let new_database = v.database || {};
@@ -18,7 +20,7 @@ function initDatabase() {
   });
 }
 
-function hash(identifier) {
+export function hash(identifier) {
   let string = identifier + ":" + database["salt"];
   const utf8 = new TextEncoder().encode(string);
   return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
@@ -30,7 +32,7 @@ function hash(identifier) {
   });
 }
 
-async function getDatabaseEntry(identifier) {
+export async function getDatabaseEntry(identifier) {
   var hashedIdentifier = await hash(identifier.toLowerCase());
 
   var databaseEntry = database["entries"][hashedIdentifier];

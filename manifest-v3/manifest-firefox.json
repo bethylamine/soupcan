@@ -7,7 +7,8 @@
     "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
     "host_permissions": ["*://*.twitter.com/*"],
     "background": {
-        "scripts": ["background.js"]
+        "scripts": ["background.js"],
+		"type": "module"
     },
     "content_scripts": [{
         "all_frames": true,
@@ -48,7 +49,6 @@
     "permissions": ["contextMenus", "menus", "storage", "unlimitedStorage"],
     "browser_specific_settings": {
         "gecko": {
-            "//": "Firefox extension ID:",
             "id": "soupcan@beth.lgbt",
             "strict_min_version": "109.0"
         }

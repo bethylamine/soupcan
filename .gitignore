@@ -2,3 +2,4 @@
 **/.pem
 packaged_extensions/
 local/
+*.zip

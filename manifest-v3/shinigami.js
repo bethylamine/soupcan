@@ -1,3 +1,5 @@
+import { SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS_1 } from "./shinigami_eyes_data1.js";
+import { SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS_2 } from "./shinigami_eyes_data2.js";
 "use strict";
 
 function fnv_1a(v, seed) {
@@ -95,7 +97,7 @@ const SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS = [
     SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS_2
 ]
 
-const shinigami = new CombinedBloomFilter();
+export const shinigami = new CombinedBloomFilter();
 shinigami.parts = [];
 for (let bloomFilter of SHINIGAMI_EYES_TRANSPHOBE_BLOOM_FILTERS) {
     shinigami.parts.push(

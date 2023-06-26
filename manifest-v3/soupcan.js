@@ -1,3 +1,6 @@
+import { shinigami } from "./shinigami.js";
+import { initDatabase, hash, getDatabaseEntry } from "./database.js";
+
 var browser = browser || chrome;
 
 var options = {
