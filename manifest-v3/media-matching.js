@@ -68,6 +68,7 @@ function cropForMobile(canvas) {
         let row = 0;
         let col = 0
         let solidPixelsInRow = 0;
+        let solidRowPixelDiffs = 0;
         let solidRows = [];
         let rowColor = -1;
 
@@ -84,11 +85,17 @@ function cropForMobile(canvas) {
                 if (rowColor < 0) {
                     rowColor = newRowColor;
                 } else {
-                    if (Math.abs(newRowColor - rowColor) < 30) {
+                    let sufficientlyDifferent = Math.abs(newRowColor - rowColor) < 5;
+                    rowColor = newRowColor;
+
+                    if (sufficientlyDifferent) {
                         rowColor = newRowColor;
                         solidPixelsInRow++;
                     } else {
-                        solidPixelsInRow = -1;
+                        solidRowPixelDiffs++;
+                        if (solidRowPixelDiffs > SMALL_CANVAS_WIDTH * 0.1) {
+                            solidPixelsInRow = -1;
+                        }
                     }
                 }
             }
@@ -125,12 +132,16 @@ function cropForMobile(canvas) {
             }
         }
 
-        if (solidRows.length > Math.floor(smallCanvas.height * 0.1) && solidBorders > solidCenters * 3) {
+        if (solidRows.length > Math.floor(smallCanvas.height * 0.1) && solidBorders > solidCenters * 0.5) {
             // detected screenshot, find inside image boundaries
             let topVal = 0;
+            let jumped = false;
             for (let y = 0; y < solidRows.length - 1; y++) {
                 if (solidRows[y + 1] < solidRows[y] + Math.floor(SMALL_CANVAS_WIDTH / 10)) {
                     topVal = y + 1;
+                } else if (solidRows[y + 1] < solidRows[y] + Math.floor(SMALL_CANVAS_WIDTH / 5) && !jumped) {
+                    topVal = y + 1;
+                    jumped = true;
                 } else {
                     break;
                 }
