@@ -1284,8 +1284,8 @@ async function updateDatabase(sendResponse, version) {
   var fetchUrl = "https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset.json"
 
   notifier.async(
-    doFetch(fetchUrl),
-    async response => {
+    new Promise(async resolve => {
+      let response = await doFetch(fetchUrl);
       try {
         if (response["status"] != 200) {
           throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
@@ -1312,11 +1312,14 @@ async function updateDatabase(sendResponse, version) {
         database["downloading"] = false;
         notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [error.msg]));
         sendResponse("Fail");
-        return true;
       }
-    },
-    response => { notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [response["status"]])); },
-    browser.i18n.getMessage("databaseDownloading")
+      resolve();
+    }),
+    response => {}, // success
+    response => {
+      notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [response["status"]]));
+    }, // failure
+    browser.i18n.getMessage("databaseDownloading") // loading message
   );
 
   return true;
