@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.11.6",
+    "version": "0.11.7",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -48,7 +48,6 @@
     "permissions": ["contextMenus", "menus", "storage", "unlimitedStorage"],
     "browser_specific_settings": {
         "gecko": {
-            "//": "Firefox extension ID:",
             "id": "soupcan@beth.lgbt",
             "strict_min_version": "109.0"
         }
