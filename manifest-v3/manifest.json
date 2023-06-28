@@ -1,13 +1,13 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.11.6",
+    "version": "0.11.7",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
     "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
     "host_permissions": ["*://*.twitter.com/*"],
     "background": {
-        "service_worker": "background.js"
+        "scripts": ["shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js", "background.js"]
     },
     "content_scripts": [{
         "all_frames": true,
@@ -45,12 +45,11 @@
         "open_in_tab": true,
         "page": "options.html"
      },
-    "permissions": ["contextMenus", "storage", "unlimitedStorage"],
-    "web_accessible_resources": [
-        {
-          "resources": ["images/*.png"],
-          "matches": ["*://*.twitter.com/*"]
+    "permissions": ["contextMenus", "menus", "storage", "unlimitedStorage"],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "soupcan@beth.lgbt",
+            "strict_min_version": "109.0"
         }
-    ],
-    "//": "Chrome extension ID: hcneafegcikghlbibfmlgadahjfckonj"
+    }
 }

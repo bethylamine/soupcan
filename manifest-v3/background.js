@@ -1,7 +1,5 @@
 var browser = browser || chrome;
 
-importScripts("shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js");
-
 const blueBlockerExtensionIds = [
   "jgpjphkbfjhlbajmmcoknjjppoamhpmm", // Chrome
   "{119be3f3-597c-4f6a-9caf-627ee431d374}", // Firefox
@@ -209,4 +207,7 @@ browser.runtime.onMessageExternal.addListener(async (message, sender, sendRespon
   }
 });
 
+if ('function' === typeof(importScripts)) {
+  importScripts("shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js");
+}
 start();
