@@ -7,7 +7,7 @@
     "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
     "host_permissions": ["*://*.twitter.com/*"],
     "background": {
-        "scripts": ["background.js"]
+        "scripts": ["shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js", "background.js"]
     },
     "content_scripts": [{
         "all_frames": true,

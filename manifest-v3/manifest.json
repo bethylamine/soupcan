@@ -51,6 +51,5 @@
           "resources": ["images/*.png"],
           "matches": ["*://*.twitter.com/*"]
         }
-    ],
-    "//": "Chrome extension ID: hcneafegcikghlbibfmlgadahjfckonj"
+    ]
 }
