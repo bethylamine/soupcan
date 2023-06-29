@@ -140,6 +140,8 @@ function loadOptions() {
           maskAllTransphobeContentRadio.checked = true;
           break;
       }
+    } else {
+      maskNoneRadio.checked = true;
     }
 
     if (options["hideAds"]) {
