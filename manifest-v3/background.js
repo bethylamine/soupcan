@@ -193,7 +193,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // BlueBlocker integration
-browser.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+browser.runtime.onMessageExternal.addListener((m, s, r) => { (async (message, sender, sendResponse) => {
   console.log("Got external message",message,sender);
   if (blueBlockerExtensionIds.includes(sender.id)) {
     if (message.action == "check_twitter_user") {
@@ -215,7 +215,7 @@ browser.runtime.onMessageExternal.addListener(async (message, sender, sendRespon
       }
     }
   }
-});
+})(m, s, r); return true });
 
 if ('function' === typeof(importScripts)) {
   importScripts("shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js");
