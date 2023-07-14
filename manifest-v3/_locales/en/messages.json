@@ -94,7 +94,7 @@
         }
     },
     "genericError": {
-        "message": "Error: $ERROR",
+        "message": "Error: $ERROR$",
         "description": "Generic error message when something fails.",
         "placeholders": {
             "error" : {
