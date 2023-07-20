@@ -96,50 +96,60 @@ function start() {
   }
 
   browser.contextMenus.onClicked.addListener(function (info, tab) {
-    var action = info.menuItemId;
-    if (action == "appeal-label") {
-      browser.tabs.sendMessage(tab.id, {
-        "action": "appeal-label",
-        "url": info.linkUrl
-      }).then((response) => {
-        // ?
-      });
-    } else if (action == "report-transphobe") {
-      browser.tabs.sendMessage(tab.id, {
-        "action": "report-transphobe",
-        "url": info.linkUrl
-      }).then((response) => {
-        // ?
-      });
-    } else if (action == "search-tweets") {
-      browser.tabs.sendMessage(tab.id, {
-        "action": "search-tweets",
-        "url": info.linkUrl
-      }).then((response) => {
-        if (response) {
-          browser.tabs.create({
-            url: "https://twitter.com/search?q=from%3A" + response + "%20(trans%20OR%20transgender%20OR%20gender%20OR%20TERF%20OR%20cis)&src=typed_query&f=top"
-          });
-        }
-      });
-    } else if (action == "run-setup") {
-      browser.tabs.create({
-        url: getURL('start.html')
-      });
-    } else if (action == "update-database") {
-      browser.tabs.sendMessage(tab.id, {
-        "action": "update-database"
-      }).then((response) => {
-        // ?
-      });
-    } else if (action == "options") {
-      browser.tabs.create({
-        url: getURL('options.html')
-      });
-    } else if (action == "moderate") {
-      browser.tabs.create({
-        url: getURL('moderation.html')
-      });
+    switch (info.menuItemId) {
+      case "appeal-label":
+        browser.tabs.sendMessage(tab.id, {
+          "action": "appeal-label",
+          "url": info.linkUrl
+        }).then((response) => {
+          // ?
+        });
+        break;
+      case "moderate":
+        browser.tabs.create({
+          url: getURL('moderation.html')
+        });
+        break;
+      case "options":
+        browser.tabs.create({
+          url: getURL('options.html')
+        });
+        break;
+      case "report-transphobe":
+        browser.tabs.sendMessage(tab.id, {
+          "action": "report-transphobe",
+          "url": info.linkUrl
+        }).then((response) => {
+          // ?
+        });
+        break;
+      case "run-setup":
+        browser.tabs.create({
+          url: getURL('start.html')
+        });
+        break;
+      case "search-tweets":
+        browser.tabs.sendMessage(tab.id, {
+          "action": "search-tweets",
+          "url": info.linkUrl
+        }).then((response) => {
+          if (response) {
+            browser.tabs.create({
+              url: "https://twitter.com/search?q=from%3A" + response + "%20(trans%20OR%20transgender%20OR%20gender%20OR%20TERF%20OR%20cis)&src=typed_query&f=top"
+            });
+          }
+        });
+        break;
+      case "update-database":
+        browser.tabs.sendMessage(tab.id, {
+          "action": "update-database"
+        }).then((response) => {
+          // ?
+        });
+        break;
+      default:
+        // Do not process.
+        break;
     }
   });
 }
@@ -183,7 +193,7 @@ browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // BlueBlocker integration
-browser.runtime.onMessageExternal.addListener(async (message, sender, sendResponse) => {
+browser.runtime.onMessageExternal.addListener((m, s, r) => { (async (message, sender, sendResponse) => {
   console.log("Got external message",message,sender);
   if (blueBlockerExtensionIds.includes(sender.id)) {
     if (message.action == "check_twitter_user") {
@@ -205,7 +215,7 @@ browser.runtime.onMessageExternal.addListener(async (message, sender, sendRespon
       }
     }
   }
-});
+})(m, s, r); return true });
 
 if ('function' === typeof(importScripts)) {
   importScripts("shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js");

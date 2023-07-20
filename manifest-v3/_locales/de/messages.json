@@ -90,7 +90,7 @@
         }
     },
     "genericError": {
-        "message": "Error: $ERROR",
+        "message": "Error: $ERROR$",
         "description": "Allgemeiner Fehler wenn irgendwas fehlschlägt.",
         "placeholders": {
             "error" : {
