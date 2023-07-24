@@ -5,7 +5,7 @@
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
     "homepage_url": "https://bethylamine.github.io/library/browser-extension/",
-    "host_permissions": ["*://*.twitter.com/*"],
+    "host_permissions": ["*://*.twitter.com/*", "*://*.x.com/*"],
     "background": {
         "scripts": ["shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js", "background.js"]
     },
@@ -23,7 +23,7 @@
             "database.js",
             "soupcan.js"
         ],
-        "matches": ["*://*.twitter.com/*" ]
+        "matches": ["*://*.twitter.com/*", "*://*.x.com/*"]
     }],
     "action": {
         "default_icon": {
