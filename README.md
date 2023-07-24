@@ -24,8 +24,9 @@ If you have any cool ideas, please pop a message into the **Issues** tab, or mes
 
 [![Available from Chrome Webstore](chrome.png)](https://chrome.google.com/webstore/detail/soupcan/hcneafegcikghlbibfmlgadahjfckonj)
 [![Available from Firefox Add-ons](firefox.png)](https://addons.mozilla.org/en-US/firefox/addon/soupcan/)
+[<img src="safari.svg" height="58" alt="Available on the Apple App Store for Safari"/>](https://apps.apple.com/au/app/soupcan/id6450102617)
 
-For Edge, Opera, Arc and other Chromium-based browsers, use the Chrome version.
+For Edge, Opera, Arc and other Chromium-based browsers, use the Chrome version. For Safari (iOS and macOS) use the version in the Apple App Store.
 
 ## Conflicts
 
