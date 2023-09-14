@@ -859,6 +859,8 @@ function getLocalUrl(url) {
     "/compose/",
     "/following",
     "/followers",
+    "/followers_you_follow",
+    "/verified_followers",
     "/creator-subscriptions",
     "/explore/",
     "/i/",
@@ -869,6 +871,10 @@ function getLocalUrl(url) {
     "/help/",
     "/troubleshooting/",
     "/analytics",
+    "/topics",
+    "/lists",
+    "/hidden",
+    "/quotes",
     "/retweets"
   ]
 
