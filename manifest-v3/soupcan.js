@@ -1070,7 +1070,7 @@ function updatePage() {
       linkedDiv.classList.remove("wiawbe-linked");
     }
 
-    if (lastUpdatedUrl.endsWith("/followers")) {
+    if (lastUpdatedUrl.endsWith("/followers") || lastUpdatedUrl.endsWith("/followers_you_follow") || lastUpdatedUrl.endsWith("/verified_followers")) {
       doCountTerfs("followers");
     } else if (lastUpdatedUrl.endsWith("/following")) {
       doCountTerfs("following");
