@@ -822,6 +822,10 @@ function getIdentifier(localUrl) {
     identifier = identifier.substr(0, identifier.indexOf("/"));
   }
 
+  if (identifier.includes("?")) {
+    identifier = identifier.substr(0, identifier.indexOf("?"));
+  }
+
   return identifier.toLowerCase();
 }
 
