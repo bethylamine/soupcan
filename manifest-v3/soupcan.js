@@ -863,6 +863,8 @@ function getLocalUrl(url) {
     "/compose/",
     "/following",
     "/followers",
+    "/followers_you_follow",
+    "/verified_followers",
     "/creator-subscriptions",
     "/explore/",
     "/i/",
@@ -873,6 +875,10 @@ function getLocalUrl(url) {
     "/help/",
     "/troubleshooting/",
     "/analytics",
+    "/topics",
+    "/lists",
+    "/hidden",
+    "/quotes",
     "/retweets"
   ]
 
@@ -1068,7 +1074,7 @@ function updatePage() {
       linkedDiv.classList.remove("wiawbe-linked");
     }
 
-    if (lastUpdatedUrl.endsWith("/followers")) {
+    if (lastUpdatedUrl.endsWith("/followers") || lastUpdatedUrl.endsWith("/followers_you_follow") || lastUpdatedUrl.endsWith("/verified_followers")) {
       doCountTerfs("followers");
     } else if (lastUpdatedUrl.endsWith("/following")) {
       doCountTerfs("following");
