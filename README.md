@@ -14,7 +14,7 @@ Thank you to [@VehpuS](https://twitter.com/VehpuS) for helping me get started wi
 
 ## Future Features
 
-* Be able to highlight hashtags / report transphobic hashtags
+* Ability to highlight hashtags / report transphobic hashtags
 * Add trans-supportive library tool to provide you with relevant trans-supportive information you can reply with quickly
 * Auto-suggest debunking sources
 
