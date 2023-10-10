@@ -64,19 +64,19 @@ function start() {
       id: "report-transphobe",
       title: browser.i18n.getMessage("actionReportTransphobe"),
       contexts: ["link"],
-      targetUrlPatterns: ["*://*.twitter.com/*"]
+      targetUrlPatterns: ["*://*.twitter.com/*", "*://*.x.com/*"]
     });
     browser.contextMenus.create({
       id: "appeal-label",
       title: browser.i18n.getMessage("actionAppealLabel"),
       contexts: ["link"],
-      targetUrlPatterns: ["*://*.twitter.com/*"]
+      targetUrlPatterns: ["*://*.twitter.com/*", "*://*.x.com/*"]
     });
     browser.contextMenus.create({
       id: "search-tweets",
       title: browser.i18n.getMessage("searchTweets"),
       contexts: ["link"],
-      targetUrlPatterns: ["*://*.twitter.com/*"]
+      targetUrlPatterns: ["*://*.twitter.com/*", "*://*.x.com/*"]
     });
     browser.menus.create({
       id: "run-setup",
