@@ -9,6 +9,7 @@ var state = "";
 var isModerator = false;
 
 var notifier = new AWN();
+var localReasonsCache = {};
 
 var cbTheme = "off";
 var cbUseSymbols = false;
@@ -677,13 +678,24 @@ function getReasoning(identifier) {
   notifier.async(
     new Promise(async resolve => {
       try {
-        let response = await doFetch(fetchUrl);
-        if (response["status"] != 200) {
-          throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
+        var jsonData = "[]";
+
+        if (identifier in localReasonsCache && new Date() - localReasonsCache[identifier][1] < 30000) {
+          jsonData = localReasonsCache[identifier][0];
+        } else {
+          let response = await doFetch(fetchUrl);
+          if (response["status"] != 200) {
+            throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
+          }
+
+          jsonData = response["json"];
+          localReasonsCache[identifier] = [jsonData, new Date()];
         }
 
-        const jsonData = response["json"];
         var listEl = document.createElement("ol");
+
+        var noReasonsSpan = document.createElement("span");
+        noReasonsSpan.innerText = browser.i18n.getMessage("noReasons");
 
         for (let report of jsonData) {
           var when = new Date(report["report_time"] * 1000).toString().replace(/\ ..:.*/g, "").trim();
@@ -695,20 +707,19 @@ function getReasoning(identifier) {
             reason = "with no reason provided";
           }
 
-          console.log(when + ": " + report["reporter_screen_name"] + " reported " + reason);
           var itemEl = document.createElement("li");
           itemEl.innerText = when + ": " + report["reporter_screen_name"] + " reported " + reason;
           listEl.appendChild(itemEl);
         }
 
-        waitForElm("[data-testid='tweetText'], .tweet-body-text").then((elm) => {
+        waitForElm("div[data-testid='DMDrawerHeader'] span").then((elm) => {
           notifier.modal(
             "<div id='soupcan-reasons'></div>",
             'modal-reasons'
           );
           var popupElements = document.getElementsByClassName("awn-popup-modal-reasons");
           var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-          var textColor = window.getComputedStyle(document.querySelector("[data-testid='tweetText'], .tweet-body-text"), null).getPropertyValue("color");
+          var textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
           if (popupElements) {
             for (let el of popupElements) {
               el.style["background-color"] = bodyBackgroundColor;
@@ -716,7 +727,11 @@ function getReasoning(identifier) {
             }
           }
 
-          document.getElementById("soupcan-reasons").appendChild(listEl);
+          if (listEl.childElementCount == 0) {
+            document.getElementById("soupcan-reasons").appendChild(noReasonsSpan);
+          } else {
+            document.getElementById("soupcan-reasons").appendChild(listEl);
+          }
         });
       } catch (error) {
         notifier.alert(browser.i18n.getMessage("serverFailure") + " (" + error.text + ")");
@@ -1481,14 +1496,14 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           }
         }
 
-        waitForElm("[data-testid='tweetText'], .tweet-body-text").then((elm) => {
+        waitForElm("div[data-testid='DMDrawerHeader'] span").then((elm) => {
           notifier.modal(
             browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
             'modal-reason'
           );
           var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
           var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-          var textColor = window.getComputedStyle(document.querySelector("[data-testid='tweetText'], .tweet-body-text"), null).getPropertyValue("color");
+          var textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
           if (popupElements) {
             for (let el of popupElements) {
               el.style["background-color"] = bodyBackgroundColor;

@@ -283,6 +283,7 @@ a.wiawbe-no-underline {
  .awn-popup-modal-reasons {
     font-family: var(--twitter-font-family);
     font-size: 14px;
+    max-width: 800px !important;
  }
 
  .awn-popup-modal-reason a {

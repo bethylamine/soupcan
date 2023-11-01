@@ -238,5 +238,9 @@
     "loadingReasons": {
         "message": "Loading reasons...",
         "description": "Popup message shown to moderators who are waiting for the report reasons to show up."
+    },
+    "noReasons": {
+        "message": "No report reasons found. This could be because they were marked red before the reason feature was created, or before reports were logged.",
+        "description": "Message that shows up to moderators when no reasons appear after they click to see report reasons."
     }
 }
