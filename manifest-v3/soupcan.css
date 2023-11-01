@@ -280,6 +280,11 @@ a.wiawbe-no-underline {
     font-size: 14px;
  }
 
+ .awn-popup-modal-reasons {
+    font-family: var(--twitter-font-family);
+    font-size: 14px;
+ }
+
  .awn-popup-modal-reason a {
     width: 50%;
     float: right;

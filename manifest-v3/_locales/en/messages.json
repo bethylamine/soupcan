@@ -36,7 +36,7 @@
         "description": "Context menu action to change extension options."
     },
     "reportReasonInstructions": {
-        "message": "<h2>🍅 Report @$ID$</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. It's optional, so if it's obvious, feel free to skip it.</p>",
+        "message": "<h2>🍅 Report @$ID$</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. Even if it's obvious please note down what you see, since people can edit their profiles/delete tweets.</p>",
         "description": "Instructions given to the user on providing a report reason.",
         "placeholders": {
             "id" : {
@@ -234,5 +234,9 @@
     "serverFailure": {
         "message": "Server failure",
         "description": "Short popup message that displays when an action was not successfully processed by the Soupcan server"
+    },
+    "loadingReasons": {
+        "message": "Loading reasons...",
+        "description": "Popup message shown to moderators who are waiting for the report reasons to show up."
     }
 }

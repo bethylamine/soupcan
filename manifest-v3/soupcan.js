@@ -545,14 +545,24 @@ function hash(string) {
   });
 }
 
-async function processDiv(div, markArea = false, depth = -1) {
+function getUsernameFromDiv(div) {
   var div_identifier = div.innerHTML.replace(/^.*?>[@⊗⊖⊡]([A-Za-z0-9_]+)<\/span><\/div>.*$/gs, "$1");
 
   if (!div_identifier) {
     div_identifier = div.innerHTML.replace(/^.*?>[@⊗⊖⊡]([A-Za-z0-9_]+)<.*$/gs, "$1");
     if (!div_identifier) {
-      return;
+      return null;
     }
+  }
+
+  return div_identifier
+}
+
+async function processDiv(div, markArea = false, depth = -1) {
+  var div_identifier = getUsernameFromDiv(div);
+
+  if (!div_identifier) {
+    return;
   }
 
   var database_entry = await getDatabaseEntry(div_identifier);
@@ -594,7 +604,7 @@ async function processDiv(div, markArea = false, depth = -1) {
   }
 
   if (div.getAttribute("data-testid") == "UserName") {
-    addReasonToUserNameDiv(div);
+    addReasonToUserNameDiv(div, div_identifier);
   }
 
   if (!div.observer) {
@@ -602,7 +612,7 @@ async function processDiv(div, markArea = false, depth = -1) {
       mutations.forEach(function(mutation) {
 
         if (div.getAttribute("data-testid") == "UserName") {
-          addReasonToUserNameDiv(div);
+          addReasonToUserNameDiv(div, div_identifier);
         }
 
         if (mutation.attributeName == "class") {
@@ -622,12 +632,104 @@ async function processDiv(div, markArea = false, depth = -1) {
   }
 }
 
-function addReasonToUserNameDiv(div) {
+function addReasonToUserNameDiv(div, identifier) {
   if (!/wiawbe-profile-reason/.test(div.innerHTML)) {
     if (div.wiawReason) {
-      div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'>[" + div.wiawReason + "]</span>");
+      var spanContents = "[" + div.wiawReason + "]";
+      div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'></span>");
+      var profileReasonSpan = document.getElementById("wiawbe-profile-reason")
+      profileReasonSpan.innerText = spanContents;
+      if (isModerator) {
+        var reasonAnchor = document.createElement("a");
+        reasonAnchor.href = "javascript:;"
+        reasonAnchor.addEventListener("click", () => getReasoning(identifier));
+        profileReasonSpan.innerText = "";
+        reasonAnchor.innerText = spanContents;
+        profileReasonSpan.appendChild(reasonAnchor);
+      }
     }
   }
+}
+
+function waitForElm(selector) {
+  return new Promise(resolve => {
+      if (document.querySelector(selector)) {
+          return resolve(document.querySelector(selector));
+      }
+
+      const observer = new MutationObserver(mutations => {
+          if (document.querySelector(selector)) {
+              resolve(document.querySelector(selector));
+              observer.disconnect();
+          }
+      });
+
+      observer.observe(document.body, {
+          childList: true,
+          subtree: true
+      });
+  });
+}
+
+function getReasoning(identifier) {
+  var fetchUrl = "https://api.beth.lgbt/moderation/reasons?state=" + state + "&identifier=" + identifier;
+
+  notifier.async(
+    new Promise(async resolve => {
+      try {
+        let response = await doFetch(fetchUrl);
+        if (response["status"] != 200) {
+          throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
+        }
+
+        const jsonData = response["json"];
+        var listEl = document.createElement("ol");
+
+        for (let report of jsonData) {
+          var when = new Date(report["report_time"] * 1000).toString().replace(/\ ..:.*/g, "").trim();
+          var reason = report["reason"];
+          
+          if (reason) {
+            reason = "because: " + reason;
+          } else {
+            reason = "with no reason provided";
+          }
+
+          console.log(when + ": " + report["reporter_screen_name"] + " reported " + reason);
+          var itemEl = document.createElement("li");
+          itemEl.innerText = when + ": " + report["reporter_screen_name"] + " reported " + reason;
+          listEl.appendChild(itemEl);
+        }
+
+        waitForElm("[data-testid='tweetText'], .tweet-body-text").then((elm) => {
+          notifier.modal(
+            "<div id='soupcan-reasons'></div>",
+            'modal-reasons'
+          );
+          var popupElements = document.getElementsByClassName("awn-popup-modal-reasons");
+          var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
+          var textColor = window.getComputedStyle(document.querySelector("[data-testid='tweetText'], .tweet-body-text"), null).getPropertyValue("color");
+          if (popupElements) {
+            for (let el of popupElements) {
+              el.style["background-color"] = bodyBackgroundColor;
+              el.style["color"] = textColor;
+            }
+          }
+
+          document.getElementById("soupcan-reasons").appendChild(listEl);
+        });
+      } catch (error) {
+        notifier.alert(browser.i18n.getMessage("serverFailure") + " (" + error.text + ")");
+        console.log(error);
+      }
+      resolve();
+    }),
+    response => {}, // success
+    response => {
+      notifier.alert(browser.i18n.getMessage("serverFailure") + " (" + error + ")");
+    }, // failure
+    browser.i18n.getMessage("loadingReasons") // loading message
+  );
 }
 
 async function getDatabaseEntry(identifier) {
@@ -1087,7 +1189,7 @@ function updatePage() {
       if (profileReason) {
         var usernameDiv = profileReason.closest("[data-testid='UserName']");
         profileReason.remove();
-        addReasonToUserNameDiv(usernameDiv);
+        addReasonToUserNameDiv(usernameDiv, getUsernameFromDiv(usernameDiv));
       }
     }  
 
@@ -1295,8 +1397,8 @@ async function updateDatabase(sendResponse, version) {
 
   notifier.async(
     new Promise(async resolve => {
-      let response = await doFetch(fetchUrl);
       try {
+        let response = await doFetch(fetchUrl);
         if (response["status"] != 200) {
           throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
         }
@@ -1320,7 +1422,7 @@ async function updateDatabase(sendResponse, version) {
         sendResponse("OK");
       } catch (error) {
         database["downloading"] = false;
-        notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [error.msg]));
+        notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [error.text]));
         sendResponse("Fail");
       }
       resolve();
@@ -1379,46 +1481,48 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           }
         }
 
-        notifier.modal(
-          browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
-          'modal-reason'
-        );
-        var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
-        var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-        var textColor = window.getComputedStyle(document.querySelector("[data-testid='tweetText'], .tweet-body-text"), null).getPropertyValue("color");
-        if (popupElements) {
-          for (let el of popupElements) {
-            el.style["background-color"] = bodyBackgroundColor;
-            el.style["color"] = textColor;
+        waitForElm("[data-testid='tweetText'], .tweet-body-text").then((elm) => {
+          notifier.modal(
+            browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
+            'modal-reason'
+          );
+          var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
+          var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
+          var textColor = window.getComputedStyle(document.querySelector("[data-testid='tweetText'], .tweet-body-text"), null).getPropertyValue("color");
+          if (popupElements) {
+            for (let el of popupElements) {
+              el.style["background-color"] = bodyBackgroundColor;
+              el.style["color"] = textColor;
+            }
           }
-        }
-        var textArea = document.getElementById("wiawbe-reason-textarea");
-        if (textArea) {
-          textArea.style["backgroundColor"] = bodyBackgroundColor;
-          textArea.style["color"] = textColor;
-          textArea.style["border-color"] = textColor;
-          textArea.value = initialReason;
-          textArea.focus();
-        }
-        textArea.after(clonedTweetButton);
+          var textArea = document.getElementById("wiawbe-reason-textarea");
+          if (textArea) {
+            textArea.style["backgroundColor"] = bodyBackgroundColor;
+            textArea.style["color"] = textColor;
+            textArea.style["border-color"] = textColor;
+            textArea.value = initialReason;
+            textArea.focus();
+          }
+          textArea.after(clonedTweetButton);
 
-        clonedTweetButton.addEventListener('click', async function() {
-          textArea.disabled = true;
-          var submitReason = textArea.value;
-          var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
-          awnPopupWrapper.classList.add("awn-hiding");
-          setTimeout(() => awnPopupWrapper.remove(), 300);
-          
-          // Add locally
-          var localKey = await hash(identifier + ":" + database["salt"])
-          localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
+          clonedTweetButton.addEventListener('click', async function() {
+            textArea.disabled = true;
+            var submitReason = textArea.value;
+            var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
+            awnPopupWrapper.classList.add("awn-hiding");
+            setTimeout(() => awnPopupWrapper.remove(), 300);
+            
+            // Add locally
+            var localKey = await hash(identifier + ":" + database["salt"])
+            localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
 
-          saveLocalEntries();
-          
-          updateAllLabels();
-          sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
-        },{once:true});
-        return true;
+            saveLocalEntries();
+            
+            updateAllLabels();
+            sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
+          },{once:true});
+          return true;
+        });
       }
     } catch (error) {
       notifier.alert(browser.i18n.getMessage("genericError", [error]));
@@ -1502,7 +1606,7 @@ function checkForInvalidExtensionContext() {
   } catch (error) {
     if (!contextInvalidated) {
       notifier.confirm(contextInvalidatedMessage, () => location.reload());
-      //awn-popup-confirm
+
       var popupElements = document.getElementsByClassName("awn-popup-confirm");
       var bodyBackgroundColor = document.getElementsByTagName("body")[0].style["background-color"];
       var textColor = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("color");
