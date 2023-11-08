@@ -811,6 +811,10 @@ async function getDatabaseEntry(identifier) {
       }
     }
   }
+
+  if (finalEntry["label"] == "appealed") {
+    return null;
+  }
   
   return finalEntry;
 }
