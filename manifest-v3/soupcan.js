@@ -1481,68 +1481,61 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   
       }
 
-      // see if they're already reported
-      const dbEntry = await getDatabaseEntry(identifier);
-      if (dbEntry && dbEntry["label"] && dbEntry["label"].startsWith("transphobe")) {
-        notifier.alert(browser.i18n.getMessage("userAlreadyRed", [identifier]));
-        return false;
-      } else {
-        var clonedTweetButton = document.querySelector("a[data-testid='SideNav_NewTweet_Button'], #navbar-tweet-button").cloneNode(true);
-        var icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
-        if (icon) {
-          icon.remove();
-        }
-        clonedTweetButton.removeAttribute("href");
-
-        for (const span of clonedTweetButton.querySelectorAll('span')) {
-          if (span.id !== "navbar-tweet-highlight") {
-            span.innerText = browser.i18n.getMessage("sendReportButton");
-          }
-        }
-
-        waitForElm("div[data-testid='DMDrawerHeader'] span").then((elm) => {
-          notifier.modal(
-            browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
-            'modal-reason'
-          );
-          var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
-          var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-          var textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
-          if (popupElements) {
-            for (let el of popupElements) {
-              el.style["background-color"] = bodyBackgroundColor;
-              el.style["color"] = textColor;
-            }
-          }
-          var textArea = document.getElementById("wiawbe-reason-textarea");
-          if (textArea) {
-            textArea.style["backgroundColor"] = bodyBackgroundColor;
-            textArea.style["color"] = textColor;
-            textArea.style["border-color"] = textColor;
-            textArea.value = initialReason;
-            textArea.focus();
-          }
-          textArea.after(clonedTweetButton);
-
-          clonedTweetButton.addEventListener('click', async function() {
-            textArea.disabled = true;
-            var submitReason = textArea.value;
-            var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
-            awnPopupWrapper.classList.add("awn-hiding");
-            setTimeout(() => awnPopupWrapper.remove(), 300);
-            
-            // Add locally
-            var localKey = await hash(identifier + ":" + database["salt"])
-            localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
-
-            saveLocalEntries();
-            
-            updateAllLabels();
-            sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
-          },{once:true});
-          return true;
-        });
+      var clonedTweetButton = document.querySelector("a[data-testid='SideNav_NewTweet_Button'], #navbar-tweet-button").cloneNode(true);
+      var icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
+      if (icon) {
+        icon.remove();
       }
+      clonedTweetButton.removeAttribute("href");
+
+      for (const span of clonedTweetButton.querySelectorAll('span')) {
+        if (span.id !== "navbar-tweet-highlight") {
+          span.innerText = browser.i18n.getMessage("sendReportButton");
+        }
+      }
+
+      waitForElm("div[data-testid='DMDrawerHeader'] span").then((elm) => {
+        notifier.modal(
+          browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
+          'modal-reason'
+        );
+        var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
+        var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
+        var textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
+        if (popupElements) {
+          for (let el of popupElements) {
+            el.style["background-color"] = bodyBackgroundColor;
+            el.style["color"] = textColor;
+          }
+        }
+        var textArea = document.getElementById("wiawbe-reason-textarea");
+        if (textArea) {
+          textArea.style["backgroundColor"] = bodyBackgroundColor;
+          textArea.style["color"] = textColor;
+          textArea.style["border-color"] = textColor;
+          textArea.value = initialReason;
+          textArea.focus();
+        }
+        textArea.after(clonedTweetButton);
+
+        clonedTweetButton.addEventListener('click', async function() {
+          textArea.disabled = true;
+          var submitReason = textArea.value;
+          var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
+          awnPopupWrapper.classList.add("awn-hiding");
+          setTimeout(() => awnPopupWrapper.remove(), 300);
+          
+          // Add locally
+          var localKey = await hash(identifier + ":" + database["salt"])
+          localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
+
+          saveLocalEntries();
+          
+          updateAllLabels();
+          sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
+        },{once:true});
+        return true;
+      });
     } catch (error) {
       notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
