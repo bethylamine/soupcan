@@ -284,3 +284,16 @@ a.wiawbe-no-underline {
     cursor: auto;
     user-select: text;
  }
+
+ table.reasons-table {
+    border-collapse: collapse; /* This ensures that the border is collapsed into a single border */
+    width: 100%; /* Adjust the width as necessary */
+  }
+  
+  table.reasons-table,
+  table.reasons-table th,
+  table.reasons-table td {
+    border: 1px solid black; /* This sets the border color and style */
+    padding: 8px; /* Adjust the padding as necessary */
+  }
+  

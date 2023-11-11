@@ -672,6 +672,13 @@ function waitForElm(selector) {
   });
 }
 
+function linkify(text) {
+  var urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  return text.replace(urlRegex, function(url) {
+    return '<a href="' + url + '">' + url + '</a>';
+  });
+}
+
 function getReasoning(identifier) {
   var fetchUrl = "https://api.beth.lgbt/moderation/reasons?state=" + state + "&identifier=" + identifier;
 
@@ -692,7 +699,23 @@ function getReasoning(identifier) {
           localReasonsCache[identifier] = [jsonData, new Date()];
         }
 
-        var listEl = document.createElement("ol");
+        var reasonsTable = document.createElement("table");
+        reasonsTable.classList.add("reasons-table")
+        var reasonsHeader = document.createElement("thead");
+        var header1 = document.createElement("th");
+        header1.innerText = "When";
+        reasonsHeader.appendChild(header1);
+        var header2 = document.createElement("th");
+        header2.innerText = "Reporter";
+        reasonsHeader.appendChild(header2);
+        var header3 = document.createElement("th");
+        header3.innerText = "Reason";
+        reasonsHeader.appendChild(header3);
+
+        var reasonsBody = document.createElement("tbody")
+
+        reasonsTable.appendChild(reasonsHeader);
+        reasonsTable.appendChild(reasonsBody);
 
         var noReasonsSpan = document.createElement("span");
         noReasonsSpan.innerText = browser.i18n.getMessage("noReasons");
@@ -701,15 +724,27 @@ function getReasoning(identifier) {
           var when = new Date(report["report_time"] * 1000).toString().replace(/\ ..:.*/g, "").trim();
           var reason = report["reason"];
           
-          if (reason) {
-            reason = "because: " + reason;
-          } else {
-            reason = "with no reason provided";
+          if (!reason) {
+            reason = "(no reason provided)";
           }
 
-          var itemEl = document.createElement("li");
-          itemEl.innerText = when + ": " + report["reporter_screen_name"] + " reported " + reason;
-          listEl.appendChild(itemEl);
+          var rowEl = document.createElement("tr");
+
+          var timestampEl = document.createElement("td");
+          var reporterEl = document.createElement("td");
+          var reasonEl = document.createElement("td");
+
+          timestampEl.innerText = when;
+          var reporterAnchor = document.createElement("a");
+          reporterAnchor.href = "https://twitter.com/" + report["reporter_screen_name"];
+          reporterAnchor.innerText = report["reporter_screen_name"];
+          reporterEl.appendChild(reporterAnchor);
+          reasonEl.innerHTML = linkify(reason);
+
+          rowEl.appendChild(timestampEl);
+          rowEl.appendChild(reporterEl);
+          rowEl.appendChild(reasonEl);
+          reasonsBody.appendChild(rowEl);
         }
 
         waitForElm("div[data-testid='DMDrawerHeader'] span").then((elm) => {
@@ -727,10 +762,10 @@ function getReasoning(identifier) {
             }
           }
 
-          if (listEl.childElementCount == 0) {
+          if (rowEl.childElementCount == 0) {
             document.getElementById("soupcan-reasons").appendChild(noReasonsSpan);
           } else {
-            document.getElementById("soupcan-reasons").appendChild(listEl);
+            document.getElementById("soupcan-reasons").appendChild(reasonsTable);
           }
         });
       } catch (error) {
@@ -812,7 +847,7 @@ async function getDatabaseEntry(identifier) {
     }
   }
 
-  if (finalEntry["label"] == "appealed") {
+  if (finalEntry && finalEntry["label"] == "appealed") {
     return null;
   }
   
