@@ -154,7 +154,7 @@ function applyOptions() {
 var content_match_cache = {};
 
 function getImageKey(url) {
-  return url.split('?')[0].replace("https://pbs.twimg.com/media/", "");
+  return url.split('?')[0];
 }
 
 var mediaMatching = false;
@@ -238,14 +238,11 @@ async function checkImage(imgEl, callback) {
     if (imgCacheKey in content_match_cache) {
       // already processed
       const cacheVal = content_match_cache[imgCacheKey];
-      if (cacheVal["imgHash"]) {
-        imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
-        imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
-        imgEl.setAttribute("data-soupcan-imghash", cacheVal["imgHash"]);
-        imgEl.setAttribute("data-soupcan-border-total", "none");
-        callback();
-        return;
-      }
+      imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
+      imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
+      imgEl.setAttribute("data-soupcan-border-total", "none");
+      callback();
+      return;
     }
 
     // check with pHash
@@ -640,14 +637,12 @@ function addReasonToUserNameDiv(div, identifier) {
       div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'></span>");
       var profileReasonSpan = document.getElementById("wiawbe-profile-reason")
       profileReasonSpan.innerText = spanContents;
-      if (isModerator) {
-        var reasonAnchor = document.createElement("a");
-        reasonAnchor.href = "javascript:;"
-        reasonAnchor.addEventListener("click", () => getReasoning(identifier));
-        profileReasonSpan.innerText = "";
-        reasonAnchor.innerText = spanContents;
-        profileReasonSpan.appendChild(reasonAnchor);
-      }
+      var reasonAnchor = document.createElement("a");
+      reasonAnchor.href = "javascript:;"
+      reasonAnchor.addEventListener("click", () => getReasoning(identifier));
+      profileReasonSpan.innerText = "";
+      reasonAnchor.innerText = spanContents;
+      profileReasonSpan.appendChild(reasonAnchor);
     }
   }
 }
@@ -731,14 +726,20 @@ function getReasoning(identifier) {
           var rowEl = document.createElement("tr");
 
           var timestampEl = document.createElement("td");
+          timestampEl.classList.add("nowrap");
           var reporterEl = document.createElement("td");
           var reasonEl = document.createElement("td");
 
           timestampEl.innerText = when;
-          var reporterAnchor = document.createElement("a");
-          reporterAnchor.href = "https://twitter.com/" + report["reporter_screen_name"];
-          reporterAnchor.innerText = report["reporter_screen_name"];
-          reporterEl.appendChild(reporterAnchor);
+          var reporter = report["reporter_screen_name"]
+          if (reporter == "redacted") {
+            reporterEl.innerText = reporter;
+          } else {
+            var reporterAnchor = document.createElement("a");
+            reporterAnchor.href = "https://twitter.com/" + report["reporter_screen_name"];
+            reporterAnchor.innerText = reporter;
+            reporterEl.appendChild(reporterAnchor);
+          }
           reasonEl.innerHTML = linkify(reason);
 
           rowEl.appendChild(timestampEl);
@@ -762,7 +763,7 @@ function getReasoning(identifier) {
             }
           }
 
-          if (rowEl.childElementCount == 0) {
+          if (reasonsBody.childElementCount == 0) {
             document.getElementById("soupcan-reasons").appendChild(noReasonsSpan);
           } else {
             document.getElementById("soupcan-reasons").appendChild(reasonsTable);

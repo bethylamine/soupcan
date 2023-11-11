@@ -290,10 +290,14 @@ a.wiawbe-no-underline {
     width: 100%; /* Adjust the width as necessary */
   }
   
-  table.reasons-table,
-  table.reasons-table th,
-  table.reasons-table td {
+table.reasons-table,
+table.reasons-table th,
+table.reasons-table td {
     border: 1px solid black; /* This sets the border color and style */
     padding: 8px; /* Adjust the padding as necessary */
-  }
-  
+    word-break: normal;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
