@@ -93,6 +93,11 @@ function start() {
       title: browser.i18n.getMessage("actionOptions"),
       contexts: ["page"]
     });
+    browser.menus.create({
+      id: "wiawbot",
+      title: browser.i18n.getMessage("actionWiawbot"),
+      contexts: ["page"]
+    });
   }
 
   browser.contextMenus.onClicked.addListener(function (info, tab) {
@@ -113,6 +118,11 @@ function start() {
       case "options":
         browser.tabs.create({
           url: getURL('options.html')
+        });
+        break;
+      case "wiawbot":
+        browser.tabs.create({
+          url: getURL('wiawbot.html')
         });
         break;
       case "report-transphobe":

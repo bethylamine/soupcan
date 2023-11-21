@@ -35,13 +35,17 @@
         "message": "⚙️ Options",
         "description": "Context menu action to change extension options."
     },
+    "actionWiawbot": {
+        "message": "🤖 Chat with WhatIsAWomanBot",
+        "description": "Context menu action to chat with WhatIsAWomanBot."
+    },
     "reportReasonInstructions": {
         "message": "<h2>🍅 Report @$ID$</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. Even if it's obvious please note down what you see, since people can edit their profiles/delete tweets.</p>",
         "description": "Instructions given to the user on providing a report reason.",
         "placeholders": {
-            "id" : {
-                "content" : "$1",
-                "example" : "bethylamine"
+            "id": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -49,9 +53,9 @@
         "message": "@$ID$ is already reported, there is no need to report again. 🍅🥫",
         "description": "Error message when you try to report someone who is already marked.",
         "placeholders": {
-            "id" : {
-                "content" : "$1",
-                "example" : "bethylamine"
+            "id": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -65,7 +69,7 @@
     },
     "invalidReportTarget": {
         "message": "Invalid report target!",
-        "description":"Error message shown when trying to report something that is not a valid target (user)."
+        "description": "Error message shown when trying to report something that is not a valid target (user)."
     },
     "invalidAppealTarget": {
         "message": "Invalid appeal target",
@@ -87,9 +91,9 @@
         "message": "Database update failed! $ERROR$",
         "description": "Error message when the database update fails.",
         "placeholders": {
-            "error" : {
-                "content" : "$1",
-                "example" : "TypeError: Cannot read properties of null (reading 'cloneNode')"
+            "error": {
+                "content": "$1",
+                "example": "TypeError: Cannot read properties of null (reading 'cloneNode')"
             }
         }
     },
@@ -97,9 +101,9 @@
         "message": "Error: $ERROR$",
         "description": "Generic error message when something fails.",
         "placeholders": {
-            "error" : {
-                "content" : "$1",
-                "example" : "TypeError: Cannot read properties of null (reading 'cloneNode')"
+            "error": {
+                "content": "$1",
+                "example": "TypeError: Cannot read properties of null (reading 'cloneNode')"
             }
         }
     },
@@ -107,9 +111,9 @@
         "message": "Re-sending pending report for @$ID$...",
         "description": "Tooltip message shown when re-sending a pending report.",
         "placeholders": {
-            "id" : {
-                "content" : "$1",
-                "example" : "bethylamine"
+            "id": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -117,9 +121,9 @@
         "message": "Sending report: @$ID$",
         "description": "Tooltip message shown when sending a new report.",
         "placeholders": {
-            "id" : {
-                "content" : "$1",
-                "example" : "bethylamine"
+            "id": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -127,9 +131,9 @@
         "message": "Report received: @$ID$",
         "description": "Tooltip message shown when a report was accepted by the server.",
         "placeholders": {
-            "id" : {
-                "content" : "$1",
-                "example" : "bethylamine"
+            "id": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -141,9 +145,9 @@
         "message": "Sending appeal: @$ID$",
         "description": "Tooltip message shown when sending a new appeal.",
         "placeholders": {
-            "id" : {
-                "content" : "$1",
-                "example" : "bethylamine"
+            "id": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -151,9 +155,9 @@
         "message": "Appeal received: @$ID$",
         "description": "Tooltip message shown when an appeal was accepted by the server.",
         "placeholders": {
-            "id" : {
-                "content" : "$1",
-                "example" : "bethylamine"
+            "id": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -165,9 +169,9 @@
         "message": "Invalid report type: $TYPE$",
         "description": "Error message shown if an unexpected report type (not report or appeal) was given.",
         "placeholders": {
-            "type" : {
-                "content" : "$1",
-                "example" : "trans-friendly"
+            "type": {
+                "content": "$1",
+                "example": "trans-friendly"
             }
         }
     },
@@ -242,5 +246,20 @@
     "noReasons": {
         "message": "No report reasons found. This could be because they were marked red before the reason feature was created, or before reports were logged.",
         "description": "Message that shows up to moderators when no reasons appear after they click to see report reasons."
+    },
+    "reasonHeaderWhen": {
+        "message": "When",
+        "description": "Heading for the reasons table that gives the date a report was approved"
+    },
+    "reasonHeaderReporter": {
+        "message": "Reporter",
+        "description": "Heading for the reasons table that gives the username of the reporter"
+    },
+    "reasonHeaderReason": {
+        "message": "Reason",
+        "description": "Heading for the reasons table that gives the reason of a report"
+    },
+    "reasonsExplanation": {
+        "message": "The following are the reports for this user. The reporter username and/or the reasoning might be redacted if you have a low trust value (new user, or not enough valid reports made.) If you think this is in error, please try to log in again (Soupcan -> Re-run setup) or contact the extension owner."
     }
 }

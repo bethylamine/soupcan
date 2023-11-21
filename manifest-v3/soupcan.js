@@ -698,13 +698,13 @@ function getReasoning(identifier) {
         reasonsTable.classList.add("reasons-table")
         var reasonsHeader = document.createElement("thead");
         var header1 = document.createElement("th");
-        header1.innerText = "When";
+        header1.innerText = browser.i18n.getMessage("reasonHeaderWhen");
         reasonsHeader.appendChild(header1);
         var header2 = document.createElement("th");
-        header2.innerText = "Reporter";
+        header2.innerText = browser.i18n.getMessage("reasonHeaderReporter");
         reasonsHeader.appendChild(header2);
         var header3 = document.createElement("th");
-        header3.innerText = "Reason";
+        header3.innerText = browser.i18n.getMessage("reasonHeaderReason");
         reasonsHeader.appendChild(header3);
 
         var reasonsBody = document.createElement("tbody")
@@ -766,6 +766,9 @@ function getReasoning(identifier) {
           if (reasonsBody.childElementCount == 0) {
             document.getElementById("soupcan-reasons").appendChild(noReasonsSpan);
           } else {
+            var reasonsExplainer = document.createElement("p");
+            reasonsExplainer.innerText = browser.i18n.getMessage("reasonsExplanation");
+            document.getElementById("soupcan-reasons").appendChild(reasonsExplainer);
             document.getElementById("soupcan-reasons").appendChild(reasonsTable);
           }
         });

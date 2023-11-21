@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chat with WhatIsAWomanBot</title>
+    <link href="bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <link href="wiawbot.css" rel="stylesheet">
+    <script src="theme.js"></script>
+    <script src="marked.min.js"></script>
+    <script src="purify.min.js"></script>
+  </head>
+  <body>
+    <div class="col-lg-8 mx-auto p-4 py-md-5">
+        <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
+          <a href="/" class="d-flex align-items-center text-body-emphasis text-decoration-none">
+            <img class="bi me-2" width="32" height="32" src="wiawbot32.png" />
+            <span class="fs-4">WhatIsAWomanBot Chat</span>
+          </a>
+        </header>
+      
+        <main>
+          <p id="top-text" class="fs-5 col-md-12">WhatIsAWomanBot is a supportive bot providing trans-friendly information and countering misinformation. Type any message to start chatting!</p>
+
+          <div class="chat-window">
+            <div class="messages" id="chatMessages">
+              <!-- Messages will be displayed here -->
+            </div>
+            <div class="message-input">
+              <input type="text" id="messageInput" placeholder="Type a message..." />
+              <button type="button" id="sendButton">Send</button>
+            </div>
+          </div>
+
+        </main>
+        <footer class="pt-5 my-5 text-body-secondary border-top">
+          The above interaction is powered by AI, and may not be correct. Check important information.
+        </footer>
+      </div>
+
+    <script src="bootstrap.bundle.min.js"></script>
+    <script src="fetch-progress.js" type="module"></script>
+    <script src="wiawbot.js" type="module"></script>
+  </body>
+</html>
