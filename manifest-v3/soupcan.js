@@ -20,7 +20,7 @@ function init() {
     "labels": {
       "tip": browser.i18n.getMessage("toast_label_tip"),
       "info": browser.i18n.getMessage("toast_label_info"),
-      "success": browser.i18n.getMessage("toast_label_success"), 
+      "success": browser.i18n.getMessage("toast_label_success"),
       "warning": browser.i18n.getMessage("toast_label_warning"),
       "alert": browser.i18n.getMessage("toast_label_alert"),
       "confirm": browser.i18n.getMessage("toast_label_confirm"),
@@ -29,7 +29,7 @@ function init() {
       "async": browser.i18n.getMessage("toast_label_async"),
     }
   });
-  
+
   initDatabase();
 
   browser.storage.local.get(["state", "is_moderator"], v => {
@@ -56,7 +56,7 @@ function applyOptions() {
   }
 
   browser.storage.local.get(["options"], v => {
-    var oldOptions = {...options};
+    var oldOptions = { ...options };
     var different = false;
 
     if (v.options) {
@@ -110,7 +110,7 @@ function applyOptions() {
       var computedStyle = window.getComputedStyle(body, null);
       if (computedStyle) {
         var backgroundColor = computedStyle.getPropertyValue("background-color");
-      
+
         if (backgroundColor.includes("FFFFFF") || backgroundColor.includes("255, 255, 255")) {
           changeSoupcanTheme(body, "light");
         } else {
@@ -121,15 +121,15 @@ function applyOptions() {
 
     checkTheme();
 
-    var bodyStyleObserver = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
+    var bodyStyleObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
         if (mutation.attributeName == "style") {
           checkTheme();
         }
       });
     });
 
-    bodyStyleObserver.observe(body, {attributes: true});
+    bodyStyleObserver.observe(body, { attributes: true });
 
     if (options["cbTheme"]) {
       cbTheme = options["cbTheme"];
@@ -141,7 +141,7 @@ function applyOptions() {
     if (options["cbUseSymbols"]) {
       cbUseSymbols = options["cbUseSymbols"];
     }
-    
+
     body.classList.remove("wiawbe-hide-zalgo");
     if (options["preventZalgoText"]) {
       body.classList.add("wiawbe-hide-zalgo");
@@ -204,7 +204,7 @@ async function safeCheckImage(imgEl, callback) {
 
     await checkImage(imgEl, callback);
   }
-   catch (error) {
+  catch (error) {
     imageContainer.setAttribute("wiawbe-content-match", "error");
     if (callback) {
       callback();
@@ -231,9 +231,9 @@ async function checkImage(imgEl, callback) {
 
   // Check for transphobic imagery
   if (imgEl.src.includes("/media") ||
-      imgEl.src.includes("/tweet_video_thumb") ||
-      imgEl.src.includes("ext_tw_video_thumb") ||
-      imgEl.src.includes("amplify_video_thumb")) {
+    imgEl.src.includes("/tweet_video_thumb") ||
+    imgEl.src.includes("ext_tw_video_thumb") ||
+    imgEl.src.includes("amplify_video_thumb")) {
 
     if (imgCacheKey in content_match_cache) {
       // already processed
@@ -252,14 +252,14 @@ async function checkImage(imgEl, callback) {
       let note = "cw/ " + matchMediaResult.label.cws + "\n(" + matchMediaResult.label.description + ")";
       imageContainer.setAttribute("wiawbe-content-match", "true");
       imageContainer.setAttribute("wiawbe-content-match-note", note);
-      content_match_cache[imgCacheKey] = {"match-attribute": "true", "note": note};
+      content_match_cache[imgCacheKey] = { "match-attribute": "true", "note": note };
     } else {
       imageContainer.setAttribute("wiawbe-content-match", "false");
-      content_match_cache[imgCacheKey] = {"match-attribute": "false", "note": ""};
+      content_match_cache[imgCacheKey] = { "match-attribute": "false", "note": "" };
     }
   } else {
     // Not a supported image URL
-    content_match_cache[imgCacheKey] = {"match-attribute": "false", "note": ""};
+    content_match_cache[imgCacheKey] = { "match-attribute": "false", "note": "" };
     imageContainer.setAttribute("wiawbe-content-match", "false");
   }
 
@@ -269,8 +269,8 @@ async function checkImage(imgEl, callback) {
 }
 
 function applyHideAds() {
-  // Hide "Get Verified" panel
-  var getVerifiedAside = document.querySelector("aside[aria-label='Get Verified']");
+  // Hide "Subscribe to Premium" panel
+  var getVerifiedAside = document.querySelector("aside[aria-label='Subscribe to Premium']");
   if (getVerifiedAside && getVerifiedAside.parentElement) {
     if (options["hideAds"]) {
       getVerifiedAside.parentElement.style.display = "none";
@@ -280,25 +280,22 @@ function applyHideAds() {
   }
 
   // Hide promoted tweets
-  var tweets = document.querySelectorAll("article[data-testid='tweet']");
+  var ads = document.querySelectorAll("article[data-testid='placementTracking']");
 
-  tweets.forEach((tweet) => {
-    var promotedPath = tweet.querySelector("path[d*='M19.498 3h-15c-1.381']");
-    if (promotedPath) {
-      if (options["hideAds"]) {      
-        tweet.style.display = "none";
-      } else {
-        tweet.style.display = "";
-      }
-      var parentDiv = tweet.closest("div[data-testid='cellInnerDiv']");
-      if (parentDiv) {
-        if (options["hideAds"]) {      
-          parentDiv.style.display = "none";
-        } else {
-          parentDiv.style.display = "";
-        }
-      }
+  ads.forEach((ad) => {
+    if (options["hideAds"]) {
+      ad.style.display = "none";
+    } else {
+      ad.style.display = "";
     }
+    // var parentDiv = tweet.closest("div[data-testid='cellInnerDiv']");
+    // if (parentDiv) {
+    //   if (options["hideAds"]) {
+    //     parentDiv.style.display = "none";
+    //   } else {
+    //     parentDiv.style.display = "";
+    //   }
+    // }
   });
 
   // Hide promoted trends
@@ -381,7 +378,7 @@ function checkNode(node, force = false, depth = 0) {
   }
 
   if (node.hasChildNodes()) {
-    for(var i = 0; i < node.children.length; i++){
+    for (var i = 0; i < node.children.length; i++) {
       var child = node.children[i];
       checkNode(child, force, depth + 1);
     }
@@ -398,15 +395,15 @@ function processForMasking() {
 
 function applyAuthorMaskingObserver(authorElement, callback) {
   if (!authorElement.maskingObserver) {
-    authorElement.maskingObserver = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
+    authorElement.maskingObserver = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
         if (mutation.attributeName == "data-wiawbeidentifier") {
           callback();
         }
       });
     });
 
-    authorElement.maskingObserver.observe(authorElement, {attributes: true});
+    authorElement.maskingObserver.observe(authorElement, { attributes: true });
   }
 }
 
@@ -447,7 +444,7 @@ function applyMasking(tweet) {
       tweetPhoto.setAttribute("wiawbe-mask-tag", "media");
     });
   }
-  
+
   // Check for QRT
   var qrtDiv = tweet.querySelector("div[tabindex='0'][role='link']");
   if (qrtDiv) {
@@ -466,13 +463,13 @@ function applyMasking(tweet) {
 
   // Add observer to catch changes and mask them
   if (!tweet.observer) {
-    tweet.observer = new MutationObserver(function(mutations) {
+    tweet.observer = new MutationObserver(function (mutations) {
       // This is necessary to apply masking to tweets that are loaded asynchronously
       // e.g. images that only appeared *after* the first applyMasking() call
       applyMasking(tweet);
     });
 
-    tweet.observer.observe(tweet, {attributes: false, childList: true, characterData: false, subtree:true});
+    tweet.observer.observe(tweet, { attributes: false, childList: true, characterData: false, subtree: true });
   }
 }
 
@@ -483,7 +480,7 @@ function updateAllLabels() {
   for (const a of document.getElementsByTagName('a')) {
     processLink(a);
   }
-  
+
   for (const div of document.getElementsByTagName('div')) {
     checkNode(div);
   }
@@ -606,8 +603,8 @@ async function processDiv(div, markArea = false, depth = -1) {
   }
 
   if (!div.observer) {
-    div.observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
+    div.observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
 
         if (div.getAttribute("data-testid") == "UserName") {
           addReasonToUserNameDiv(div, div_identifier);
@@ -626,7 +623,7 @@ async function processDiv(div, markArea = false, depth = -1) {
       });
     });
 
-    div.observer.observe(div, {attributes: true});
+    div.observer.observe(div, { attributes: true });
   }
 }
 
@@ -649,27 +646,27 @@ function addReasonToUserNameDiv(div, identifier) {
 
 function waitForElm(selector) {
   return new Promise(resolve => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector));
+    }
+
+    const observer = new MutationObserver(mutations => {
       if (document.querySelector(selector)) {
-          return resolve(document.querySelector(selector));
+        resolve(document.querySelector(selector));
+        observer.disconnect();
       }
+    });
 
-      const observer = new MutationObserver(mutations => {
-          if (document.querySelector(selector)) {
-              resolve(document.querySelector(selector));
-              observer.disconnect();
-          }
-      });
-
-      observer.observe(document.body, {
-          childList: true,
-          subtree: true
-      });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
   });
 }
 
 function linkify(text) {
   var urlRegex = /(\bhttps?:\/\/(twitter\.com|x\.com)\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-  return text.replace(urlRegex, function(url) {
+  return text.replace(urlRegex, function (url) {
     return '<a href="' + url + '">' + url + '</a>';
   });
 }
@@ -718,7 +715,7 @@ function getReasoning(identifier) {
         for (let report of jsonData) {
           var when = new Date(report["report_time"] * 1000).toString().replace(/\ ..:.*/g, "").trim();
           var reason = report["reason"];
-          
+
           if (!reason) {
             reason = "(no reason provided)";
           }
@@ -778,7 +775,7 @@ function getReasoning(identifier) {
       }
       resolve();
     }),
-    response => {}, // success
+    response => { }, // success
     response => {
       notifier.alert(browser.i18n.getMessage("serverFailure") + " (" + error + ")");
     }, // failure
@@ -854,7 +851,7 @@ async function getDatabaseEntry(identifier) {
   if (finalEntry && finalEntry["label"] == "appealed") {
     return null;
   }
-  
+
   return finalEntry;
 }
 
@@ -880,7 +877,7 @@ async function processLink(a) {
     if (!localUrl) {
       return;
     }
-    
+
     identifier = getIdentifier(localUrl);
   }
 
@@ -921,8 +918,8 @@ async function processLink(a) {
   }
 
   if (!a.observer) {
-    a.observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
+    a.observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
         if (mutation.attributeName == "class" || mutation.attributeName == "href") {
           if (a.wiawLabel) {
             if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
@@ -938,7 +935,7 @@ async function processLink(a) {
       });
     });
 
-    a.observer.observe(a, {attributes: true});
+    a.observer.observe(a, { attributes: true });
   }
 }
 
@@ -948,19 +945,18 @@ function applySymbols(element) {
   }
   const innerSpans = element.querySelectorAll("span");
   for (let innerSpan of innerSpans) {
-    if (innerSpan) {
-      if (innerSpan.childNodes.length === 1 && innerSpan.childNodes[0].nodeType === 3) {
-        // leaf node
-        if (innerSpan.innerText.includes("@")) {
-          // has @ symbol (username)
-          let textNode = innerSpan.childNodes[0]
-          if (element.className.includes("label-transphobe")) {
-            textNode.nodeValue = innerSpan.innerText.replace(/@/, "⊗");
-          } else if (element.className.includes("label-local-transphobe")) {
-            textNode.nodeValue = innerSpan.innerText.replace(/@/, "⊖");
-          } else if (element.className.includes("label-local-appeal")) {
-            textNode.nodeValue = innerSpan.innerText.replace(/@/, "⊡");
-          }
+    if (innerSpan && innerSpan.childNodes.length === 1 && innerSpan.childNodes[0].nodeType === 3) {
+      // leaf node
+      let textNode = innerSpan.childNodes[0];
+      let innerText = innerSpan.innerText;
+      if (innerText.includes("@")) {
+        // has @ symbol (username)
+        if (element.className.includes("label-transphobe")) {
+          textNode.nodeValue = innerText.replace("@", "⊗");
+        } else if (element.className.includes("label-local-transphobe")) {
+          textNode.nodeValue = innerText.replace("@", "⊖");
+        } else if (element.className.includes("label-local-appeal")) {
+          textNode.nodeValue = innerText.replace("@", "⊡");
         }
       }
     }
@@ -971,7 +967,7 @@ function getIdentifier(localUrl) {
   if (!localUrl) {
     return null;
   }
-  
+
   var identifier = localUrl;
 
   if (identifier.startsWith("/")) {
@@ -1154,7 +1150,7 @@ function doCountTerfs(kind) {
             el.childNodes[0].nodeValue = browser.i18n.getMessage("counterName_" + kind);
             break;
           case 1:
-            break;        
+            break;
           case 2:
             el.childNodes[0].nodeValue = browser.i18n.getMessage("scrollInstructions");
             el.parentElement.parentElement.style.maxWidth = "100%";
@@ -1196,7 +1192,7 @@ function doCountTerfs(kind) {
       document.querySelectorAll("[data-testid='primaryColumn'] [data-testid='UserCell']").forEach(userCell => {
         countTerf(userCell);
       });
-      
+
       var terfObserver = new MutationObserver(mutationsList => {
         for (const mutation of mutationsList) {
           if (lastUpdatedUrl.includes("follow")) {
@@ -1249,7 +1245,7 @@ function updatePage() {
         profileReason.remove();
         addReasonToUserNameDiv(usernameDiv, getUsernameFromDiv(usernameDiv));
       }
-    }  
+    }
 
     nodeCheckCache = {};
 
@@ -1259,7 +1255,7 @@ function updatePage() {
     setTimeout(removeProfileReason, 25);
     setTimeout(removeProfileReason, 200);
   }
-  
+
   // Color-code all links
   for (const a of document.querySelectorAll('a')) {
     if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
@@ -1323,7 +1319,7 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
         sendResponse(jsonData);
       } catch (error) {
         notifier.alert(failureMessage + error);
-        
+
         updateAllLabels();
         sendResponse("Failed");
       }
@@ -1364,11 +1360,11 @@ function sendPendingLabels() {
             const reported = response["text"];
             if (reported == "1") {
               localEntries[localKey]["status"] = "received";
-        
+
               saveLocalEntries();
             } else {
               notifier.info(browser.i18n.getMessage("resendingReport", [localEntry["identifier"]]));
-              sendLabel(reportType, localEntry["identifier"], () => {}, localKey, localEntry["submitReason"]);
+              sendLabel(reportType, localEntry["identifier"], () => { }, localKey, localEntry["submitReason"]);
             }
           } catch (error) {
             notifier.alert(browser.i18n.getMessage("genericError", [error]));
@@ -1416,7 +1412,7 @@ async function checkForDatabaseUpdates() {
           const numberVersion = parseInt(version);
           if (!database["version"] || database["version"] < numberVersion) {
             // update the database
-            updateDatabase(() => {}, numberVersion);
+            updateDatabase(() => { }, numberVersion);
           }
           database["last_updated"] = Date.now();
         });
@@ -1485,7 +1481,7 @@ async function updateDatabase(sendResponse, version) {
       }
       resolve();
     }),
-    response => {}, // success
+    response => { }, // success
     response => {
       notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [response["status"]]));
     }, // failure
@@ -1517,7 +1513,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       try {
         initialReason = contextMenuElement.closest("article").querySelector("a[href*='status'][href*='" + identifier + "' i]").href;
       } catch {
-  
+
       }
 
       var clonedTweetButton = document.querySelector("a[data-testid='SideNav_NewTweet_Button'], #navbar-tweet-button").cloneNode(true);
@@ -1557,22 +1553,22 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         }
         textArea.after(clonedTweetButton);
 
-        clonedTweetButton.addEventListener('click', async function() {
+        clonedTweetButton.addEventListener('click', async function () {
           textArea.disabled = true;
           var submitReason = textArea.value;
           var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
           awnPopupWrapper.classList.add("awn-hiding");
           setTimeout(() => awnPopupWrapper.remove(), 300);
-          
+
           // Add locally
           var localKey = await hash(identifier + ":" + database["salt"])
-          localEntries[localKey] = {"label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier};
+          localEntries[localKey] = { "label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier };
 
           saveLocalEntries();
-          
+
           updateAllLabels();
           sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
-        },{once:true});
+        }, { once: true });
         return true;
       });
     } catch (error) {
@@ -1599,7 +1595,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         if (confirm(`Are you sure you would like to appeal @${identifier}'s label?`)) {
           // Add locally
           var localKey = await hash(identifier + ":" + database["salt"])
-          localEntries[localKey] = {"label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier};
+          localEntries[localKey] = { "label": "local-appeal", "reason": "Appealed by you", "status": "pending", "time": Date.now(), "identifier": identifier };
 
           saveLocalEntries();
 
@@ -1682,7 +1678,7 @@ function checkForInvalidExtensionContext() {
 var contextMenuElement = null;
 
 // Populate DOM element for context menu
-document.addEventListener("contextmenu", function(event){
+document.addEventListener("contextmenu", function (event) {
   contextMenuElement = event.target;
 }, true);
 
