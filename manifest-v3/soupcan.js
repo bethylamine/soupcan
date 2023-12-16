@@ -280,7 +280,7 @@ function applyHideAds() {
   }
 
   // Hide promoted tweets
-  var ads = document.querySelectorAll("article[data-testid='placementTracking']");
+  var ads = document.querySelectorAll("div[data-testid='placementTracking'] article");
 
   ads.forEach((ad) => {
     if (options["hideAds"]) {
@@ -288,14 +288,6 @@ function applyHideAds() {
     } else {
       ad.style.display = "";
     }
-    // var parentDiv = tweet.closest("div[data-testid='cellInnerDiv']");
-    // if (parentDiv) {
-    //   if (options["hideAds"]) {
-    //     parentDiv.style.display = "none";
-    //   } else {
-    //     parentDiv.style.display = "";
-    //   }
-    // }
   });
 
   // Hide promoted trends
