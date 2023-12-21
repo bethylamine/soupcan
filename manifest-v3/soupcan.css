@@ -208,8 +208,8 @@ body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-ta
 
 /* Tweet masking */
 
-body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet'],
-body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet']
+body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet'] [data-testid='tweetText'],
+body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet'] [data-testid='tweetText']
 {
     content: "";
     filter: blur(8px);
@@ -221,11 +221,24 @@ body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet']
     z-index: 2;
 }
 
-body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet']:hover,
-body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet']:hover
+@keyframes wait-unblur {
+    0% {
+        filter: blur(8px)
+    }
+    50% {
+        filter: blur(6px)
+    }
+    100% {
+        filter: blur(0px)
+    }
+}
+
+body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet'] [data-testid='tweetText']:hover,
+body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet'] [data-testid='tweetText']:hover
 {
     filter: blur(0px);
-    transition: 0.5s;
+    animation-name: wait-unblur;
+    animation-duration: 1s;
 }
 
 /* Mark reason on profile page */
