@@ -7,6 +7,10 @@
     <link href="bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link href="start.css" rel="stylesheet">
     <link href="moderation.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="dist/jquery.dataTables.css">
+    <script type="text/javascript" src="dist/jquery-3.5.1.js"></script>
+    <script type="text/javascript" src="dist/jquery.dataTables.js"></script>
+
     <script src="theme.js"></script>
   </head>
   <body>
@@ -24,6 +28,15 @@
           <p class="fs-7 col-md-12">Reports/appeals are accepted every ~5 minutes, not instantly, so if it's been a while and it's still here, please let @bethylamine know.</p>
           <p class="fs-7 col-md-12">Trust values are shown in labels next to reporter IDs. Green rows mean the report will be approved soon.</p>
           <p class="fs-7 col-md-12">Don't worry about approving reports with only 1 reporter (there's bound to be many of them.) You can if you want to, though.</p>
+
+          <h4>Filters</h4>
+          <a href="?minTrust=90">Reports with >= 90% trust</a> |
+          <a href="?minTrust=50&maxTrust=89">Reports with 50%-89% trust</a> |
+          <a href="?maxTrust=49">Reports with <= 49% trust</a> |
+          <a href="?maxTrust=25">Reports with <= 25% trust</a> |
+          <a href="?maxTrust=10">Reports with <= 10% trust</a> |
+          <a href="?maxTrust=0">Reports with <= 0% trust</a>
+          <hr/>
 
           <div id="reports-table">Loading...</div>
 

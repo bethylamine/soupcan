@@ -2,11 +2,25 @@ var browser = browser || chrome;
 
 var state = null;
 
+const PAGE_SIZE = 20;
+
 browser.storage.local.get(["state"], v => {
 
   if (v.state) {
     state = v.state;
-    handleFetch("https://api.beth.lgbt/moderation/reports?state=" + v.state, response => {
+    // Create a URL object based on the current location
+    const currentUrl = new URL(window.location.href);
+
+    // Get the search parameters from the current URL
+    const queryParams = new URLSearchParams(currentUrl.search);
+
+    // Append these parameters to your base URL
+    const fetchUrl = new URL("https://api.beth.lgbt/moderation/reports?state=" + v.state);
+    queryParams.forEach((value, key) => {
+      fetchUrl.searchParams.append(key, value);
+    });
+
+    handleFetch(fetchUrl, response => {
       buildTable(response["json"]);
     });
   }
@@ -24,7 +38,7 @@ function linkify(inputText) {
 function buildTable(reports) {
   document.getElementById("reports-table").innerHTML = `
       <h4 id='reports-table-heading'></h4>
-      <table class="table">
+      <table class="table" id='reports-table-table'>
       <thead>
         <tr>
           <th scope="col">Reported transphobe</th>
@@ -37,7 +51,7 @@ function buildTable(reports) {
     </table>`;
   var grouped_reports = {};
 
-  document.getElementById("reports-table-heading").innerText = reports.length + " reports shown.";
+  document.getElementById("reports-table-heading").innerText = "Reports loaded.";
 
   reports.forEach(report => {
     var screenName = report["transphobe_screen_name"];
@@ -61,21 +75,21 @@ function buildTable(reports) {
   });
 
   var report_screen_names = Object.keys(grouped_reports);
-  report_screen_names = report_screen_names.sort((a, b) => {
+
+  // Let the server sort them
+  
+  /*report_screen_names = report_screen_names.sort((a, b) => {
     var length = grouped_reports[b].length - grouped_reports[a].length;
     if (length != 0) {
       return length;
     }
     var reportTime = grouped_reports[a][0].report_time - grouped_reports[b][0].report_time
     return reportTime;
-  });
+  });*/
 
   var tableBody = document.getElementById("reports-table-body");
   report_screen_names.forEach(screenName => {
     var row = document.createElement("tr");
-    var screenNameCell = document.createElement("td");
-    screenNameCell.innerHTML = "<a target='_blank' class='badge bg-danger' href='https://twitter.com/" + screenName + "'>@" + screenName + "</a>";
-    row.appendChild(screenNameCell);
     var reportsCell = document.createElement("td");
     const reports = grouped_reports[screenName];
     var listTag = document.createElement("ol");
@@ -91,13 +105,13 @@ function buildTable(reports) {
       let badgeClasses = "badge ";
       if (report.reporter_trust < 0) {
         badgeClasses += "bg-danger";
-      } else if (report.reporter_trust <= 20) {
+      } else if (report.reporter_trust <= 25) {
         badgeClasses += "bg-secondary";
-      } else if (report.reporter_trust <= 40) {
-        badgeClasses += "bg-info text-dark";
       } else if (report.reporter_trust <= 50) {
+        badgeClasses += "bg-info text-dark";
+      } else if (report.reporter_trust < 100) {
         badgeClasses += "bg-primary";
-      } else if (report.reporter_trust <= 100) {
+      } else if (report.reporter_trust >= 100) {
         badgeClasses += "bg-success";
       } else {
         badgeClasses += "bg-dark";
@@ -119,9 +133,12 @@ function buildTable(reports) {
     reportsCell.appendChild(listTag);
 
     if (totalTrust >= 100) {
-      console.log("Total trust is ", totalTrust);
       row.classList.add("table-success");
     }
+
+    var screenNameCell = document.createElement("td");
+    screenNameCell.innerHTML = "<a target='_blank' class='badge bg-danger' href='https://twitter.com/" + screenName + "'>@" + screenName + "</a><br/><b>Report Trust: " + totalTrust + "%</b>";
+    row.appendChild(screenNameCell);  
 
     row.appendChild(reportsCell);
     var actionsCell = document.createElement("td");
@@ -152,6 +169,8 @@ function buildTable(reports) {
 
     tableBody.appendChild(row);
   });
+
+  $('#reports-table-table').DataTable({"ordering": false});
 }
 
 const handleFetch = async (url, sendResponse) => {
