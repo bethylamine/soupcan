@@ -40,7 +40,7 @@
         "description": "Context menu action to chat with WhatIsAWomanBot."
     },
     "reportReasonInstructions": {
-        "message": "<h2>🍅 Report @$ID$</h2><p>You can provide reasoning for your report here, if you think it may help verify your report, including links to tweets, etc. Even if it's obvious please note down what you see, since people can edit their profiles/delete tweets.</p>",
+        "message": "<h2>🍅 Report @$ID$</h2><p>Provide examples tweets that you deem transphobic. If you're not sure, check <a style='float:none' href='https://bethylamine.github.io/library/browser-extension/mod'>the moderator guidelines</a>. The more examples you include the easier it is to approve. Add context if you think it's needed. A community moderator may reach out to you for questions. Do NOT report someone who is otherwise non-transphobic for a contentious tweet; give them the benefit of the doubt.</p>",
         "description": "Instructions given to the user on providing a report reason.",
         "placeholders": {
             "id": {
