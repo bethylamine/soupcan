@@ -80,8 +80,8 @@
         "description": "Error message shown when trying to execute an action on something that is not a valid target (user)."
     },
     "databaseDownloading": {
-        "message": "Database downloading...",
-        "description": "Tooltip shown when starting to download the database."
+        "message": "Database updating...",
+        "description": "Tooltip shown when starting to download/update the database."
     },
     "databaseUpdated": {
         "message": "Database updated!",

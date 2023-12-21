@@ -1461,9 +1461,15 @@ async function updateDatabase(sendResponse, version) {
           "downloading": false,
         };
 
-        browser.storage.local.set({
-          "database": database
-        });
+        async function saveDatabaseToLocalStorage(database) {
+          await browser.storage.local.set({
+            "database": database
+          });
+        }
+        
+        saveDatabaseToLocalStorage(database);
+        resolve();
+
         notifier.success(browser.i18n.getMessage("databaseUpdated"));
         sendResponse("OK");
       } catch (error) {
