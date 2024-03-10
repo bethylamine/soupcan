@@ -1439,7 +1439,7 @@ async function updateDatabase(sendResponse, version) {
   }
 
   database["downloading"] = true;
-  var fetchUrl = "https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset_compressed.json"
+  const fetchUrl = `https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset_compressed.json?${new Date().getTime()}`;
 
   notifier.async(
     new Promise(async resolve => {
