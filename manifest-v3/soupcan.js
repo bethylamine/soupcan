@@ -384,6 +384,7 @@ function checkNode(node, force = false, depth = 0) {
 }
 
 function processForMasking() {
+  console.log("pfm");
   const tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
 
   tweets.forEach(tweet => {
@@ -472,6 +473,7 @@ function applyMasking(tweet) {
 }
 
 function updateAllLabels() {
+  console.log("UAL");
   processForMasking();
   applyHideAds();
 
@@ -569,17 +571,16 @@ async function processDiv(div, markArea = false, depth = -1) {
     removedLabel = 'wiaw-area-removed';
   }
 
-  let labelToApply = labelPrefix + div.wiawLabel;
-
   if (database_entry) {
     div.wiawLabel = database_entry["label"]
     div.wiawReason = database_entry["reason"];
     if (database_entry["time"]) {
-      if (database_entry["time"] < 99900000000) {
+      if (database_entry["time"] < 99900000000) { // assume in seconds
         database_entry["time"] *= 1000; // convert seconds to milliseconds
       }
       div.wiawReason += " " + timeSince(database_entry["time"]);
     }
+    let labelToApply = labelPrefix + div.wiawLabel;
     if (div.wiawLabel && !div.classList.contains(labelToApply)) {
       div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
       div.classList.add(hasLabelToApply);
@@ -589,14 +590,14 @@ async function processDiv(div, markArea = false, depth = -1) {
     }
   } else {
     div.classList.remove(hasLabelToApply);
-    div.classList.remove(labelToApply);
+    div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith(labelPrefix)));
     div.classList.add(removedLabel);
     div.removeAttribute("data-wiawbeidentifier");
     div.wiawLabel = null;
     div.wiawReason = null;
   }
 
-  if (div.getAttribute("data-testid") == "UserName") {
+  if (div.getAttribute("data-testid") === "UserName") {
     addReasonToUserNameDiv(div, div_identifier);
   }
 
@@ -604,7 +605,7 @@ async function processDiv(div, markArea = false, depth = -1) {
     div.observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
 
-        if (div.getAttribute("data-testid") == "UserName") {
+        if (div.getAttribute("data-testid") === "UserName") {
           addReasonToUserNameDiv(div, div_identifier);
         }
 
