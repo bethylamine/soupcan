@@ -384,7 +384,6 @@ function checkNode(node, force = false, depth = 0) {
 }
 
 function processForMasking() {
-  console.log("pfm");
   const tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
 
   tweets.forEach(tweet => {
@@ -473,7 +472,6 @@ function applyMasking(tweet) {
 }
 
 function updateAllLabels() {
-  console.log("UAL");
   processForMasking();
   applyHideAds();
 
@@ -744,14 +742,14 @@ function getReasoning(identifier) {
           reasonsBody.appendChild(rowEl);
         }
 
-        waitForElm("div[data-testid='DMDrawerHeader'] span").then((elm) => {
+        waitForElm("body").then((elm) => {
           notifier.modal(
             "<div id='soupcan-reasons'></div>",
             'modal-reasons'
           );
           const popupElements = document.getElementsByClassName("awn-popup-modal-reasons");
           const bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-          const textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
+          const textColor = window.getComputedStyle(document.querySelector("body"), null).getPropertyValue("color");
           if (popupElements) {
             for (let el of popupElements) {
               el.style["background-color"] = bodyBackgroundColor;
@@ -1542,14 +1540,14 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         }
       }
 
-      waitForElm("div[data-testid='DMDrawerHeader'] span").then((elm) => {
+      waitForElm("body").then((elm) => {
         notifier.modal(
           browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
           'modal-reason'
         );
         const popupElements = document.getElementsByClassName("awn-popup-modal-reason");
         const bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-        const textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
+        const textColor = window.getComputedStyle(document.querySelector("body"), null).getPropertyValue("color");
         if (popupElements) {
           for (let el of popupElements) {
             el.style["background-color"] = bodyBackgroundColor;

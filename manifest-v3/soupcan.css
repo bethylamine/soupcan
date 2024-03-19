@@ -148,7 +148,8 @@ body.wiawbe-mask-hide-all [wiawbe-content-match='true'] {
 body.wiawbe-mask-hide-all [wiawbe-mask-tag='tweet'],
 body.wiawbe-mask-hide-all [wiawbe-mask-tag='retweet'],
 body.wiawbe-mask-hide-all [role="link"][wiawbe-mask-tag="tweet"],
-body.wiawbe-mask-hide-all article:has([wiawbe-mask-tag="tweet"])
+body.wiawbe-mask-hide-all article:has([wiawbe-mask-tag="tweet"]),
+body.wiawbe-mask-hide-all article:has(div.wiaw-label-transphobe)
 {
     display: none !important;
 }
