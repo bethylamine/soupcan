@@ -1266,6 +1266,12 @@ function updatePage() {
   }
 }
 
+function generateUUIDv4() {
+  return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+  );
+}
+
 async function sendLabel(reportType, identifier, sendResponse, localKey, reason = "") {
   if (checkForInvalidExtensionContext()) {
     return;
@@ -1291,10 +1297,13 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
     return;
   }
 
+  const client_report_id = generateUUIDv4();
   localEntries[localKey]["time"] = Date.now();
+  localEntries[localKey]["client_report_id"] = client_report_id;
+
   saveLocalEntries();
 
-  var fetchUrl = "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&reason=" + encodeURI(reason);
+  const fetchUrl = "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&client_report_id=" + client_report_id + "&reason=" + encodeURI(reason);
   // Report to WIAW
   notifier.async(
     doFetch(fetchUrl),
@@ -1305,6 +1314,7 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
         }
         const jsonData = response["json"];
 
+        localEntries[localKey]["time"] = Date.now();
         localEntries[localKey]["status"] = "received";
 
         saveLocalEntries();
@@ -1337,22 +1347,22 @@ function sendPendingLabels() {
       const when = localEntry["time"];
       const now = Date.now();
 
-      if (!when || now > when + 10000) { // it's been at least 10 seconds
+      if (!when || now > when + 30000) { // it's been at least 30 seconds
         const reportType = localEntry["label"].replace("local-", "");
 
-        const fetchUrl = "https://api.beth.lgbt/check-report?state=" + state + "&screen_name=" + localEntry["identifier"];
+        const fetchUrl = "https://api.beth.lgbt/check-report?state=" + state + "&client_report_id=" + localEntry["client_report_id"];
         // check if the report already went through
         browser.runtime.sendMessage({
           "action": "fetch",
           "url": fetchUrl
         }).then(async response => {
           try {
-            if (response["status"] != 200) {
+            if (response["status"] !== 200) {
               throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
             }
 
             const reported = response["text"];
-            if (reported == "1") {
+            if (reported === "1") {
               localEntries[localKey]["status"] = "received";
 
               saveLocalEntries();
@@ -1692,6 +1702,12 @@ function reloadLocalDb() {
       for (let key in newLocalEntries) {
         if (!(key in localEntries)) {
           localEntries[key] = newLocalEntries[key];
+        } else {
+          const cur_when = localEntries[key]["time"];
+          const new_when = newLocalEntries[key]["time"];
+          if (new_when > cur_when) {
+            localEntries[key] = newLocalEntries[key];
+          }
         }
       }
     }
