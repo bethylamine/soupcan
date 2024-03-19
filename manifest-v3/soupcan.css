@@ -139,6 +139,22 @@ body.wiawbe-hide-zalgo [aria-label="Followers you know"] div:has(>span) {
     overflow: hidden;
 }
 
+/* Hide all content from red users */
+
+body.wiawbe-mask-hide-all [wiawbe-content-match='true'] {
+    display: none !important;
+}
+
+body.wiawbe-mask-hide-all [wiawbe-mask-tag='tweet'],
+body.wiawbe-mask-hide-all [wiawbe-mask-tag='retweet'],
+body.wiawbe-mask-hide-all [role="link"][wiawbe-mask-tag="tweet"],
+body.wiawbe-mask-hide-all article:has([wiawbe-mask-tag="tweet"])
+{
+    display: none !important;
+}
+
+
+
 /* Image masking */
 
 body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']::after,

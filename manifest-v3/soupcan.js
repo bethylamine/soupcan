@@ -1,18 +1,19 @@
-var browser = browser || chrome;
+let browser;
+browser = browser || chrome;
 
-var options = {
+let options = {
 
 };
 
-var state = "";
+let state = "";
 
-var isModerator = false;
+let isModerator = false;
 
-var notifier = new AWN();
-var localReasonsCache = {};
+let notifier = new AWN();
+let localReasonsCache = {};
 
-var cbTheme = "off";
-var cbUseSymbols = false;
+let cbTheme = "off";
+let cbUseSymbols = false;
 
 function init() {
   notifier = new AWN({
@@ -56,20 +57,20 @@ function applyOptions() {
   }
 
   browser.storage.local.get(["options"], v => {
-    var oldOptions = { ...options };
-    var different = false;
+    const oldOptions = {...options};
+    let different = false;
 
     if (v.options) {
       options = v.options || {};
     }
 
     for (let optionKey in options) {
-      if (options[optionKey] != oldOptions[optionKey]) {
+      if (options[optionKey] !== oldOptions[optionKey]) {
         different = true;
       }
     }
     for (let optionKey in oldOptions) {
-      if (options[optionKey] != oldOptions[optionKey]) {
+      if (options[optionKey] !== oldOptions[optionKey]) {
         different = true;
       }
     }
@@ -81,7 +82,7 @@ function applyOptions() {
     const body = document.getElementsByTagName("body")[0];
 
     if (options["maskMode"]) {
-      var mm = options["maskMode"];
+      const mm = options["maskMode"];
       body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("wiawbe-mask-")));
       switch (mm) {
         case "direct-media-only":
@@ -96,6 +97,9 @@ function applyOptions() {
           body.classList.add("wiawbe-mask-media-incl-retweets");
           body.classList.add("wiawbe-mask-all-content");
           break;
+        case "hide-all":
+          body.classList.add("wiawbe-mask-hide-all");
+          break;
       }
     }
 
@@ -107,9 +111,9 @@ function applyOptions() {
       changeSoupcanTheme(body, "light"); // default to light mode if all else fails
 
       // Check if Twitter is using light or dark mode
-      var computedStyle = window.getComputedStyle(body, null);
+      const computedStyle = window.getComputedStyle(body, null);
       if (computedStyle) {
-        var backgroundColor = computedStyle.getPropertyValue("background-color");
+        let backgroundColor = computedStyle.getPropertyValue("background-color");
 
         if (backgroundColor.includes("FFFFFF") || backgroundColor.includes("255, 255, 255")) {
           changeSoupcanTheme(body, "light");
@@ -121,9 +125,9 @@ function applyOptions() {
 
     checkTheme();
 
-    var bodyStyleObserver = new MutationObserver(function (mutations) {
+    const bodyStyleObserver = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
-        if (mutation.attributeName == "style") {
+        if (mutation.attributeName === "style") {
           checkTheme();
         }
       });
@@ -151,36 +155,36 @@ function applyOptions() {
   });
 }
 
-var content_match_cache = {};
+let content_match_cache = {};
 
 function getImageKey(url) {
   return url.split('?')[0];
 }
 
-var mediaMatching = false;
+let mediaMatching = false;
 
 async function checkVideo(videoEl) {
   if (!mediaMatching || !database["media_matching_data"]) {
     return;
   }
 
-  var videoContainer = videoEl.closest("[data-testid='videoComponent']");
+  let videoContainer = videoEl.closest("[data-testid='videoComponent']");
   if (["true", "false"].includes(videoContainer.getAttribute("wiawbe-content-match"))) {
     return;
   }
 
   videoContainer.setAttribute("wiawbe-content-match", "pending");
-  var posterUrl = videoEl.getAttribute("poster");
-  var tmpImgEl = document.createElement("img");
+  const posterUrl = videoEl.getAttribute("poster");
+  const tmpImgEl = document.createElement("img");
   tmpImgEl.src = posterUrl;
 
-  var fragment = document.createDocumentFragment();
-  var tmpImgContainer = document.createElement("div");
+  const fragment = document.createDocumentFragment();
+  const tmpImgContainer = document.createElement("div");
   tmpImgContainer.setAttribute("aria-label", "Image");
   tmpImgContainer.appendChild(tmpImgEl);
   fragment.appendChild(tmpImgContainer);
 
-  safeCheckImage(tmpImgEl, () => {
+  await safeCheckImage(tmpImgEl, () => {
     videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"));
     videoContainer.setAttribute("wiawbe-content-match-note", tmpImgContainer.getAttribute("wiawbe-content-match-note"));
     videoEl.setAttribute("data-soupcan-imghash", tmpImgEl.getAttribute("data-soupcan-imghash"));
@@ -270,7 +274,7 @@ async function checkImage(imgEl, callback) {
 
 function applyHideAds() {
   // Hide "Subscribe to Premium" panel
-  var getVerifiedAside = document.querySelector("aside[aria-label='Subscribe to Premium']");
+  const getVerifiedAside = document.querySelector("aside[aria-label='Subscribe to Premium']");
   if (getVerifiedAside && getVerifiedAside.parentElement) {
     if (options["hideAds"]) {
       getVerifiedAside.parentElement.style.display = "none";
@@ -280,7 +284,7 @@ function applyHideAds() {
   }
 
   // Hide promoted tweets
-  var ads = document.querySelectorAll("div[data-testid='placementTracking'] article");
+  const ads = document.querySelectorAll("div[data-testid='placementTracking'] article");
 
   ads.forEach((ad) => {
     if (options["hideAds"]) {
@@ -291,9 +295,9 @@ function applyHideAds() {
   });
 
   // Hide promoted trends
-  var trends = document.querySelectorAll("div[data-testid='trend']");
+  const trends = document.querySelectorAll("div[data-testid='trend']");
   trends.forEach((trend) => {
-    var promotedPath = trend.querySelector("path[d*='M19.498 3h-15c-1.381 0-2.5 1.12-2.5 2.5v13c0']");
+    const promotedPath = trend.querySelector("path[d*='M19.498 3h-15c-1.381 0-2.5 1.12-2.5 2.5v13c0']");
     if (promotedPath) {
       if (options["hideAds"]) {
         trend.style.display = "none";
@@ -305,8 +309,10 @@ function applyHideAds() {
 
 }
 
+let lastUpdatedUrl;
+
 function createObserver() {
-  var observer = new MutationObserver(mutationsList => {
+  const observer = new MutationObserver(mutationsList => {
     for (const mutation of mutationsList) {
       if (location.href != lastUpdatedUrl) {
         updatePage();
@@ -343,8 +349,8 @@ function createObserver() {
   });
 }
 
-var nodeCheckCache = {}
-var divCacheId = 1;
+let nodeCheckCache = {};
+let divCacheId = 1;
 
 function checkNode(node, force = false, depth = 0) {
   node.cacheId = node.cacheId || ('hashID' + (divCacheId++));
@@ -359,26 +365,26 @@ function checkNode(node, force = false, depth = 0) {
 
   nodeCheckCache[node.cacheId] = Date.now() + Math.floor(Math.random() * 2000);
 
-  var dt = node.getAttribute("data-testid")
-  if (dt == "TypeaheadUser" || dt == "typeaheadRecentSearchesItem" || dt == "User-Name" || dt == "UserName" || dt == "conversation") {
+  const dt = node.getAttribute("data-testid");
+  if (dt === "TypeaheadUser" || dt === "typeaheadRecentSearchesItem" || dt === "User-Name" || dt === "UserName" || dt === "conversation") {
     processDiv(node, false, depth);
   }
 
-  if (dt == "tweet") {
+  if (dt === "tweet") {
     // mark the tweet as a labelled area
     processDiv(node, true, depth)
   }
 
   if (node.hasChildNodes()) {
     for (var i = 0; i < node.children.length; i++) {
-      var child = node.children[i];
+      const child = node.children[i];
       checkNode(child, force, depth + 1);
     }
   }
 }
 
 function processForMasking() {
-  var tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
+  const tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
 
   tweets.forEach(tweet => {
     applyMasking(tweet);
@@ -401,9 +407,9 @@ function applyAuthorMaskingObserver(authorElement, callback) {
 
 function applyMasking(tweet) {
   // Check if there is a social context element e.g. ("Username Retweeted")
-  var socialContext = tweet.querySelector("span[data-testid='socialContext']");
+  const socialContext = tweet.querySelector("span[data-testid='socialContext']");
   if (socialContext) {
-    var userLink = socialContext.closest("a");
+    const userLink = socialContext.closest("a");
     applyAuthorMaskingObserver(userLink, () => applyMasking(tweet));
     if (userLink.className.includes("transphobe")) {
       // User in social context is a transphobe
@@ -413,7 +419,7 @@ function applyMasking(tweet) {
   }
 
   // Check for the tweet author
-  var tweetAuthor = tweet.querySelector("div[data-testid='User-Name'] a");
+  const tweetAuthor = tweet.querySelector("div[data-testid='User-Name'] a");
   if (tweetAuthor) {
     applyAuthorMaskingObserver(tweetAuthor, () => applyMasking(tweet));
     if (tweetAuthor.className.includes("transphobe")) {
@@ -421,16 +427,16 @@ function applyMasking(tweet) {
     }
   }
 
-  var videoComponent = tweet.querySelector("div[data-testid='videoComponent']");
+  const videoComponent = tweet.querySelector("div[data-testid='videoComponent']");
   if (videoComponent) {
     videoComponent.setAttribute("wiawbe-mask-tag", "media");
-    var videoEl = videoComponent.querySelector("video");
+    const videoEl = videoComponent.querySelector("video");
     if (videoEl) {
       checkVideo(videoEl);
     }
   }
 
-  var tweetPhotos = tweet.querySelectorAll("div[data-testid='tweetPhoto']");
+  const tweetPhotos = tweet.querySelectorAll("div[data-testid='tweetPhoto']");
   if (tweetPhotos) {
     tweetPhotos.forEach(tweetPhoto => {
       tweetPhoto.setAttribute("wiawbe-mask-tag", "media");
@@ -438,9 +444,9 @@ function applyMasking(tweet) {
   }
 
   // Check for QRT
-  var qrtDiv = tweet.querySelector("div[tabindex='0'][role='link']");
+  const qrtDiv = tweet.querySelector("div[tabindex='0'][role='link']");
   if (qrtDiv) {
-    var qrtAuthor = qrtDiv.querySelector("div[data-testid='User-Name']");
+    const qrtAuthor = qrtDiv.querySelector("div[data-testid='User-Name']");
     if (qrtAuthor) {
       applyAuthorMaskingObserver(qrtAuthor, () => applyMasking(tweet));
       if (qrtAuthor.className.includes("transphobe")) {
@@ -485,17 +491,17 @@ function updateAllLabels() {
 function isProfilePage() {
   const localUrl = getLocalUrl(location.href);
   if (localUrl) {
-    const isProfilePage = localUrl.toLowerCase().startsWith("/" + getIdentifier(localUrl));
-    return isProfilePage;
+    return localUrl.toLowerCase().startsWith("/" + getIdentifier(localUrl));
   } else {
     return false;
   }
 }
 
+let appliedLinkedToUsernameOnProfilePage = false;
 function applyLinkToUsernameOnProfilePage() {
   if (!document.querySelector("a.wiaw-username-link") || !appliedLinkedToUsernameOnProfilePage) {
     // Check for username at top of profile page
-    var usernameDiv = document.body.querySelector("div[data-testid='UserName']");
+    const usernameDiv = document.body.querySelector("div[data-testid='UserName']");
     if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
       const link = document.createElement('a');
       link.setAttribute("href", location.href);
@@ -506,7 +512,7 @@ function applyLinkToUsernameOnProfilePage() {
       });
       link.classList.add("wiaw-username-link");
       // Remove any previous link wrapper
-      var previousLink = usernameDiv.closest("a.wiaw-username-link");
+      const previousLink = usernameDiv.closest("a.wiaw-username-link");
       if (previousLink) {
         //var parent = previousLink.closest("div");
         previousLink.before(previousLink.childNodes[0]); // move username div to just before link
@@ -525,15 +531,14 @@ function hash(string) {
   const utf8 = new TextEncoder().encode(string);
   return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray
-      .map((bytes) => bytes.toString(16).padStart(2, '0'))
-      .join('');
-    return hashHex;
+    return hashArray
+        .map((bytes) => bytes.toString(16).padStart(2, '0'))
+        .join('');
   });
 }
 
 function getUsernameFromDiv(div) {
-  var div_identifier = div.innerHTML.replace(/^.*?>[@⊗⊖⊡]([A-Za-z0-9_]+)<\/span><\/div>.*$/gs, "$1");
+  let div_identifier = div.innerHTML.replace(/^.*?>[@⊗⊖⊡]([A-Za-z0-9_]+)<\/span><\/div>.*$/gs, "$1");
 
   if (!div_identifier) {
     div_identifier = div.innerHTML.replace(/^.*?>[@⊗⊖⊡]([A-Za-z0-9_]+)<.*$/gs, "$1");
@@ -546,23 +551,25 @@ function getUsernameFromDiv(div) {
 }
 
 async function processDiv(div, markArea = false, depth = -1) {
-  var div_identifier = getUsernameFromDiv(div);
+  const div_identifier = getUsernameFromDiv(div);
 
   if (!div_identifier) {
     return;
   }
 
-  var database_entry = await getDatabaseEntry(div_identifier);
+  const database_entry = await getDatabaseEntry(div_identifier);
 
-  var hasLabelToApply = 'has-wiaw-label';
-  var labelPrefix = 'wiaw-label-';
-  var removedLabel = 'wiaw-removed';
+  let hasLabelToApply = 'has-wiaw-label';
+  let labelPrefix = 'wiaw-label-';
+  let removedLabel = 'wiaw-removed';
 
   if (markArea) {
     hasLabelToApply = 'has-wiaw-area-label';
     labelPrefix = 'wiaw-area-label-';
     removedLabel = 'wiaw-area-removed';
   }
+
+  let labelToApply = labelPrefix + div.wiawLabel;
 
   if (database_entry) {
     div.wiawLabel = database_entry["label"]
@@ -573,7 +580,6 @@ async function processDiv(div, markArea = false, depth = -1) {
       }
       div.wiawReason += " " + timeSince(database_entry["time"]);
     }
-    var labelToApply = labelPrefix + div.wiawLabel;
     if (div.wiawLabel && !div.classList.contains(labelToApply)) {
       div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
       div.classList.add(hasLabelToApply);
@@ -610,7 +616,7 @@ async function processDiv(div, markArea = false, depth = -1) {
             mutation.target.classList.add(labelToApply);
           }
         } else if (mutation.attributeName == "data-wiawbe-reason") {
-          applyProfileDecorations(div);
+          //applyProfileDecorations(div);
         }
       });
     });
@@ -622,11 +628,11 @@ async function processDiv(div, markArea = false, depth = -1) {
 function addReasonToUserNameDiv(div, identifier) {
   if (!/wiawbe-profile-reason/.test(div.innerHTML)) {
     if (div.wiawReason) {
-      var spanContents = "[" + div.wiawReason + "]";
+      const spanContents = "[" + div.wiawReason + "]";
       div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'></span>");
-      var profileReasonSpan = document.getElementById("wiawbe-profile-reason")
+      const profileReasonSpan = document.getElementById("wiawbe-profile-reason");
       profileReasonSpan.innerText = spanContents;
-      var reasonAnchor = document.createElement("a");
+      const reasonAnchor = document.createElement("a");
       reasonAnchor.href = "javascript:;"
       reasonAnchor.addEventListener("click", () => getReasoning(identifier));
       profileReasonSpan.innerText = "";
@@ -657,19 +663,19 @@ function waitForElm(selector) {
 }
 
 function linkify(text) {
-  var urlRegex = /(\bhttps?:\/\/(twitter\.com|x\.com)\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+  const urlRegex = /(\bhttps?:\/\/(twitter\.com|x\.com)\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
   return text.replace(urlRegex, function (url) {
     return '<a href="' + url + '">' + url + '</a>';
   });
 }
 
 function getReasoning(identifier) {
-  var fetchUrl = "https://api.beth.lgbt/moderation/reasons?state=" + state + "&identifier=" + identifier;
+  const fetchUrl = "https://api.beth.lgbt/moderation/reasons?state=" + state + "&identifier=" + identifier;
 
   notifier.async(
     new Promise(async resolve => {
       try {
-        var jsonData = "[]";
+        let jsonData = "[]";
 
         if (identifier in localReasonsCache && new Date() - localReasonsCache[identifier][1] < 30000) {
           jsonData = localReasonsCache[identifier][0];
@@ -683,48 +689,48 @@ function getReasoning(identifier) {
           localReasonsCache[identifier] = [jsonData, new Date()];
         }
 
-        var reasonsTable = document.createElement("table");
+        const reasonsTable = document.createElement("table");
         reasonsTable.classList.add("reasons-table")
-        var reasonsHeader = document.createElement("thead");
-        var header1 = document.createElement("th");
+        const reasonsHeader = document.createElement("thead");
+        const header1 = document.createElement("th");
         header1.innerText = browser.i18n.getMessage("reasonHeaderWhen");
         reasonsHeader.appendChild(header1);
-        var header2 = document.createElement("th");
+        const header2 = document.createElement("th");
         header2.innerText = browser.i18n.getMessage("reasonHeaderReporter");
         reasonsHeader.appendChild(header2);
-        var header3 = document.createElement("th");
+        const header3 = document.createElement("th");
         header3.innerText = browser.i18n.getMessage("reasonHeaderReason");
         reasonsHeader.appendChild(header3);
 
-        var reasonsBody = document.createElement("tbody")
+        const reasonsBody = document.createElement("tbody");
 
         reasonsTable.appendChild(reasonsHeader);
         reasonsTable.appendChild(reasonsBody);
 
-        var noReasonsSpan = document.createElement("span");
+        const noReasonsSpan = document.createElement("span");
         noReasonsSpan.innerText = browser.i18n.getMessage("noReasons");
 
         for (let report of jsonData) {
-          var when = new Date(report["report_time"] * 1000).toString().replace(/\ ..:.*/g, "").trim();
-          var reason = report["reason"];
+          const when = new Date(report["report_time"] * 1000).toString().replace(/\ ..:.*/g, "").trim();
+          let reason = report["reason"];
 
           if (!reason) {
             reason = "(no reason provided)";
           }
 
-          var rowEl = document.createElement("tr");
+          const rowEl = document.createElement("tr");
 
-          var timestampEl = document.createElement("td");
+          const timestampEl = document.createElement("td");
           timestampEl.classList.add("nowrap");
-          var reporterEl = document.createElement("td");
-          var reasonEl = document.createElement("td");
+          const reporterEl = document.createElement("td");
+          const reasonEl = document.createElement("td");
 
           timestampEl.innerText = when;
-          var reporter = report["reporter_screen_name"]
-          if (reporter == "redacted") {
+          const reporter = report["reporter_screen_name"];
+          if (reporter === "redacted") {
             reporterEl.innerText = reporter;
           } else {
-            var reporterAnchor = document.createElement("a");
+            const reporterAnchor = document.createElement("a");
             reporterAnchor.href = "https://twitter.com/" + report["reporter_screen_name"];
             reporterAnchor.innerText = reporter;
             reporterEl.appendChild(reporterAnchor);
@@ -742,9 +748,9 @@ function getReasoning(identifier) {
             "<div id='soupcan-reasons'></div>",
             'modal-reasons'
           );
-          var popupElements = document.getElementsByClassName("awn-popup-modal-reasons");
-          var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-          var textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
+          const popupElements = document.getElementsByClassName("awn-popup-modal-reasons");
+          const bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
+          const textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
           if (popupElements) {
             for (let el of popupElements) {
               el.style["background-color"] = bodyBackgroundColor;
@@ -752,10 +758,10 @@ function getReasoning(identifier) {
             }
           }
 
-          if (reasonsBody.childElementCount == 0) {
+          if (reasonsBody.childElementCount === 0) {
             document.getElementById("soupcan-reasons").appendChild(noReasonsSpan);
           } else {
-            var reasonsExplainer = document.createElement("p");
+            const reasonsExplainer = document.createElement("p");
             reasonsExplainer.innerText = browser.i18n.getMessage("reasonsExplanation");
             document.getElementById("soupcan-reasons").appendChild(reasonsExplainer);
             document.getElementById("soupcan-reasons").appendChild(reasonsTable);
@@ -767,8 +773,8 @@ function getReasoning(identifier) {
       }
       resolve();
     }),
-    response => { }, // success
-    response => {
+    () => { }, // success
+    () => {
       notifier.alert(browser.i18n.getMessage("serverFailure") + " (" + error + ")");
     }, // failure
     browser.i18n.getMessage("loadingReasons") // loading message
@@ -776,13 +782,13 @@ function getReasoning(identifier) {
 }
 
 async function getDatabaseEntry(identifier) {
-  var hashedIdentifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
+  const hashedIdentifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
 
-  var databaseEntry = database["entries"][hashedIdentifier];
-  var localEntry = localEntries[hashedIdentifier];
-  var isTransphobeInShinigamiEyes = shinigami.test(identifier);
+  const databaseEntry = database["entries"][hashedIdentifier];
+  const localEntry = localEntries[hashedIdentifier];
+  const isTransphobeInShinigamiEyes = shinigami.test(identifier);
 
-  var finalEntry = databaseEntry;
+  let finalEntry = databaseEntry;
 
   if (!!localEntry) {
     // Local entry takes precedence over db
@@ -832,7 +838,7 @@ async function getDatabaseEntry(identifier) {
 
       // Report to server
       try {
-        var fetchUrl = "https://api.beth.lgbt/report-shinigami?screen_name=" + identifier;
+        const fetchUrl = "https://api.beth.lgbt/report-shinigami?screen_name=" + identifier;
         doFetch(fetchUrl);
       } catch (error) {
         // ignore
@@ -840,7 +846,7 @@ async function getDatabaseEntry(identifier) {
     }
   }
 
-  if (finalEntry && finalEntry["label"] == "appealed") {
+  if (finalEntry && finalEntry["label"] === "appealed") {
     return null;
   }
 
@@ -848,14 +854,14 @@ async function getDatabaseEntry(identifier) {
 }
 
 async function processLink(a) {
-  if (a.getAttribute("role") == "tab") {
+  if (a.getAttribute("role") === "tab") {
     // don't label tabs
     return;
   }
 
-  var identifier = null;
+  let identifier = null;
 
-  var dataIdentifier = a.getAttribute("data-wiawbeidentifier");
+  const dataIdentifier = a.getAttribute("data-wiawbeidentifier");
 
   if (a.querySelector("a>time")) {
     a.removeAttribute("data-wiawbeidentifier");
@@ -863,9 +869,9 @@ async function processLink(a) {
   }
 
   if (dataIdentifier) {
-    var identifier = dataIdentifier;
+    identifier = dataIdentifier;
   } else {
-    var localUrl = getLocalUrl(a.href);
+    const localUrl = getLocalUrl(a.href);
     if (!localUrl) {
       return;
     }
@@ -912,7 +918,7 @@ async function processLink(a) {
   if (!a.observer) {
     a.observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
-        if (mutation.attributeName == "class" || mutation.attributeName == "href") {
+        if (mutation.attributeName === "class" || mutation.attributeName === "href") {
           if (a.wiawLabel) {
             if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
               a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
@@ -960,7 +966,7 @@ function getIdentifier(localUrl) {
     return null;
   }
 
-  var identifier = localUrl;
+  let identifier = localUrl;
 
   if (identifier.startsWith("/")) {
     identifier = identifier.substr(1);
@@ -992,22 +998,22 @@ function getLocalUrl(url) {
     return null;
   }
 
-  var reservedUrls = [
+  const reservedUrls = [
     "/home",
     "/explore",
     "/notifications",
     "/messages",
     "/tos",
     "/privacy"
-  ]
+  ];
 
   for (const reservedUrl of reservedUrls) {
-    if (url == reservedUrl) {
+    if (url === reservedUrl) {
       return null;
     }
   }
 
-  var reservedSlugs = [
+  const reservedSlugs = [
     "/compose/",
     "/following",
     "/followers",
@@ -1028,7 +1034,7 @@ function getLocalUrl(url) {
     "/hidden",
     "/quotes",
     "/retweets"
-  ]
+  ];
 
   for (const reservedSlug of reservedSlugs) {
     if (url.includes(reservedSlug)) {
@@ -1043,15 +1049,15 @@ function getLocalUrl(url) {
   return url;
 }
 
-var countedTerfs = 0;
-var countedUserCells = 0;
-var usersCounted = [];
+let countedTerfs = 0;
+let countedUserCells = 0;
+let usersCounted = [];
 
 async function countTerf(userCell) {
-  var link = userCell.querySelector("a");
+  const link = userCell.querySelector("a");
   if (link) {
-    var href = link.getAttribute("href");
-    var entry = await getDatabaseEntry(getIdentifier(href));
+    const href = link.getAttribute("href");
+    const entry = await getDatabaseEntry(getIdentifier(href));
     if (href && !usersCounted.includes(href)) {
       countedUserCells++;
       usersCounted.push(href);
@@ -1062,9 +1068,9 @@ async function countTerf(userCell) {
     }
   }
 
-  var count = document.getElementById("soupcan-count");
+  const count = document.getElementById("soupcan-count");
+  let percentage = 0;
   if (count) {
-    percentage = 0;
     if (countedUserCells > 0) {
       percentage = Math.max(0, Math.min(100, Math.floor(100 * countedTerfs / countedUserCells)));
     }
@@ -1077,28 +1083,23 @@ function doCountTerfs(kind) {
     return;
   }
 
+  let el = document.getElementById("soupcan-terf-count");
+
   if (!kind) {
     // Remove terf count UI
-    var el = document.getElementById("soupcan-terf-count");
     if (el) {
       el.remove();
     }
   } else {
     try {
-      // Delete existing panel
-      var el = document.getElementById("soupcan-terf-count");
-      if (el) {
-        el.remove();
-      }
-
       // Reset count values
       countedTerfs = 0;
       countedUserCells = 0;
       usersCounted = [];
 
       // Create a copy of the "Who to follow" panel as a basis for the transphobe counter panel
-      var whatsHappeningDiv = document.querySelector("div[data-testid='sidebarColumn'] div[tabindex='0'] div>section[aria-labelledby]");
-      var whatsHappeningPanel = whatsHappeningDiv.parentElement.parentElement;
+      const whatsHappeningDiv = document.querySelector("div[data-testid='sidebarColumn'] div[tabindex='0'] div>section[aria-labelledby]");
+      const whatsHappeningPanel = whatsHappeningDiv.parentElement.parentElement;
 
       if (!whatsHappeningPanel || !whatsHappeningPanel.querySelector("a") || whatsHappeningPanel.querySelectorAll("div[tabindex='0'] div>div>div>span").length < 4) {
         // Not fully loaded
@@ -1106,7 +1107,7 @@ function doCountTerfs(kind) {
         return;
       }
 
-      var transphobeCountPanel = whatsHappeningPanel.cloneNode(true);
+      const transphobeCountPanel = whatsHappeningPanel.cloneNode(true);
       // Set the id for later reference
       transphobeCountPanel.id = "soupcan-terf-count";
       // Make the panel the right size
@@ -1185,13 +1186,13 @@ function doCountTerfs(kind) {
         countTerf(userCell);
       });
 
-      var terfObserver = new MutationObserver(mutationsList => {
+      const terfObserver = new MutationObserver(mutationsList => {
         for (const mutation of mutationsList) {
           if (lastUpdatedUrl.includes("follow")) {
             if (mutation.type == 'childList') {
               for (const node of mutation.addedNodes) {
                 if (node instanceof HTMLDivElement) {
-                  var userCell = node.querySelector("[data-testid='UserCell']");
+                  const userCell = node.querySelector("[data-testid='UserCell']");
                   if (userCell) {
                     countTerf(userCell);
                   }
@@ -1212,12 +1213,13 @@ function doCountTerfs(kind) {
   }
 }
 
-var lastUpdatedUrl = null;
+lastUpdatedUrl = null;
+
 function updatePage() {
   if (location.href != lastUpdatedUrl) {
     lastUpdatedUrl = location.href;
     appliedLinkedToUsernameOnProfilePage = false;
-    var linkedDiv = document.querySelector("div.wiawbe-linked");
+    const linkedDiv = document.querySelector("div.wiawbe-linked");
     if (linkedDiv) {
       linkedDiv.classList.remove("wiawbe-linked");
     }
@@ -1231,9 +1233,9 @@ function updatePage() {
     }
 
     function removeProfileReason() {
-      var profileReason = document.getElementById("wiawbe-profile-reason");
+      const profileReason = document.getElementById("wiawbe-profile-reason");
       if (profileReason) {
-        var usernameDiv = profileReason.closest("[data-testid='UserName']");
+        const usernameDiv = profileReason.closest("[data-testid='UserName']");
         profileReason.remove();
         addReasonToUserNameDiv(usernameDiv, getUsernameFromDiv(usernameDiv));
       }
@@ -1269,17 +1271,17 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
     return;
   }
 
-  var successMessage = "";
-  var failureMessage = "";
-  var notificationMessage = "";
-  var endpoint = "";
+  let successMessage = "";
+  let failureMessage = "";
+  let notificationMessage = "";
+  let endpoint = "";
 
-  if (reportType == "transphobe") {
+  if (reportType === "transphobe") {
     endpoint = "report-transphobe";
     successMessage = browser.i18n.getMessage("reportReceived", [identifier]);
     failureMessage = browser.i18n.getMessage("reportSubmissionFailed") + " ";
     notificationMessage = browser.i18n.getMessage("sendingReport", [identifier]);
-  } else if (reportType == "appeal") {
+  } else if (reportType === "appeal") {
     endpoint = "appeal-label";
     successMessage = browser.i18n.getMessage("appealReceived", [identifier]);
     failureMessage = browser.i18n.getMessage("appealSubmissionFailed") + " ";
@@ -1331,14 +1333,14 @@ function sendPendingLabels() {
   Object.keys(localEntries).forEach(localKey => {
     const localEntry = localEntries[localKey];
 
-    if (localEntry["status"] == "pending") {
+    if (localEntry["status"] === "pending") {
       const when = localEntry["time"];
       const now = Date.now();
 
       if (!when || now > when + 10000) { // it's been at least 10 seconds
         const reportType = localEntry["label"].replace("local-", "");
 
-        var fetchUrl = "https://api.beth.lgbt/check-report?state=" + state + "&screen_name=" + localEntry["identifier"];
+        const fetchUrl = "https://api.beth.lgbt/check-report?state=" + state + "&screen_name=" + localEntry["identifier"];
         // check if the report already went through
         browser.runtime.sendMessage({
           "action": "fetch",
@@ -1389,8 +1391,8 @@ async function checkForDatabaseUpdates() {
 
   if (database) {
     if (database["last_updated"]) {
-      var lastUpdated = database["last_updated"];
-      var fetchUrl = "https://api.beth.lgbt/get-db-version";
+      const lastUpdated = database["last_updated"];
+      const fetchUrl = "https://api.beth.lgbt/get-db-version";
       if (Date.now() > lastUpdated + 5 * 60 * 1000) { // 5 minutes
         browser.runtime.sendMessage({
           "action": "fetch",
@@ -1489,10 +1491,12 @@ async function updateDatabase(sendResponse, version) {
   return true;
 }
 
+let contextMenuElement;
 // Receive messages from background script
 browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-  if (message.action == "report-transphobe") {
-    var initialReason = "";
+  let localUrl;
+  if (message.action === "report-transphobe") {
+    let initialReason = "";
 
     try {
       if (!state) {
@@ -1500,7 +1504,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         sendResponse("Invalid state!");
         return true;
       }
-      var localUrl = getLocalUrl(message.url);
+      localUrl = getLocalUrl(message.url);
       if (!localUrl) {
         notifier.alert(browser.i18n.getMessage("invalidReportTarget"));
         sendResponse("Invalid report target!");
@@ -1514,8 +1518,8 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       }
 
-      var clonedTweetButton = document.querySelector("a[data-testid='SideNav_NewTweet_Button'], #navbar-tweet-button").cloneNode(true);
-      var icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
+      const clonedTweetButton = document.querySelector("a[data-testid='SideNav_NewTweet_Button'], #navbar-tweet-button").cloneNode(true);
+      const icon = clonedTweetButton.querySelector("div[dir='ltr'] svg");
       if (icon) {
         icon.remove();
       }
@@ -1532,16 +1536,16 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
           'modal-reason'
         );
-        var popupElements = document.getElementsByClassName("awn-popup-modal-reason");
-        var bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
-        var textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
+        const popupElements = document.getElementsByClassName("awn-popup-modal-reason");
+        const bodyBackgroundColor = window.getComputedStyle(document.body, null).getPropertyValue("background-color");
+        const textColor = window.getComputedStyle(document.querySelector("div[data-testid='DMDrawerHeader'] span"), null).getPropertyValue("color");
         if (popupElements) {
           for (let el of popupElements) {
             el.style["background-color"] = bodyBackgroundColor;
             el.style["color"] = textColor;
           }
         }
-        var textArea = document.getElementById("wiawbe-reason-textarea");
+        const textArea = document.getElementById("wiawbe-reason-textarea");
         if (textArea) {
           textArea.style["backgroundColor"] = bodyBackgroundColor;
           textArea.style["color"] = textColor;
@@ -1553,13 +1557,13 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
         clonedTweetButton.addEventListener('click', async function () {
           textArea.disabled = true;
-          var submitReason = textArea.value;
-          var awnPopupWrapper = document.getElementById("awn-popup-wrapper");
+          const submitReason = textArea.value;
+          const awnPopupWrapper = document.getElementById("awn-popup-wrapper");
           awnPopupWrapper.classList.add("awn-hiding");
           setTimeout(() => awnPopupWrapper.remove(), 300);
 
           // Add locally
-          var localKey = await hash(identifier + ":" + database["salt"])
+          const localKey = await hash(identifier + ":" + database["salt"]);
           localEntries[localKey] = { "label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier };
 
           saveLocalEntries();
@@ -1579,7 +1583,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         sendResponse("Invalid state!");
         return true;
       }
-      var localUrl = getLocalUrl(message.url);
+      localUrl = getLocalUrl(message.url);
       if (!localUrl) {
         notifier.alert(browser.i18n.getMessage("invalidAppealTarget"));
         sendResponse("Invalid appeal target!");
@@ -1588,7 +1592,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       const identifier = getIdentifier(localUrl);
 
-      dbEntry = await getDatabaseEntry(identifier);
+      let dbEntry = await getDatabaseEntry(identifier);
       if (dbEntry || isModerator) {
         if (confirm(`Are you sure you would like to appeal @${identifier}'s label?`)) {
           // Add locally
@@ -1607,9 +1611,9 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     } catch (error) {
       notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
-  } else if (message.action == "search-tweets") {
+  } else if (message.action === "search-tweets") {
     try {
-      var localUrl = getLocalUrl(message.url);
+      localUrl = getLocalUrl(message.url);
       if (!localUrl) {
         notifier.alert(browser.i18n.getMessage("invalidTarget"));
         sendResponse(null);
@@ -1622,9 +1626,9 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     } catch (error) {
       notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
-  } else if (message.action == "update-database") {
+  } else if (message.action === "update-database") {
     updateDatabase(sendResponse, database["version"]);
-  } else if (message.action == "check-transphobe") {
+  } else if (message.action === "check-transphobe") {
     let dbEntry = getDatabaseEntry(message.screen_name);
 
     return {
@@ -1637,9 +1641,10 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
   return false;
 });
 
-var contextInvalidated = false;
+let contextInvalidated = false;
 const contextInvalidatedMessage = browser.i18n.getMessage("extensionContextInvalidated");
-var intervals = [];
+let intervals = [];
+
 function checkForInvalidExtensionContext() {
   if (contextInvalidated) {
     return true;
@@ -1652,10 +1657,10 @@ function checkForInvalidExtensionContext() {
     if (!contextInvalidated) {
       notifier.confirm(contextInvalidatedMessage, () => location.reload());
 
-      var popupElements = document.getElementsByClassName("awn-popup-confirm");
-      var bodyBackgroundColor = document.getElementsByTagName("body")[0].style["background-color"];
-      var textColor = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("color");
-      var fontFamily = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("font-family");
+      const popupElements = document.getElementsByClassName("awn-popup-confirm");
+      const bodyBackgroundColor = document.getElementsByTagName("body")[0].style["background-color"];
+      const textColor = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("color");
+      const fontFamily = window.getComputedStyle(document.querySelector("span"), null).getPropertyValue("font-family");
       if (popupElements) {
         for (let el of popupElements) {
           el.style["background-color"] = bodyBackgroundColor;
@@ -1673,7 +1678,7 @@ function checkForInvalidExtensionContext() {
   }
 }
 
-var contextMenuElement = null;
+contextMenuElement = null;
 
 // Populate DOM element for context menu
 document.addEventListener("contextmenu", function (event) {
@@ -1683,7 +1688,7 @@ document.addEventListener("contextmenu", function (event) {
 function reloadLocalDb() {
   browser.storage.local.get(["local_entries"], v => {
     if (v.local_entries) {
-      newLocalEntries = v.local_entries;
+      let newLocalEntries = v.local_entries;
       for (let key in newLocalEntries) {
         if (!(key in localEntries)) {
           localEntries[key] = newLocalEntries[key];

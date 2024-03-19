@@ -4,6 +4,7 @@ const maskNoneRadio = document.getElementById("maskNone");
 const maskTransphobeMediaRadio = document.getElementById("maskTransphobeMedia");
 const maskAllTransphobeMediaRadio = document.getElementById("maskAllTransphobeMedia");
 const maskAllTransphobeContentRadio = document.getElementById("maskAllTransphobeContent");
+const hideAllTransphobeContentRadio = document.getElementById("hideAllTransphobeContent");
 const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
 const hideAdsCheckbox = document.getElementById("hideAds");
 
@@ -14,14 +15,14 @@ const themeExamples = [
   document.getElementById("dark-mode-example")
 ]
 
-var inputs = document.getElementsByTagName("input");
+const inputs = document.getElementsByTagName("input");
 for (let el of inputs) {
   el.addEventListener("change", () => {
     saveOptions();
   });
 };
 
-var colorBlindThemeSelect = document.getElementById("color-blind-theme");
+const colorBlindThemeSelect = document.getElementById("color-blind-theme");
 
 colorBlindThemeSelect.addEventListener("change", () => {
   for (let themeEx of themeExamples) {
@@ -33,16 +34,15 @@ colorBlindThemeSelect.addEventListener("change", () => {
   saveOptions();
 });
 
-var useSymbolsCheckbox = document.getElementById("useSymbols");
-var useSymbols = false;
+const useSymbolsCheckbox = document.getElementById("useSymbols");
+let useSymbols = false;
 useSymbolsCheckbox.addEventListener("change", () => {
   useSymbols = useSymbolsCheckbox.checked;
   loadThemeExamples();
   saveOptions();
 });
 
-var options = {}
-var contentMatchingThreshold = -1;
+let options = {};
 
 useMediaMatching.addEventListener("change", () => {
   saveOptions();
@@ -125,7 +125,7 @@ function loadOptions() {
     }
 
     if (options["maskMode"]) {
-      var mm = options["maskMode"];
+      const mm = options["maskMode"];
       switch (mm) {
         case "none":
           maskNoneRadio.checked = true;
@@ -138,6 +138,9 @@ function loadOptions() {
           break;
         case "all-content":
           maskAllTransphobeContentRadio.checked = true;
+          break;
+        case "hide-all":
+          hideAllTransphobeContentRadio.checked = true;
           break;
       }
     } else {
@@ -174,7 +177,6 @@ function saveOptions() {
 
   options["hideAds"] = hideAdsCheckbox.checked;
   options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
-  options["contentMatchingThreshold"] = contentMatchingThreshold;
 
   options["mediaMatching"] = useMediaMatching.checked;
   options["cbTheme"] = colorBlindThemeSelect.value;
