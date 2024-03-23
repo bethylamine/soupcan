@@ -40,7 +40,7 @@
         "description": "Context menu action to chat with WhatIsAWomanBot."
     },
     "reportReasonInstructions": {
-        "message": "<h2>🍅 Report @$ID$</h2><p>Provide examples tweets that you deem transphobic. If you're not sure, check <a style='float:none' href='https://bethylamine.github.io/library/browser-extension/mod'>the moderator guidelines</a>. The more examples you include the easier it is to approve. Add context if you think it's needed. A community moderator may reach out to you for questions. Do NOT report someone who is otherwise non-transphobic for a contentious tweet; give them the benefit of the doubt.</p>",
+        "message": "<h2>🍅 Report @$ID$</h2><p><b>You must specify a good reason.</b> If you're not sure, check <a style='float:none' href='https://bethylamine.github.io/library/browser-extension/mod'>the moderator guidelines</a>.<br/><br/>You may provide multiple tweets here, or make multiple reports, either is fine. Add context if needed. A community moderator may reach out to you for questions.<br/><br/><ul><li><b>For each tweet listed</b> please summarize why it's transphobic (especially in case they delete it.)</li></ul></p>",
         "description": "Instructions given to the user on providing a report reason.",
         "placeholders": {
             "id": {
@@ -261,5 +261,13 @@
     },
     "reasonsExplanation": {
         "message": "The following are the reports for this user. The reporter username and/or the reasoning might be redacted if you have a low trust value (new user, or not enough valid reports made.) If you think this is in error, please try to log in again (Soupcan -> Re-run setup) or contact the extension owner."
+    },
+    "reasonInsufficient": {
+        "description": "When no reason/too short of a reason is given in a report, this is the error message",
+        "message": "You must specify a longer report reason."
+    },
+    "cancelReportConfirmation": {
+        "description": "Warning confirmation given to the user if they click off the report dialog when there's text in the report text box.",
+        "message": "Really close the report window?"
     }
 }

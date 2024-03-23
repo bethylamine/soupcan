@@ -31,6 +31,17 @@ function init() {
     }
   });
 
+  document.addEventListener('click', function(event) {
+    if (event.target === document.getElementById("awn-popup-wrapper")) {
+      let reasonBox = document.getElementById("wiawbe-reason-textarea");
+      if (reasonBox.value.length > 0) {
+        if (!confirm(browser.i18n.getMessage("cancelReportConfirmation"))) {
+          event.stopPropagation();
+        }
+      }
+    }
+  }, true);
+
   initDatabase();
 
   browser.storage.local.get(["state", "is_moderator"], v => {
@@ -1571,14 +1582,18 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           awnPopupWrapper.classList.add("awn-hiding");
           setTimeout(() => awnPopupWrapper.remove(), 300);
 
-          // Add locally
-          const localKey = await hash(identifier + ":" + database["salt"]);
-          localEntries[localKey] = { "label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier };
+          if (submitReason.length > 10) {
+            // Add locally
+            const localKey = await hash(identifier + ":" + database["salt"]);
+            localEntries[localKey] = { "label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier };
 
-          saveLocalEntries();
+            saveLocalEntries();
 
-          updateAllLabels();
-          sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
+            updateAllLabels();
+            sendLabel("transphobe", identifier, sendResponse, localKey, submitReason);
+          } else {
+            notifier.alert(browser.i18n.getMessage("reasonInsufficient"));
+          }
         }, { once: true });
         return true;
       });
