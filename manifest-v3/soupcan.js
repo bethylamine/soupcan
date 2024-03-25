@@ -1534,6 +1534,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       try {
         initialReason = contextMenuElement.closest("article").querySelector("a[href*='status'][href*='" + identifier + "' i]").href;
+        initialReason += " - \"" + contextMenuElement.closest("article").querySelector("[data-testid='tweetText']").innerText + "\"";
       } catch {
 
       }
