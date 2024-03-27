@@ -62,6 +62,8 @@ class BloomFilter {
     }
     ;
     test(v) {
+        return false;
+
         var l = this.locations(v + ""), k = this.k, buckets = this.buckets;
         for (var i = 0; i < k; ++i) {
             var b = l[i];

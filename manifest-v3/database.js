@@ -35,7 +35,7 @@ async function getDatabaseEntry(identifier) {
 
   var databaseEntry = database["entries"][hashedIdentifier];
   var localEntry = localEntries[hashedIdentifier];
-  var isTransphobeInShinigamiEyes = shinigami.test(identifier);
+  var isTransphobeInShinigamiEyes = false; // shinigami.test(identifier);
 
   var finalEntry = databaseEntry;
 
