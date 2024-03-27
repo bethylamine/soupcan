@@ -795,10 +795,16 @@ async function getDatabaseEntry(identifier) {
   const hashedIdentifier = await hash(identifier.toLowerCase() + ":" + database["salt"]);
 
   const databaseEntry = database["entries"][hashedIdentifier];
-  const localEntry = localEntries[hashedIdentifier];
+  let localEntry = localEntries[hashedIdentifier];
   const isTransphobeInShinigamiEyes = shinigami.test(identifier);
 
   let finalEntry = databaseEntry;
+
+  if (localEntry) {
+    if (localEntry["reason"] === "Detected by Shinigami Eyes") {
+      localEntry = null;
+    }
+  }
 
   if (!!localEntry) {
     // Local entry takes precedence over db
