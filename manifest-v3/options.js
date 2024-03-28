@@ -229,3 +229,35 @@ function saveOptions() {
     "options": options
   });
 }
+
+
+
+const permissions = {
+  origins: ["*://*.twitter.com/*", "*://*.x.com/*"],
+};
+const permCheckbox = document.getElementById("permCheckbox");
+permCheckbox.onchange = async () => {
+  if (permCheckbox.checked) {
+    let granted = await browser.permissions.request(permissions);
+    if (!granted) {
+      permCheckbox.checked = false;
+    }
+  } else {
+    try {
+      await browser.permissions.remove(permissions);
+    } catch (e) {
+
+      console.error(e);
+      permCheckbox.checked = true;
+    }
+  }
+};
+
+async function renderPermissions() {
+  permCheckbox.checked = await browser.permissions.contains(permissions);
+}
+
+
+browser.permissions.onAdded.addListener(renderPermissions);
+browser.permissions.onRemoved.addListener(renderPermissions);
+renderPermissions();
