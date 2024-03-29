@@ -1319,7 +1319,7 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
 
   saveLocalEntries();
 
-  const fetchUrl = "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&client_report_id=" + client_report_id + "&reason=" + encodeURI(reason);
+  const fetchUrl = "https://api.beth.lgbt/" + endpoint + "?state=" + state + "&screen_name=" + identifier + "&client_report_id=" + client_report_id + "&reason=" + encodeURIComponent(reason);
   // Report to WIAW
   notifier.async(
     doFetch(fetchUrl),
