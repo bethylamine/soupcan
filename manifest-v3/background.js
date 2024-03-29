@@ -38,8 +38,10 @@ function start() {
     }
 
     if (v.state) {
-      handleFetch("https://api.beth.lgbt/moderation/is-moderator?state=" + v.state, response => {
-        if (response["text"] == "1") {
+      handleFetch("https://api.beth.lgbt/moderation/user-data?state=" + v.state, response => {
+        response = response["json"];
+
+        if (response["is_moderator"]) {
           browser.storage.local.set({
             "is_moderator": true
           });
@@ -50,6 +52,11 @@ function start() {
               contexts: ["page"]
             });
           }
+        }
+        if (response["trust_level"]) {
+          browser.storage.local.set({
+            "trust_level": response["trust_level"]
+          });
         }
       });
     }

@@ -976,14 +976,16 @@ function applySymbols(transphobeDiv) {
         }
         parentNode = parentNode.parentElement;
       }
-      if (textContent.includes("@")) {
-        // has @ symbol (username)
-        if (parentNode.className.includes("label-transphobe")) {
-          textNode.textContent = textContent.replace("@", "⊗");
-        } else if (parentNode.className.includes("label-local-transphobe")) {
-          textNode.textContent = textContent.replace("@", "⊖");
-        } else if (parentNode.className.includes("label-local-appeal")) {
-          textNode.textContent = textContent.replace("@", "⊡");
+      if (parentNode) {
+        if (textContent.includes("@")) {
+          // has @ symbol (username)
+          if (parentNode.className.includes("label-transphobe")) {
+            textNode.textContent = textContent.replace("@", "⊗");
+          } else if (parentNode.className.includes("label-local-transphobe")) {
+            textNode.textContent = textContent.replace("@", "⊖");
+          } else if (parentNode.className.includes("label-local-appeal")) {
+            textNode.textContent = textContent.replace("@", "⊡");
+          }
         }
       }
     }

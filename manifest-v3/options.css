@@ -4,6 +4,11 @@
          url('fonts/Chirp-Regular.woff2') format('woff2')
 }
 
+.ratings-star {
+    margin-right: 0.4em;
+    width: 3em;
+}
+
 .mm-example {
     cursor: default;
     user-select: none;

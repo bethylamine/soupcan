@@ -20,7 +20,7 @@ for (let el of inputs) {
   el.addEventListener("change", () => {
     saveOptions();
   });
-};
+}
 
 const colorBlindThemeSelect = document.getElementById("color-blind-theme");
 
@@ -48,7 +48,10 @@ useMediaMatching.addEventListener("change", () => {
   saveOptions();
 });
 
-loadOptions();
+window.onload = () => {
+  loadOptions();
+  loadThemeExamples();
+};
 
 loadThemeExamples();
 
@@ -119,9 +122,13 @@ function loadThemeExamples() {
 }
 
 function loadOptions() {
-  browser.storage.local.get(["options"], v => {
+  browser.storage.local.get(["options", "trust_level"], v => {
     if (v.options) {
       options = v.options || {};
+    }
+    if (v.trust_level !== undefined) {
+      v.trust_level = v.trust_level || 0;
+      setTrustLevel(v.trust_level)
     }
 
     if (options["maskMode"]) {
@@ -170,6 +177,42 @@ function loadOptions() {
 
     loadThemeExamples();
   });
+}
+
+function setTrustLevel(real_trust_level) {
+  const trustStars = document.getElementById("trustStars");
+  let trust_level = real_trust_level;
+  // full stars
+  while (trust_level >= 2) {
+    const fullStarImage = document.createElement("img");
+    fullStarImage.src = "images/star-full.png";
+    fullStarImage.className = "ratings-star"
+    fullStarImage.alt = "Full star";
+    fullStarImage.draggable = false;
+    trustStars.appendChild(fullStarImage);
+    trust_level -= 2;
+  }
+  // half stars
+  if (trust_level === 1) {
+    const halfStarImage = document.createElement("img");
+    halfStarImage.src = "images/star-half.png";
+    halfStarImage.className = "ratings-star"
+    halfStarImage.alt = "Full star";
+    halfStarImage.draggable = false;
+    trustStars.appendChild(halfStarImage);
+  }
+
+  // now do empty stars
+  trust_level = real_trust_level;
+  while (trust_level <= 8) {
+    const emptyStarImage = document.createElement("img");
+    emptyStarImage.src = "images/star-empty.png";
+    emptyStarImage.className = "ratings-star"
+    emptyStarImage.alt = "Full star";
+    emptyStarImage.draggable = false;
+    trustStars.appendChild(emptyStarImage);
+    trust_level += 2;
+  }
 }
 
 function saveOptions() {
