@@ -953,24 +953,37 @@ async function processLink(a) {
   }
 }
 
-function applySymbols(element) {
+function applySymbols(transphobeDiv) {
   if (!cbUseSymbols) {
     return;
   }
-  const innerSpans = element.querySelectorAll("span");
+  const innerSpans = transphobeDiv.querySelectorAll("span");
   for (let innerSpan of innerSpans) {
     if (innerSpan && innerSpan.childNodes.length === 1 && innerSpan.childNodes[0].nodeType === 3) {
       // leaf node
       let textNode = innerSpan.childNodes[0];
-      let innerText = innerSpan.innerText;
-      if (innerText.includes("@")) {
+      let textContent = innerSpan.textContent;
+      if (!textContent) {
+        continue;
+      }
+      // find nearest User-Name parent
+      let parentNode = innerSpan.parentElement;
+      let parentUserNameDiv = transphobeDiv;
+      while (parentNode) {
+        if (parentNode.getAttribute("data-testid") === "User-Name") {
+          parentUserNameDiv = parentNode
+          break;
+        }
+        parentNode = parentNode.parentElement;
+      }
+      if (textContent.includes("@")) {
         // has @ symbol (username)
-        if (element.className.includes("label-transphobe")) {
-          textNode.nodeValue = innerText.replace("@", "⊗");
-        } else if (element.className.includes("label-local-transphobe")) {
-          textNode.nodeValue = innerText.replace("@", "⊖");
-        } else if (element.className.includes("label-local-appeal")) {
-          textNode.nodeValue = innerText.replace("@", "⊡");
+        if (parentNode.className.includes("label-transphobe")) {
+          textNode.textContent = textContent.replace("@", "⊗");
+        } else if (parentNode.className.includes("label-local-transphobe")) {
+          textNode.textContent = textContent.replace("@", "⊖");
+        } else if (parentNode.className.includes("label-local-appeal")) {
+          textNode.textContent = textContent.replace("@", "⊡");
         }
       }
     }
