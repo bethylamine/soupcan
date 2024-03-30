@@ -2,10 +2,15 @@ import http from "./fetch-progress.js";
 
 var browser = browser || chrome;
 
+const permissions = {
+  origins: ["*://*.twitter.com/*", "*://*.x.com/*"],
+};
+
 var downloadButton = document.getElementById("download-button");
 var closeButton = document.getElementById("close-button");
 var continueButton = document.getElementById("continue-button");
 var continueButton2 = document.getElementById("continue-button-2");
+var continueButton3 = document.getElementById("continue-button-3");
 var loginButton = document.getElementById("login-button");
 var progressBarWrapper = document.getElementById("progress-bar-wrapper");
 var progressBar = document.getElementById("progress-bar");
@@ -15,11 +20,14 @@ var instructions = document.getElementById("instructions");
 var header = document.getElementById("header");
 var tos = document.getElementById("tos");
 var agree = document.getElementById("agree");
+var permissionButton = document.getElementById("permission-button");
 
 downloadButton.addEventListener("click", startDownload);
+permissionButton.addEventListener("click", requestPermissions );
 closeButton.addEventListener("click", () => window.close());
 continueButton.addEventListener("click", goToLogin);
-continueButton2.addEventListener("click", goToEnd);
+continueButton2.addEventListener("click", goToPermissions);
+continueButton3.addEventListener("click", goToEnd);
 agree.addEventListener("change", () => {
   continueButton2.disabled = !agree.checked;
 })
@@ -31,6 +39,9 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 // Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
 if (params.download) {
   goToDownload();
+}
+else if (params.permissions) {
+  goToPermissions(true);
 }
 
 var result = {};
@@ -139,8 +150,7 @@ function goToAcceptTos() {
 }
 
 function goToEnd() {
-  tos.classList.add("d-none");
-  continueButton2.classList.add("d-none");
+  continueButton3.classList.add("d-none");
   header.innerText = "You're all set!";
   topText.innerHTML = "Note: If you're on Firefox, make sure you give the extension permission to access twitter either through Manage Extension or 'Always Allow on twitter.com':<br/><br/><img src='images/ff-perms1.png'/><img src='images/ff-perms2.png'/><br/><br/>You're ready to start enjoying your new Twitter experience. You may close this page now.";
   closeButton.classList.remove("d-none");
@@ -170,3 +180,44 @@ window.addEventListener('fetch-progress', (e) => {
 window.addEventListener('fetch-finished', (e) => {
   setProgressbarValue(e.detail);
 });
+
+async function goToPermissions(afterInstall){
+  if(afterInstall == true) {
+    downloadButton.classList.add("d-none");
+
+    header.innerText = "Requesting Host Permissions";
+    topText.innerHTML = "Please allow Soupcan to access Twitter.com and x.com.";
+    permissionButton.classList.remove("d-none");
+  } else {
+    tos.classList.add("d-none");
+    continueButton2.classList.add("d-none");
+    header.innerText = "Requesting Host Permissions";
+    topText.innerHTML = "Please allow Soupcan to access Twitter.com and x.com.";
+    let granted = await browser.permissions.request(permissions);
+    if(granted) {
+      header.innerText = "Host Permissions Granted";
+      topText.innerHTML = "Thank you!";
+      continueButton3.classList.remove("d-none");
+      return;
+    }
+    header.innerText = "Host Permissions Denied";
+    topText.innerHTML = "This page will show again on next launch.";
+    continueButton3.classList.remove("d-none");
+  }
+
+}
+
+async function requestPermissions(){
+  let granted = await browser.permissions.request(permissions);
+  if(granted) {
+    header.innerText = "Host Permissions Granted";
+    topText.innerHTML = "Thank you! You can now close this page.";
+    permissionButton.classList.add("d-none");
+    closeButton.classList.remove("d-none");
+    return;
+  }
+  header.innerText = "Permissions Denied";
+  topText.innerHTML = "Permissions were not granted. this page will show again on next launch.";
+  permissionButton.classList.add("d-none");
+  closeButton.classList.remove("d-none");
+}

@@ -45,7 +45,7 @@
         "open_in_tab": true,
         "page": "options.html"
      },
-    "permissions": ["contextMenus", "storage", "unlimitedStorage"],
+    "permissions": ["contextMenus", "storage", "unlimitedStorage", "webNavigation"],
     "web_accessible_resources": [
         {
           "resources": ["images/*.png"],

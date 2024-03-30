@@ -45,7 +45,7 @@
         "open_in_tab": true,
         "page": "options.html"
      },
-    "permissions": ["contextMenus", "menus", "storage", "unlimitedStorage"],
+    "permissions": ["contextMenus", "menus", "storage", "unlimitedStorage", "webNavigation"],
     "browser_specific_settings": {
         "gecko": {
             "id": "soupcan@beth.lgbt",
