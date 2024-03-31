@@ -10,7 +10,6 @@ var downloadButton = document.getElementById("download-button");
 var closeButton = document.getElementById("close-button");
 var continueButton = document.getElementById("continue-button");
 var continueButton2 = document.getElementById("continue-button-2");
-var continueButton3 = document.getElementById("continue-button-3");
 var loginButton = document.getElementById("login-button");
 var progressBarWrapper = document.getElementById("progress-bar-wrapper");
 var progressBar = document.getElementById("progress-bar");
@@ -27,7 +26,6 @@ permissionButton.addEventListener("click", requestPermissions );
 closeButton.addEventListener("click", () => window.close());
 continueButton.addEventListener("click", goToLogin);
 continueButton2.addEventListener("click", goToPermissions);
-continueButton3.addEventListener("click", goToEnd);
 agree.addEventListener("change", () => {
   continueButton2.disabled = !agree.checked;
 })
@@ -197,12 +195,8 @@ async function goToPermissions(afterInstall){
     if(granted) {
       header.innerText = "Host Permissions Granted";
       topText.innerHTML = "Thank you!";
-      continueButton3.classList.remove("d-none");
-      return;
     }
-    header.innerText = "Host Permissions Denied";
-    topText.innerHTML = "This page will show again on next launch.";
-    continueButton3.classList.remove("d-none");
+    goToEnd();
   }
 
 }
