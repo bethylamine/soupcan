@@ -148,7 +148,6 @@ function goToAcceptTos() {
 }
 
 function goToEnd() {
-  continueButton3.classList.add("d-none");
   header.innerText = "You're all set!";
   topText.innerHTML = "Note: If you're on Firefox, make sure you give the extension permission to access twitter either through Manage Extension or 'Always Allow on twitter.com':<br/><br/><img src='images/ff-perms1.png'/><img src='images/ff-perms2.png'/><br/><br/>You're ready to start enjoying your new Twitter experience. You may close this page now.";
   closeButton.classList.remove("d-none");
