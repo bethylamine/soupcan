@@ -325,10 +325,10 @@ let lastUpdatedUrl;
 function createObserver() {
   const observer = new MutationObserver(mutationsList => {
     for (const mutation of mutationsList) {
-      if (location.href != lastUpdatedUrl) {
+      if (location.href !== lastUpdatedUrl) {
         updatePage();
       }
-      if (mutation.type == 'childList') {
+      if (mutation.type === 'childList') {
         processForMasking();
         for (const node of mutation.addedNodes) {
           if (node instanceof HTMLAnchorElement) {
@@ -378,12 +378,12 @@ function checkNode(node, force = false, depth = 0) {
 
   const dt = node.getAttribute("data-testid");
   if (dt === "TypeaheadUser" || dt === "typeaheadRecentSearchesItem" || dt === "User-Name" || dt === "UserName" || dt === "conversation") {
-    processDiv(node, false, depth);
+    processDiv(node, false);
   }
 
   if (dt === "tweet") {
     // mark the tweet as a labelled area
-    processDiv(node, true, depth)
+    processDiv(node, true)
   }
 
   if (node.hasChildNodes()) {
@@ -406,7 +406,7 @@ function applyAuthorMaskingObserver(authorElement, callback) {
   if (!authorElement.maskingObserver) {
     authorElement.maskingObserver = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
-        if (mutation.attributeName == "data-wiawbeidentifier") {
+        if (mutation.attributeName === "data-wiawbeidentifier") {
           callback();
         }
       });
@@ -472,7 +472,7 @@ function applyMasking(tweet) {
 
   // Add observer to catch changes and mask them
   if (!tweet.observer) {
-    tweet.observer = new MutationObserver(function (mutations) {
+    tweet.observer = new MutationObserver(function () {
       // This is necessary to apply masking to tweets that are loaded asynchronously
       // e.g. images that only appeared *after* the first applyMasking() call
       applyMasking(tweet);
@@ -561,7 +561,7 @@ function getUsernameFromDiv(div) {
   return div_identifier
 }
 
-async function processDiv(div, markArea = false, depth = -1) {
+async function processDiv(div, markArea = false) {
   const div_identifier = getUsernameFromDiv(div);
 
   if (!div_identifier) {
@@ -618,14 +618,14 @@ async function processDiv(div, markArea = false, depth = -1) {
           addReasonToUserNameDiv(div, div_identifier);
         }
 
-        if (mutation.attributeName == "class") {
+        if (mutation.attributeName === "class") {
           var labelToApply = labelPrefix + div.wiawLabel;
           if (div.wiawLabel && !mutation.target.classList.contains(labelToApply)) {
             div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith(labelPrefix)));
             mutation.target.classList.add(hasLabelToApply);
             mutation.target.classList.add(labelToApply);
           }
-        } else if (mutation.attributeName == "data-wiawbe-reason") {
+        } else if (mutation.attributeName === "data-wiawbe-reason") {
           //applyProfileDecorations(div);
         }
       });
@@ -658,7 +658,7 @@ function waitForElm(selector) {
       return resolve(document.querySelector(selector));
     }
 
-    const observer = new MutationObserver(mutations => {
+    const observer = new MutationObserver(() => {
       if (document.querySelector(selector)) {
         resolve(document.querySelector(selector));
         observer.disconnect();
@@ -691,7 +691,7 @@ function getReasoning(identifier) {
           jsonData = localReasonsCache[identifier][0];
         } else {
           let response = await doFetch(fetchUrl);
-          if (response["status"] != 200) {
+          if (response["status"] !== 200) {
             throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
           }
 
@@ -721,7 +721,7 @@ function getReasoning(identifier) {
         noReasonsSpan.innerText = browser.i18n.getMessage("noReasons");
 
         for (let report of jsonData) {
-          const when = new Date(report["report_time"] * 1000).toString().replace(/\ ..:.*/g, "").trim();
+          const when = new Date(report["report_time"] * 1000).toString().replace(/ ..:.*/g, "").trim();
           let reason = report["reason"];
 
           if (!reason) {
@@ -753,7 +753,7 @@ function getReasoning(identifier) {
           reasonsBody.appendChild(rowEl);
         }
 
-        waitForElm("body").then((elm) => {
+        waitForElm("body").then(() => {
           notifier.modal(
             "<div id='soupcan-reasons'></div>",
             'modal-reasons'
@@ -826,15 +826,15 @@ async function getDatabaseEntry(identifier) {
     }
   }
 
-  if (!!databaseEntry && databaseEntry["label"] == "transphobe" && !!localEntry && localEntry["label"] == "local-transphobe") {
+  if (!!databaseEntry && databaseEntry["label"] === "transphobe" && !!localEntry && localEntry["label"] === "local-transphobe") {
     // Report was accepted
     finalEntry = databaseEntry;
   }
-  if (!!databaseEntry && databaseEntry["label"] == "transphobe" && !!localEntry && localEntry["label"] == "transphobe-se") {
+  if (!!databaseEntry && databaseEntry["label"] === "transphobe" && !!localEntry && localEntry["label"] === "transphobe-se") {
     // Shinigami Eyes report was accepted
     finalEntry = databaseEntry;
   }
-  if (!!databaseEntry && databaseEntry["label"] == "appealed" && !!localEntry && localEntry["label"] == "local-appeal") {
+  if (!!databaseEntry && databaseEntry["label"] === "appealed" && !!localEntry && localEntry["label"] === "local-appeal") {
     // Appeal was accepted
     finalEntry = databaseEntry;
   }
@@ -1220,7 +1220,7 @@ function doCountTerfs(kind) {
       const terfObserver = new MutationObserver(mutationsList => {
         for (const mutation of mutationsList) {
           if (lastUpdatedUrl.includes("follow")) {
-            if (mutation.type == 'childList') {
+            if (mutation.type === 'childList') {
               for (const node of mutation.addedNodes) {
                 if (node instanceof HTMLDivElement) {
                   const userCell = node.querySelector("[data-testid='UserCell']");
@@ -1247,7 +1247,7 @@ function doCountTerfs(kind) {
 lastUpdatedUrl = null;
 
 function updatePage() {
-  if (location.href != lastUpdatedUrl) {
+  if (location.href !== lastUpdatedUrl) {
     lastUpdatedUrl = location.href;
     appliedLinkedToUsernameOnProfilePage = false;
     const linkedDiv = document.querySelector("div.wiawbe-linked");
@@ -1340,7 +1340,7 @@ async function sendLabel(reportType, identifier, sendResponse, localKey, reason 
     doFetch(fetchUrl),
     async response => {
       try {
-        if (response["status"] != 200) {
+        if (response["status"] !== 200) {
           throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
         }
         const jsonData = response["json"];
@@ -1449,7 +1449,7 @@ async function checkForDatabaseUpdates() {
           "action": "fetch",
           "url": fetchUrl
         }).then(async response => {
-          if (response["status"] != 200) {
+          if (response["status"] !== 200) {
             throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
           }
 
@@ -1457,7 +1457,7 @@ async function checkForDatabaseUpdates() {
           const numberVersion = parseInt(version);
           if (!database["version"] || database["version"] < numberVersion) {
             // update the database
-            updateDatabase(() => { }, numberVersion);
+            updateDatabase(() => { });
           }
           database["last_updated"] = Date.now();
         });
@@ -1477,7 +1477,7 @@ async function doFetch(url) {
       } else {
         reject(response);
       }
-    };
+    }
 
     browser.runtime.sendMessage({
       "action": "fetch",
@@ -1486,7 +1486,7 @@ async function doFetch(url) {
   });
 }
 
-async function updateDatabase(sendResponse, version) {
+async function updateDatabase(sendResponse) {
   if (checkForInvalidExtensionContext()) {
     return;
   }
@@ -1498,7 +1498,7 @@ async function updateDatabase(sendResponse, version) {
     new Promise(async resolve => {
       try {
         let response = await doFetch(fetchUrl);
-        if (response["status"] != 200) {
+        if (response["status"] !== 200) {
           throw new Error(fetchUrl + ": " + browser.i18n.getMessage("serverFailure") + " (" + response["status"] + ")");
         }
 
@@ -1544,7 +1544,7 @@ async function updateDatabase(sendResponse, version) {
       }
       resolve();
     }),
-    response => { }, // success
+    () => { }, // success
     response => {
       notifier.alert(browser.i18n.getMessage("databaseUpdateFailed", [response["status"]]));
     }, // failure
@@ -1595,7 +1595,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
         }
       }
 
-      waitForElm("body").then((elm) => {
+      waitForElm("body").then(() => {
         notifier.modal(
           browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
           'modal-reason'
@@ -1652,7 +1652,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     } catch (error) {
       notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
-  } else if (message.action == "appeal-label") {
+  } else if (message.action === "appeal-label") {
     try {
       if (!state) {
         notifier.alert(browser.i18n.getMessage("authorizationInvalid"));
@@ -1703,7 +1703,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       notifier.alert(browser.i18n.getMessage("genericError", [error]));
     }
   } else if (message.action === "update-database") {
-    updateDatabase(sendResponse, database["version"]);
+    updateDatabase(sendResponse);
   } else if (message.action === "check-transphobe") {
     let dbEntry = getDatabaseEntry(message.screen_name);
 
