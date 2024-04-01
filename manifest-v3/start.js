@@ -2,6 +2,10 @@ import http from "./fetch-progress.js";
 
 var browser = browser || chrome;
 
+const permissions = {
+  origins: ["*://*.twitter.com/*", "*://*.x.com/*"],
+};
+
 var downloadButton = document.getElementById("download-button");
 var closeButton = document.getElementById("close-button");
 var continueButton = document.getElementById("continue-button");
@@ -15,11 +19,13 @@ var instructions = document.getElementById("instructions");
 var header = document.getElementById("header");
 var tos = document.getElementById("tos");
 var agree = document.getElementById("agree");
+var permissionButton = document.getElementById("permission-button");
 
 downloadButton.addEventListener("click", startDownload);
+permissionButton.addEventListener("click", requestPermissions);
 closeButton.addEventListener("click", () => window.close());
 continueButton.addEventListener("click", goToLogin);
-continueButton2.addEventListener("click", goToEnd);
+continueButton2.addEventListener("click", goToPermissions);
 agree.addEventListener("change", () => {
   continueButton2.disabled = !agree.checked;
 })
@@ -28,9 +34,11 @@ loginButton.addEventListener("click", launchTwitterLogin)
 const params = new Proxy(new URLSearchParams(window.location.search), {
   get: (searchParams, prop) => searchParams.get(prop),
 });
-// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+
 if (params.download) {
-  goToDownload();
+  startDownload();
+} else if (params.permissions) {
+  goToPermissions();
 }
 
 var result = {};
@@ -86,15 +94,16 @@ function launchTwitterLogin() {
 }
 
 async function checkLogin(state) {
+  topText.innerHTML = "Verifying Twitter login, please wait a second...";
   try {
     const response = await fetch("https://api.beth.lgbt/extension-login-check?state=" + state);
     const jsonData = await response.json();
     if ("response" in jsonData) {
       var resp = jsonData["response"]
-      if (resp == "none") {
+      if (resp === "none") {
         // retry in a bit
         setTimeout(() => checkLogin(state), 1000);
-      } else if (resp == "true") {
+      } else if (resp === "true") {
         // all good
         browser.storage.local.set({
           "state": state
@@ -107,7 +116,7 @@ async function checkLogin(state) {
           }
         }
         goToAcceptTos();
-      } else if (resp == "false") {
+      } else if (resp === "false") {
         // all bad
       } else {
         topText.innerHTML = "Something went wrong with the authorization validation. Sorry, please contact @bethylamine! resp was " + resp;
@@ -139,8 +148,6 @@ function goToAcceptTos() {
 }
 
 function goToEnd() {
-  tos.classList.add("d-none");
-  continueButton2.classList.add("d-none");
   header.innerText = "You're all set!";
   topText.innerHTML = "Note: If you're on Firefox, make sure you give the extension permission to access twitter either through Manage Extension or 'Always Allow on twitter.com':<br/><br/><img src='images/ff-perms1.png'/><img src='images/ff-perms2.png'/><br/><br/>You're ready to start enjoying your new Twitter experience. You may close this page now.";
   closeButton.classList.remove("d-none");
@@ -170,3 +177,32 @@ window.addEventListener('fetch-progress', (e) => {
 window.addEventListener('fetch-finished', (e) => {
   setProgressbarValue(e.detail);
 });
+
+async function goToPermissions() {
+  downloadButton.classList.add("d-none");
+  continueButton2.classList.add("d-none");
+  tos.classList.add("d-none");
+  if (await browser.permissions.contains(permissions)) {
+    permissionsDone(true);
+  } else {
+    permissionButton.classList.remove("d-none");
+    header.innerText = "Requesting Host Permissions";
+    topText.innerHTML = "Please grant Soupcan access to twitter.com and x.com. These permissions are required for Soupcan to operate.";
+  }
+}
+
+async function requestPermissions() {
+  permissionsDone(await browser.permissions.request(permissions));
+}
+
+function permissionsDone(granted) {
+  if (granted) {
+    header.innerText = "You're all set!";
+    topText.innerHTML = "Thank you! You can now close this page.";
+    permissionButton.classList.add("d-none");
+    closeButton.classList.remove("d-none");
+  } else {
+    header.innerText = "Host Permissions Denied";
+    topText.innerHTML = "Soupcan can't function without access to twitter.com and x.com.";
+  }
+}

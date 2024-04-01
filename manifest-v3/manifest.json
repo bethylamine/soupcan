@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.20.0",
+    "version": "0.21.0",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -45,7 +45,7 @@
         "open_in_tab": true,
         "page": "options.html"
      },
-    "permissions": ["contextMenus", "storage", "unlimitedStorage"],
+    "permissions": ["contextMenus", "storage", "unlimitedStorage", "webNavigation"],
     "web_accessible_resources": [
         {
           "resources": ["images/*.png"],

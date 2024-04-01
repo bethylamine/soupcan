@@ -6,6 +6,27 @@ const blueBlockerExtensionIds = [
   "jphoieibjlbddgacnjpfjphmpambipfl" // local testing
 ];
 
+const permissions = {
+  origins: ["*://*.twitter.com/*", "*://*.x.com/*"],
+};
+const filter = {
+  url: [{ hostContains: "twitter.com",  }, { hostContains: "x.com" }],
+};
+async function checkHostPermissions(details) {
+  if (details.url.includes("oauth2")) {
+    // They are logging in to Twitter for Soupcan, so they're
+    // probably in the setup. Don't pop open a new setup window.
+    return;
+  }
+  if(!await browser.permissions.contains(permissions)){
+    browser.tabs.create({
+      url: getURL('start.html?permissions=1')
+    });
+
+  }
+}
+browser.webNavigation.onCompleted.addListener(checkHostPermissions, filter);
+
 function iOS() {
   return [
     'iPad Simulator',
@@ -29,6 +50,7 @@ function start() {
         browser.tabs.create({
           url: getURL('start.html')
         });
+        browser.webNavigation.onCompleted.removeListener(checkHostPermissions)
       } else {
         // Logged in but not database
         browser.tabs.create({
