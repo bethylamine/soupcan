@@ -84,8 +84,32 @@
         "description": "Tooltip shown when starting to download/update the database."
     },
     "databaseUpdated": {
-        "message": "Database updated!",
-        "description": "Success tooltip message when the database was downloaded."
+        "message": "Database updated! (Version $V$: $E$ entries)",
+        "description": "Success tooltip message when the database was downloaded.",
+        "placeholders": {
+            "v": {
+                "content": "$1",
+                "example": "3024"
+            },
+            "e": {
+                "content": "$2",
+                "example": "28212"
+            }
+        }
+    },
+    "databaseUpToDate": {
+        "message": "Database already up to date. (Version $V$: $E$ entries)",
+        "description": "Tooltip message when the database was downloaded but was already up to date.",
+        "placeholders": {
+            "v": {
+                "content": "$1",
+                "example": "3024"
+            },
+            "e": {
+                "content": "$2",
+                "example": "28212"
+            }
+        }
     },
     "databaseUpdateFailed": {
         "message": "Database update failed! $ERROR$",
@@ -104,6 +128,16 @@
             "error": {
                 "content": "$1",
                 "example": "TypeError: Cannot read properties of null (reading 'cloneNode')"
+            }
+        }
+    },
+    "retriesExhausted": {
+        "message": "Failed to send report for @$U$ multiple times. Please try again later.",
+        "description": "When a report fails to send for a user too many times.",
+        "placeholders": {
+            "u": {
+                "content": "$1",
+                "example": "bethylamine"
             }
         }
     },
@@ -138,7 +172,7 @@
         }
     },
     "reportSubmissionFailed": {
-        "message": "Failed to submit report:",
+        "message": "Failed to submit report, will try again later",
         "description": "Tooltip error message shown when a report could not be submitted."
     },
     "sendingAppeal": {

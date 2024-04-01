@@ -1375,6 +1375,11 @@ function sendPendingLabels() {
     const localEntry = localEntries[localKey];
 
     if (localEntry["status"] === "pending") {
+      if (localEntry.hasOwnProperty("retriesLeft") && localEntry["retriesLeft"] <= 0) {
+        notifier.alert(browser.i18n.getMessage("retriesExhausted", [localEntry["identifier"]]));
+        return;
+      }
+
       const when = localEntry["time"];
       const now = Date.now();
 
@@ -1403,6 +1408,11 @@ function sendPendingLabels() {
             }
           } catch (error) {
             notifier.alert(browser.i18n.getMessage("genericError", [error]));
+            if (localEntry["retriesLeft"]) {
+              localEntry["retriesLeft"] = localEntry["retriesLeft"] - 1;
+            } else {
+              localEntry["retriesLeft"] = 2;
+            }
           }
         });
       }
@@ -1494,6 +1504,13 @@ async function updateDatabase(sendResponse, version) {
 
         const jsonData = response["json"];
 
+        let alreadyUpToDate = false;
+        if (database) {
+          if (database["version"] === jsonData["version"]) {
+            alreadyUpToDate = true;
+          }
+        }
+
         database = {
           "version": jsonData["version"],
           "last_updated": Date.now(),
@@ -1513,7 +1530,12 @@ async function updateDatabase(sendResponse, version) {
         saveDatabaseToLocalStorage(database);
         resolve();
 
-        notifier.success(browser.i18n.getMessage("databaseUpdated"));
+
+        if (alreadyUpToDate) {
+          notifier.success(browser.i18n.getMessage("databaseUpToDate", [database["version"], Object.keys(database["entries"]).length]));
+        } else {
+          notifier.success(browser.i18n.getMessage("databaseUpdated", [database["version"], Object.keys(database["entries"]).length]));
+        }
         sendResponse("OK");
       } catch (error) {
         database["downloading"] = false;
@@ -1607,7 +1629,15 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
           if (submitReason.length > 10) {
             // Add locally
             const localKey = await hash(identifier + ":" + database["salt"]);
-            localEntries[localKey] = { "label": "local-transphobe", "reason": "Reported by you", "status": "pending", "submitReason": submitReason, "time": Date.now(), "identifier": identifier };
+            localEntries[localKey] = {
+              "label": "local-transphobe",
+              "reason": "Reported by you",
+              "status": "pending",
+              "submitReason": submitReason,
+              "time": Date.now(),
+              "identifier": identifier,
+              "retriesLeft": 3
+            };
 
             saveLocalEntries();
 

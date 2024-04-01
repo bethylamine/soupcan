@@ -205,22 +205,26 @@ async function doFetch(url) {
       } else {
         reject(response);
       }
-    };
+    }
 
     handleFetch(url, callback);
   });
 }
 
 const handleFetch = async (url, sendResponse) => {
-  const response = await fetch(url);
-  var json = "";
   try {
-    json = await response.clone().json();
-  } catch (error) {
+    const response = await fetch(url);
+    let json = "";
+    try {
+      json = await response.clone().json();
+    } catch (error) {
 
+    }
+    const text = await response.text();
+    sendResponse({"status": response.status, "text": text, "json": json});
+  } catch (fetchError) {
+    sendResponse({"status": 503});
   }
-  const text = await response.text();
-  sendResponse({"status": response.status, "text": text, "json": json});
 };
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
