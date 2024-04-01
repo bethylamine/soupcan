@@ -22,7 +22,7 @@ var agree = document.getElementById("agree");
 var permissionButton = document.getElementById("permission-button");
 
 downloadButton.addEventListener("click", startDownload);
-permissionButton.addEventListener("click", requestPermissions );
+permissionButton.addEventListener("click", requestPermissions);
 closeButton.addEventListener("click", () => window.close());
 continueButton.addEventListener("click", goToLogin);
 continueButton2.addEventListener("click", goToPermissions);
@@ -34,12 +34,11 @@ loginButton.addEventListener("click", launchTwitterLogin)
 const params = new Proxy(new URLSearchParams(window.location.search), {
   get: (searchParams, prop) => searchParams.get(prop),
 });
-// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
+
 if (params.download) {
-  goToDownload();
-}
-else if (params.permissions) {
-  goToPermissions(true);
+  startDownload();
+} else if (params.permissions) {
+  goToPermissions();
 }
 
 var result = {};
@@ -95,15 +94,16 @@ function launchTwitterLogin() {
 }
 
 async function checkLogin(state) {
+  topText.innerHTML = "Verifying Twitter login, please wait a second...";
   try {
     const response = await fetch("https://api.beth.lgbt/extension-login-check?state=" + state);
     const jsonData = await response.json();
     if ("response" in jsonData) {
       var resp = jsonData["response"]
-      if (resp == "none") {
+      if (resp === "none") {
         // retry in a bit
         setTimeout(() => checkLogin(state), 1000);
-      } else if (resp == "true") {
+      } else if (resp === "true") {
         // all good
         browser.storage.local.set({
           "state": state
@@ -116,7 +116,7 @@ async function checkLogin(state) {
           }
         }
         goToAcceptTos();
-      } else if (resp == "false") {
+      } else if (resp === "false") {
         // all bad
       } else {
         topText.innerHTML = "Something went wrong with the authorization validation. Sorry, please contact @bethylamine! resp was " + resp;
@@ -178,39 +178,31 @@ window.addEventListener('fetch-finished', (e) => {
   setProgressbarValue(e.detail);
 });
 
-async function goToPermissions(afterInstall){
-  if(afterInstall == true) {
-    downloadButton.classList.add("d-none");
-
-    header.innerText = "Requesting Host Permissions";
-    topText.innerHTML = "Please allow Soupcan to access Twitter.com and x.com.";
-    permissionButton.classList.remove("d-none");
+async function goToPermissions() {
+  downloadButton.classList.add("d-none");
+  continueButton2.classList.add("d-none");
+  tos.classList.add("d-none");
+  if (await browser.permissions.contains(permissions)) {
+    permissionsDone(true);
   } else {
-    tos.classList.add("d-none");
-    continueButton2.classList.add("d-none");
+    permissionButton.classList.remove("d-none");
     header.innerText = "Requesting Host Permissions";
-    topText.innerHTML = "Please allow Soupcan to access Twitter.com and x.com.";
-    let granted = await browser.permissions.request(permissions);
-    if(granted) {
-      header.innerText = "Host Permissions Granted";
-      topText.innerHTML = "Thank you!";
-    }
-    goToEnd();
+    topText.innerHTML = "Please grant Soupcan access to twitter.com and x.com. These permissions are required for Soupcan to operate.";
   }
-
 }
 
-async function requestPermissions(){
-  let granted = await browser.permissions.request(permissions);
-  if(granted) {
-    header.innerText = "Host Permissions Granted";
+async function requestPermissions() {
+  permissionsDone(await browser.permissions.request(permissions));
+}
+
+function permissionsDone(granted) {
+  if (granted) {
+    header.innerText = "You're all set!";
     topText.innerHTML = "Thank you! You can now close this page.";
     permissionButton.classList.add("d-none");
     closeButton.classList.remove("d-none");
-    return;
+  } else {
+    header.innerText = "Host Permissions Denied";
+    topText.innerHTML = "Soupcan can't function without access to twitter.com and x.com.";
   }
-  header.innerText = "Permissions Denied";
-  topText.innerHTML = "Permissions were not granted. this page will show again on next launch.";
-  permissionButton.classList.add("d-none");
-  closeButton.classList.remove("d-none");
 }
