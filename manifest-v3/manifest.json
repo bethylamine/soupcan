@@ -1,6 +1,6 @@
 {
     "name": "__MSG_extensionName__",
-    "version": "0.21.2",
+    "version": "0.22.0",
     "manifest_version": 3,
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
@@ -17,9 +17,6 @@
             "awesome-notifications/index.var.js",
             "util.js",
             "media-matching.js",
-            "shinigami_eyes_data1.js",
-            "shinigami_eyes_data2.js",
-            "shinigami.js",
             "database.js",
             "soupcan.js"
         ],

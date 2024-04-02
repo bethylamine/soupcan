@@ -261,6 +261,6 @@ browser.runtime.onMessageExternal.addListener((m, s, r) => { (async (message, se
 })(m, s, r); return true });
 
 if ('function' === typeof(importScripts)) {
-  importScripts("shinigami_eyes_data1.js", "shinigami_eyes_data2.js", "shinigami.js", "database.js");
+  importScripts("database.js");
 }
 start();

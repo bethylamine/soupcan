@@ -34,7 +34,7 @@ function init() {
   document.addEventListener('click', function(event) {
     if (event.target === document.getElementById("awn-popup-wrapper")) {
       let reasonBox = document.getElementById("wiawbe-reason-textarea");
-      if (reasonBox.value.length > 0) {
+      if (reasonBox && reasonBox.value.length > 0) {
         if (!confirm(browser.i18n.getMessage("cancelReportConfirmation"))) {
           event.stopPropagation();
         }
@@ -796,11 +796,11 @@ async function getDatabaseEntry(identifier) {
 
   const databaseEntry = database["entries"][hashedIdentifier];
   let localEntry = localEntries[hashedIdentifier];
-  const isTransphobeInShinigamiEyes = shinigami.test(identifier);
 
   let finalEntry = databaseEntry;
 
   if (localEntry) {
+    // Treat local entries with detected reason as nonexistent.
     if (localEntry["reason"] === "Detected by Shinigami Eyes") {
       localEntry = null;
     }
@@ -830,36 +830,9 @@ async function getDatabaseEntry(identifier) {
     // Report was accepted
     finalEntry = databaseEntry;
   }
-  if (!!databaseEntry && databaseEntry["label"] === "transphobe" && !!localEntry && localEntry["label"] === "transphobe-se") {
-    // Shinigami Eyes report was accepted
-    finalEntry = databaseEntry;
-  }
   if (!!databaseEntry && databaseEntry["label"] === "appealed" && !!localEntry && localEntry["label"] === "local-appeal") {
     // Appeal was accepted
     finalEntry = databaseEntry;
-  }
-
-  if (!finalEntry) {
-    if (isTransphobeInShinigamiEyes) {
-      // Create an entry to show they are marked in Shinigami
-      finalEntry = {
-        "screen_name": identifier,
-        "label": "transphobe-se",
-        "reason": "Detected by Shinigami Eyes",
-        "time": Date.now()
-      };
-
-      localEntries[hashedIdentifier] = finalEntry;
-      saveLocalEntries();
-
-      // Report to server
-      try {
-        const fetchUrl = "https://api.beth.lgbt/report-shinigami?screen_name=" + identifier;
-        doFetch(fetchUrl);
-      } catch (error) {
-        // ignore
-      }
-    }
   }
 
   if (finalEntry && finalEntry["label"] === "appealed") {
