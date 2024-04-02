@@ -126,10 +126,9 @@ function loadOptions() {
     if (v.options) {
       options = v.options || {};
     }
-    if (v.trust_level !== undefined) {
-      v.trust_level = v.trust_level || 0;
-      setTrustLevel(v.trust_level)
-    }
+
+    v.trust_level = v.trust_level || 0;
+    setTrustLevel(v.trust_level)
 
     if (options["maskMode"]) {
       const mm = options["maskMode"];
@@ -229,3 +228,12 @@ function saveOptions() {
     "options": options
   });
 }
+
+const permissions = {
+  origins: ["*://*.twitter.com/*", "*://*.x.com/*"],
+};
+
+const permissionButton = document.getElementById("permission-button");
+permissionButton.addEventListener("click", async () => {
+  await browser.permissions.request(permissions);
+});
