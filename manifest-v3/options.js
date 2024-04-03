@@ -48,9 +48,10 @@ useMediaMatching.addEventListener("change", () => {
   saveOptions();
 });
 
-window.onload = () => {
+window.onload = async () => {
   loadOptions();
   loadThemeExamples();
+  await showPermissionsOption();
 };
 
 loadThemeExamples();
@@ -126,10 +127,9 @@ function loadOptions() {
     if (v.options) {
       options = v.options || {};
     }
-    if (v.trust_level !== undefined) {
-      v.trust_level = v.trust_level || 0;
-      setTrustLevel(v.trust_level)
-    }
+
+    v.trust_level = v.trust_level || 0;
+    setTrustLevel(v.trust_level)
 
     if (options["maskMode"]) {
       const mm = options["maskMode"];
@@ -228,4 +228,21 @@ function saveOptions() {
   browser.storage.local.set({
     "options": options
   });
+}
+
+const permissions = {
+  origins: ["*://*.twitter.com/*", "*://*.x.com/*"],
+};
+
+const permissionButton = document.getElementById("permission-button");
+permissionButton.addEventListener("click", async () => {
+  await browser.permissions.request(permissions);
+});
+async function showPermissionsOption() {
+  const permissionOption = document.getElementById("request-permission-div");
+  if (await browser.permissions.contains(permissions)) {
+    permissionOption.style.display = "none";
+  } else {
+    permissionOption.style.display = "block";
+  }
 }
