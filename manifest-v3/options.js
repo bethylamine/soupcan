@@ -48,9 +48,10 @@ useMediaMatching.addEventListener("change", () => {
   saveOptions();
 });
 
-window.onload = () => {
+window.onload = async () => {
   loadOptions();
   loadThemeExamples();
+  await showPermissionsOption();
 };
 
 loadThemeExamples();
@@ -237,3 +238,11 @@ const permissionButton = document.getElementById("permission-button");
 permissionButton.addEventListener("click", async () => {
   await browser.permissions.request(permissions);
 });
+async function showPermissionsOption() {
+  const permissionOption = document.getElementById("request-permission-div");
+  if (await browser.permissions.contains(permissions)) {
+    permissionOption.style.display = "none";
+  } else {
+    permissionOption.style.display = "block";
+  }
+}
