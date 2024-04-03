@@ -1,13 +1,13 @@
-import glob, os, shutil, sys
+import os, shutil, sys
 
-all_files = glob.glob("*")
-for file in all_files:
-	if file == sys.argv[0]:
-		all_files.remove(file)
-	if file.endswith(".zip"):
-		all_files.remove(file)
-	if file.startswith("extension-"):
-		all_files.remove(file)
+try:
+    if os.path.exists("soupcan-chrome.zip"):
+        os.remove("soupcan-chrome.zip")
+    if os.path.exists("soupcan-ff.zip"):
+        os.remove("soupcan-ff.zip")
+except Exception as e:
+    print("Unable to remove existing zips. Are they in use?")
+    raise e
 
 shutil.copytree(".", "extension-chrome")
 os.remove(os.path.join("extension-chrome", "manifest-firefox.json"))
