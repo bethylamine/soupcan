@@ -55,5 +55,6 @@
             "id": "soupcan@beth.lgbt",
             "strict_min_version": "121.0"
         }
-    }
+    },
+    "minimum_chrome_version": "121"
 }
