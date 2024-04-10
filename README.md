@@ -6,6 +6,8 @@
 
 Thank you to [@VehpuS](https://twitter.com/VehpuS) for helping me get started with extension development!
 
+Website: https://soupcan.beth.lgbt/
+
 ## Features
 
 * Highlight users on WhatIsAWomanBot's transphobe database
