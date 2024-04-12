@@ -117,7 +117,7 @@ function loadThemeExamples() {
     newEl.style.left = "23px";
     newEl.style.top = "153px";
     newEl.style.setProperty("font-weight", "normal", "important");
-    newEl.innerHTML = "Replying to @regularPerson and <span class='wiaw-label-local-appeal'>" + (useSymbols ? "⊡" : "@") +  "appealedByYou</span>";
+    newEl.innerHTML = "Replying to <span class='wiaw-label-controversial'>" + (useSymbols ? "✱" : "@") +  "controversialPerson</span> and <span class='wiaw-label-local-appeal'>" + (useSymbols ? "⊡" : "@") +  "appealedByYou</span>";
     themeEx.appendChild(newEl);
   }
 }

@@ -19,24 +19,28 @@ body {
     --wiawBotTransphobic: #f72819;
     --wiawBotLocallyTransphobic: #ff9100;
     --wiawBotLocallyAppealed: #9f1ddb;
+    --wiawBotControversial: #ff00d6;
 }
 
 .soupcan-cb-deuteranopia.soupcan-theme-light {
     --wiawBotTransphobic: #fc4683;
     --wiawBotLocallyTransphobic: #924b08;
     --wiawBotLocallyAppealed: #3cb8ff;
+    --wiawBotControversial: #C59434;
 }
 
 .soupcan-cb-protanopia.soupcan-theme-light {
     --wiawBotTransphobic: #ee6fc8;
     --wiawBotLocallyTransphobic: #c55d43;
     --wiawBotLocallyAppealed: #41bdd3;
+    --wiawBotControversial: #AE9C45;
 }
 
 .soupcan-cb-tritanopia.soupcan-theme-light {
     --wiawBotTransphobic: #e12cf1;
     --wiawBotLocallyTransphobic: #a543dd;
     --wiawBotLocallyAppealed: #2cb11b;
+    --wiawBotControversial: #b91258;
 }
 
 /* Dark themes */
@@ -45,24 +49,28 @@ body {
     --wiawBotTransphobic: #cf2d21;
     --wiawBotLocallyTransphobic: #faa11b;
     --wiawBotLocallyAppealed: #7f1eac;
+    --wiawBotControversial: #c216a6;
 }
 
 .soupcan-cb-deuteranopia.soupcan-theme-dark {
     --wiawBotTransphobic: #ff98ba;
     --wiawBotLocallyTransphobic: #945922;
     --wiawBotLocallyAppealed: #348bbd;
+    --wiawBotControversial: #C59434;
 }
 
 .soupcan-cb-protanopia.soupcan-theme-dark {
     --wiawBotTransphobic: #ee6fc8;
     --wiawBotLocallyTransphobic: #d38e7d;
     --wiawBotLocallyAppealed: #41bdd3;
+    --wiawBotControversial: #AE9C45;
 }
 
 .soupcan-cb-tritanopia.soupcan-theme-dark {
     --wiawBotTransphobic: #e12cf1;
     --wiawBotLocallyTransphobic: #a543dd;
     --wiawBotLocallyAppealed: #51ec3c;
+    --wiawBotControversial: #b91258;
 }
 
  /* Marked text labels */
@@ -91,6 +99,11 @@ body {
 
 .wiaw-label-local-appeal, a.wiaw-label-local-appeal, div.wiaw-label-local-appeal {
     color: var(--wiawBotLocallyAppealed) !important;
+    font-weight: bold !important;
+}
+
+.wiaw-label-controversial, a.wiaw-label-controversial, div.wiaw-label-controversial {
+    color: var(--wiawBotControversial) !important;
     font-weight: bold !important;
 }
 
