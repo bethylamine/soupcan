@@ -52,7 +52,7 @@ async function startDownload() {
   header.innerText = "Update";
 
   setTimeout(async () => {
-    const { json, cancel } = http('https://wiaw-extension.s3.us-west-2.amazonaws.com/');
+    const { json, cancel } = http('https://soupcan-extension.s3.us-west-2.amazonaws.com/');
     result = await json(`dataset_compressed.json?${new Date().getTime()}`);
 
     browser.storage.local.set({

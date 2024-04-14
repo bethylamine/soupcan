@@ -33,7 +33,7 @@ function init() {
 
   document.addEventListener('click', function(event) {
     if (event.target === document.getElementById("awn-popup-wrapper")) {
-      let reasonBox = document.getElementById("wiawbe-reason-textarea");
+      let reasonBox = document.getElementById("soupcan-reason-textarea");
       if (reasonBox && reasonBox.value.length > 0) {
         if (!confirm(browser.i18n.getMessage("cancelReportConfirmation"))) {
           event.stopPropagation();
@@ -94,22 +94,22 @@ function applyOptions() {
 
     if (options["maskMode"]) {
       const mm = options["maskMode"];
-      body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("wiawbe-mask-")));
+      body.classList.remove.apply(body.classList, Array.from(body.classList).filter(v => v.startsWith("soupcan-mask-")));
       switch (mm) {
         case "direct-media-only":
-          body.classList.add("wiawbe-mask-direct-media");
+          body.classList.add("soupcan-mask-direct-media");
           break;
         case "media-incl-retweets":
-          body.classList.add("wiawbe-mask-direct-media");
-          body.classList.add("wiawbe-mask-media-incl-retweets");
+          body.classList.add("soupcan-mask-direct-media");
+          body.classList.add("soupcan-mask-media-incl-retweets");
           break;
         case "all-content":
-          body.classList.add("wiawbe-mask-direct-media");
-          body.classList.add("wiawbe-mask-media-incl-retweets");
-          body.classList.add("wiawbe-mask-all-content");
+          body.classList.add("soupcan-mask-direct-media");
+          body.classList.add("soupcan-mask-media-incl-retweets");
+          body.classList.add("soupcan-mask-all-content");
           break;
         case "hide-all":
-          body.classList.add("wiawbe-mask-hide-all");
+          body.classList.add("soupcan-mask-hide-all");
           break;
       }
     }
@@ -157,11 +157,11 @@ function applyOptions() {
       cbUseSymbols = options["cbUseSymbols"];
     }
 
-    body.classList.remove("wiawbe-hide-zalgo");
+    body.classList.remove("soupcan-hide-zalgo");
     if (options["preventZalgoText"]) {
-      body.classList.add("wiawbe-hide-zalgo");
+      body.classList.add("soupcan-hide-zalgo");
     } else {
-      body.classList.remove("wiawbe-hide-zalgo");
+      body.classList.remove("soupcan-hide-zalgo");
     }
     if (options["removeSidebarGrok"]) {
       body.classList.add("soupcan-remove-sidebar-grok");
@@ -197,11 +197,11 @@ async function checkVideo(videoEl) {
   }
 
   let videoContainer = videoEl.closest("[data-testid='videoComponent']");
-  if (["true", "false"].includes(videoContainer.getAttribute("wiawbe-content-match"))) {
+  if (["true", "false"].includes(videoContainer.getAttribute("soupcan-content-match"))) {
     return;
   }
 
-  videoContainer.setAttribute("wiawbe-content-match", "pending");
+  videoContainer.setAttribute("soupcan-content-match", "pending");
   const posterUrl = videoEl.getAttribute("poster");
   const tmpImgEl = document.createElement("img");
   tmpImgEl.src = posterUrl;
@@ -213,8 +213,8 @@ async function checkVideo(videoEl) {
   fragment.appendChild(tmpImgContainer);
 
   await safeCheckImage(tmpImgEl, () => {
-    videoContainer.setAttribute("wiawbe-content-match", tmpImgContainer.getAttribute("wiawbe-content-match"));
-    videoContainer.setAttribute("wiawbe-content-match-note", tmpImgContainer.getAttribute("wiawbe-content-match-note"));
+    videoContainer.setAttribute("soupcan-content-match", tmpImgContainer.getAttribute("soupcan-content-match"));
+    videoContainer.setAttribute("soupcan-content-match-note", tmpImgContainer.getAttribute("soupcan-content-match-note"));
     videoEl.setAttribute("data-soupcan-imghash", tmpImgEl.getAttribute("data-soupcan-imghash"));
     videoEl.setAttribute("data-soupcan-matched-imghash", tmpImgEl.getAttribute("data-soupcan-matched-imghash"));
   });
@@ -232,12 +232,12 @@ async function safeCheckImage(imgEl, callback) {
 
   try {
     // Mark it pending until we have a result
-    imageContainer.setAttribute("wiawbe-content-match", "pending");
+    imageContainer.setAttribute("soupcan-content-match", "pending");
 
     await checkImage(imgEl, callback);
   }
   catch (error) {
-    imageContainer.setAttribute("wiawbe-content-match", "error");
+    imageContainer.setAttribute("soupcan-content-match", "error");
     if (callback) {
       callback();
     }
@@ -245,7 +245,7 @@ async function safeCheckImage(imgEl, callback) {
 }
 
 async function checkImage(imgEl, callback) {
-  if (imgEl.getAttribute("wiawbe-content-match")) {
+  if (imgEl.getAttribute("soupcan-content-match")) {
     // already has attribute
     return;
   }
@@ -254,7 +254,7 @@ async function checkImage(imgEl, callback) {
   if (imageContainer == null) {
     return;
   }
-  if (["true", "false"].includes(imageContainer.getAttribute("wiawbe-content-match"))) {
+  if (["true", "false"].includes(imageContainer.getAttribute("soupcan-content-match"))) {
     // already has attribute
     return;
   }
@@ -270,8 +270,8 @@ async function checkImage(imgEl, callback) {
     if (imgCacheKey in content_match_cache) {
       // already processed
       const cacheVal = content_match_cache[imgCacheKey];
-      imageContainer.setAttribute("wiawbe-content-match", cacheVal["match-attribute"]);
-      imageContainer.setAttribute("wiawbe-content-match-note", cacheVal["note"]);
+      imageContainer.setAttribute("soupcan-content-match", cacheVal["match-attribute"]);
+      imageContainer.setAttribute("soupcan-content-match-note", cacheVal["note"]);
       imgEl.setAttribute("data-soupcan-border-total", "none");
       callback();
       return;
@@ -282,17 +282,17 @@ async function checkImage(imgEl, callback) {
     if (matchMediaResult.match) {
       // matched
       let note = "cw/ " + matchMediaResult.label.cws + "\n(" + matchMediaResult.label.description + ")";
-      imageContainer.setAttribute("wiawbe-content-match", "true");
-      imageContainer.setAttribute("wiawbe-content-match-note", note);
+      imageContainer.setAttribute("soupcan-content-match", "true");
+      imageContainer.setAttribute("soupcan-content-match-note", note);
       content_match_cache[imgCacheKey] = { "match-attribute": "true", "note": note };
     } else {
-      imageContainer.setAttribute("wiawbe-content-match", "false");
+      imageContainer.setAttribute("soupcan-content-match", "false");
       content_match_cache[imgCacheKey] = { "match-attribute": "false", "note": "" };
     }
   } else {
     // Not a supported image URL
     content_match_cache[imgCacheKey] = { "match-attribute": "false", "note": "" };
-    imageContainer.setAttribute("wiawbe-content-match", "false");
+    imageContainer.setAttribute("soupcan-content-match", "false");
   }
 
   if (callback) {
@@ -412,7 +412,7 @@ function checkNode(node, force = false, depth = 0) {
 }
 
 function processForMasking() {
-  const tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-wiawbe-mask-checked])");
+  const tweets = document.querySelectorAll("article[data-testid='tweet']:not([data-soupcan-mask-checked])");
 
   tweets.forEach(tweet => {
     applyMasking(tweet);
@@ -423,7 +423,7 @@ function applyAuthorMaskingObserver(authorElement, callback) {
   if (!authorElement.maskingObserver) {
     authorElement.maskingObserver = new MutationObserver(function (mutations) {
       mutations.forEach(function (mutation) {
-        if (mutation.attributeName === "data-wiawbeidentifier") {
+        if (mutation.attributeName === "data-soupcanidentifier") {
           callback();
         }
       });
@@ -441,7 +441,7 @@ function applyMasking(tweet) {
     applyAuthorMaskingObserver(userLink, () => applyMasking(tweet));
     if (userLink.className.includes("transphobe")) {
       // User in social context is a transphobe
-      tweet.setAttribute("wiawbe-mask-tag", "retweet");
+      tweet.setAttribute("soupcan-mask-tag", "retweet");
 
     }
   }
@@ -451,13 +451,13 @@ function applyMasking(tweet) {
   if (tweetAuthor) {
     applyAuthorMaskingObserver(tweetAuthor, () => applyMasking(tweet));
     if (tweetAuthor.className.includes("transphobe")) {
-      tweet.setAttribute("wiawbe-mask-tag", "tweet");
+      tweet.setAttribute("soupcan-mask-tag", "tweet");
     }
   }
 
   const videoComponent = tweet.querySelector("div[data-testid='videoComponent']");
   if (videoComponent) {
-    videoComponent.setAttribute("wiawbe-mask-tag", "media");
+    videoComponent.setAttribute("soupcan-mask-tag", "media");
     const videoEl = videoComponent.querySelector("video");
     if (videoEl) {
       checkVideo(videoEl);
@@ -467,7 +467,7 @@ function applyMasking(tweet) {
   const tweetPhotos = tweet.querySelectorAll("div[data-testid='tweetPhoto']");
   if (tweetPhotos) {
     tweetPhotos.forEach(tweetPhoto => {
-      tweetPhoto.setAttribute("wiawbe-mask-tag", "media");
+      tweetPhoto.setAttribute("soupcan-mask-tag", "media");
     });
   }
 
@@ -479,13 +479,13 @@ function applyMasking(tweet) {
       applyAuthorMaskingObserver(qrtAuthor, () => applyMasking(tweet));
       if (qrtAuthor.className.includes("transphobe")) {
         // QRT'ed a transphobe
-        qrtDiv.setAttribute("wiawbe-mask-tag", "tweet");
+        qrtDiv.setAttribute("soupcan-mask-tag", "tweet");
       }
     }
   }
 
   // Mark the tweet as checked for masking
-  tweet.setAttribute("data-wiawbe-mask-checked", "true");
+  tweet.setAttribute("data-soupcan-mask-checked", "true");
 
   // Add observer to catch changes and mask them
   if (!tweet.observer) {
@@ -527,10 +527,10 @@ function isProfilePage() {
 
 let appliedLinkedToUsernameOnProfilePage = false;
 function applyLinkToUsernameOnProfilePage() {
-  if (!document.querySelector("a.wiaw-username-link") || !appliedLinkedToUsernameOnProfilePage) {
+  if (!document.querySelector("a.soupcan-username-link") || !appliedLinkedToUsernameOnProfilePage) {
     // Check for username at top of profile page
     const usernameDiv = document.body.querySelector("div[data-testid='UserName']");
-    if (usernameDiv && !usernameDiv.classList.contains("wiawbe-linked")) {
+    if (usernameDiv && !usernameDiv.classList.contains("soupcan-linked")) {
       const link = document.createElement('a');
       link.setAttribute("href", location.href);
       link.setAttribute("draggable", "false");
@@ -538,9 +538,9 @@ function applyLinkToUsernameOnProfilePage() {
         e.preventDefault();
         return false;
       });
-      link.classList.add("wiaw-username-link");
+      link.classList.add("soupcan-username-link");
       // Remove any previous link wrapper
-      const previousLink = usernameDiv.closest("a.wiaw-username-link");
+      const previousLink = usernameDiv.closest("a.soupcan-username-link");
       if (previousLink) {
         //var parent = previousLink.closest("div");
         previousLink.before(previousLink.childNodes[0]); // move username div to just before link
@@ -549,7 +549,7 @@ function applyLinkToUsernameOnProfilePage() {
 
       usernameDiv.after(link);
       link.appendChild(usernameDiv);
-      usernameDiv.classList.add("wiawbe-linked");
+      usernameDiv.classList.add("soupcan-linked");
       appliedLinkedToUsernameOnProfilePage = true;
     }
   }
@@ -587,14 +587,14 @@ async function processDiv(div, markArea = false) {
 
   const database_entry = await getDatabaseEntry(div_identifier);
 
-  let hasLabelToApply = 'has-wiaw-label';
-  let labelPrefix = 'wiaw-label-';
-  let removedLabel = 'wiaw-removed';
+  let hasLabelToApply = 'has-soupcan-label';
+  let labelPrefix = 'soupcan-label-';
+  let removedLabel = 'soupcan-removed';
 
   if (markArea) {
-    hasLabelToApply = 'has-wiaw-area-label';
-    labelPrefix = 'wiaw-area-label-';
-    removedLabel = 'wiaw-area-removed';
+    hasLabelToApply = 'has-soupcan-area-label';
+    labelPrefix = 'soupcan-area-label-';
+    removedLabel = 'soupcan-area-removed';
   }
 
   if (database_entry) {
@@ -608,17 +608,17 @@ async function processDiv(div, markArea = false) {
     }
     let labelToApply = labelPrefix + div.wiawLabel;
     if (div.wiawLabel && !div.classList.contains(labelToApply)) {
-      div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("wiaw-label-")));
+      div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith("soupcan-label-")));
       div.classList.add(hasLabelToApply);
       div.classList.add(labelToApply);
-      div.setAttribute("data-wiawbeidentifier", div_identifier);
+      div.setAttribute("data-soupcanidentifier", div_identifier);
       applySymbols(div);
     }
   } else {
     div.classList.remove(hasLabelToApply);
     div.classList.remove.apply(div.classList, Array.from(div.classList).filter(v => v.startsWith(labelPrefix)));
     div.classList.add(removedLabel);
-    div.removeAttribute("data-wiawbeidentifier");
+    div.removeAttribute("data-soupcanidentifier");
     div.wiawLabel = null;
     div.wiawReason = null;
   }
@@ -642,7 +642,7 @@ async function processDiv(div, markArea = false) {
             mutation.target.classList.add(hasLabelToApply);
             mutation.target.classList.add(labelToApply);
           }
-        } else if (mutation.attributeName === "data-wiawbe-reason") {
+        } else if (mutation.attributeName === "data-soupcan-reason") {
           //applyProfileDecorations(div);
         }
       });
@@ -653,11 +653,11 @@ async function processDiv(div, markArea = false) {
 }
 
 function addReasonToUserNameDiv(div, identifier) {
-  if (!/wiawbe-profile-reason/.test(div.innerHTML)) {
+  if (!/soupcan-profile-reason/.test(div.innerHTML)) {
     if (div.wiawReason) {
       const spanContents = "[" + div.wiawReason + "]";
-      div.insertAdjacentHTML("beforeend", "<span id='wiawbe-profile-reason' class='wiawbe-reason'></span>");
-      const profileReasonSpan = document.getElementById("wiawbe-profile-reason");
+      div.insertAdjacentHTML("beforeend", "<span id='soupcan-profile-reason' class='soupcan-reason'></span>");
+      const profileReasonSpan = document.getElementById("soupcan-profile-reason");
       profileReasonSpan.innerText = spanContents;
       const reasonAnchor = document.createElement("a");
       reasonAnchor.href = "javascript:;"
@@ -867,10 +867,10 @@ async function processLink(a) {
 
   let identifier = null;
 
-  const dataIdentifier = a.getAttribute("data-wiawbeidentifier");
+  const dataIdentifier = a.getAttribute("data-soupcanidentifier");
 
   if (a.querySelector("a>time")) {
-    a.removeAttribute("data-wiawbeidentifier");
+    a.removeAttribute("data-soupcanidentifier");
     return;
   }
 
@@ -898,23 +898,23 @@ async function processLink(a) {
     a.wiawLabel = databaseEntry["label"]
     a.wiawReason = databaseEntry["reason"]
 
-    if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
-      a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
-      a.classList.remove("has-wiaw-label");
+    if (!a.className.includes("soupcan-label-" + a.wiawLabel)) {
+      a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("soupcan-label-")));
+      a.classList.remove("has-soupcan-label");
     }
 
-    if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
-      a.classList.add('has-wiaw-label');
-      a.classList.add('wiaw-label-' + a.wiawLabel);
-      a.setAttribute("data-wiawbeidentifier", identifier);
+    if (a.wiawLabel && !a.classList.contains('has-soupcan-label')) {
+      a.classList.add('has-soupcan-label');
+      a.classList.add('soupcan-label-' + a.wiawLabel);
+      a.setAttribute("data-soupcanidentifier", identifier);
     }
   } else {
-    a.classList.remove('has-wiaw-label');
-    a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
-    a.classList.add('wiaw-removed');
+    a.classList.remove('has-soupcan-label');
+    a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("soupcan-label-")));
+    a.classList.add('soupcan-removed');
     a.wiawLabel = null;
     a.wiawReason = null;
-    a.removeAttribute("data-wiawbeidentifier");
+    a.removeAttribute("data-soupcanidentifier");
   }
 
   if (cbUseSymbols) {
@@ -926,10 +926,10 @@ async function processLink(a) {
       mutations.forEach(function (mutation) {
         if (mutation.attributeName === "class" || mutation.attributeName === "href") {
           if (a.wiawLabel) {
-            if (!a.className.includes("wiaw-label-" + a.wiawLabel)) {
-              a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("wiaw-label-")));
-              mutation.target.classList.add('has-wiaw-label');
-              mutation.target.classList.add('wiaw-label-' + a.wiawLabel);
+            if (!a.className.includes("soupcan-label-" + a.wiawLabel)) {
+              a.classList.remove.apply(a.classList, Array.from(a.classList).filter(v => v.startsWith("soupcan-label-")));
+              mutation.target.classList.add('has-soupcan-label');
+              mutation.target.classList.add('soupcan-label-' + a.wiawLabel);
               if (cbUseSymbols) {
                 applySymbols(a);
               }
@@ -1240,9 +1240,9 @@ function updatePage() {
   if (location.href !== lastUpdatedUrl) {
     lastUpdatedUrl = location.href;
     appliedLinkedToUsernameOnProfilePage = false;
-    const linkedDiv = document.querySelector("div.wiawbe-linked");
+    const linkedDiv = document.querySelector("div.soupcan-linked");
     if (linkedDiv) {
-      linkedDiv.classList.remove("wiawbe-linked");
+      linkedDiv.classList.remove("soupcan-linked");
     }
 
     if (lastUpdatedUrl.endsWith("/followers") || lastUpdatedUrl.endsWith("/followers_you_follow") || lastUpdatedUrl.endsWith("/verified_followers")) {
@@ -1254,7 +1254,7 @@ function updatePage() {
     }
 
     function removeProfileReason() {
-      const profileReason = document.getElementById("wiawbe-profile-reason");
+      const profileReason = document.getElementById("soupcan-profile-reason");
       if (profileReason) {
         const usernameDiv = profileReason.closest("[data-testid='UserName']");
         profileReason.remove();
@@ -1273,16 +1273,16 @@ function updatePage() {
 
   // Color-code all links
   for (const a of document.querySelectorAll('a')) {
-    if (a.wiawLabel && !a.classList.contains('has-wiaw-label')) {
-      a.classList.add('wiaw-label-' + a.wiawLabel);
-      a.classList.add('has-wiaw-label');
+    if (a.wiawLabel && !a.classList.contains('has-soupcan-label')) {
+      a.classList.add('soupcan-label-' + a.wiawLabel);
+      a.classList.add('has-soupcan-label');
     }
   }
   // Color-code all divs
   for (const div of document.querySelectorAll('div')) {
-    if (div.wiawLabel && !div.classList.contains('has-wiaw-label')) {
-      div.classList.add('wiaw-label-' + div.wiawLabel);
-      div.classList.add('has-wiaw-label');
+    if (div.wiawLabel && !div.classList.contains('has-soupcan-label')) {
+      div.classList.add('soupcan-label-' + div.wiawLabel);
+      div.classList.add('has-soupcan-label');
     }
   }
 }
@@ -1482,7 +1482,7 @@ async function updateDatabase(sendResponse) {
   }
 
   database["downloading"] = true;
-  const fetchUrl = `https://wiaw-extension.s3.us-west-2.amazonaws.com/dataset_compressed.json?${new Date().getTime()}`;
+  const fetchUrl = `https://soupcan-extension.s3.us-west-2.amazonaws.com/dataset_compressed.json?${new Date().getTime()}`;
 
   notifier.async(
     new Promise(async resolve => {
@@ -1587,7 +1587,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
 
       waitForElm("body").then(() => {
         notifier.modal(
-          browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='wiawbe-reason-textarea'></textarea>",
+          browser.i18n.getMessage("reportReasonInstructions", [identifier]) + "<textarea rows='8' cols='50' maxlength='1024' id='soupcan-reason-textarea'></textarea>",
           'modal-reason'
         );
         const popupElements = document.getElementsByClassName("awn-popup-modal-reason");
@@ -1599,7 +1599,7 @@ browser.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             el.style["color"] = textColor;
           }
         }
-        const textArea = document.getElementById("wiawbe-reason-textarea");
+        const textArea = document.getElementById("soupcan-reason-textarea");
         if (textArea) {
           textArea.style["backgroundColor"] = bodyBackgroundColor;
           textArea.style["color"] = textColor;

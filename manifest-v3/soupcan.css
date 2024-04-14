@@ -76,33 +76,33 @@ body {
  /* Marked text labels */
 
  /* When marked by both Shinigami and Soupcan, use Soupcan styling for consistency */
- a.wiaw-label-transphobe.assigned-label-transphobic {
+ a.soupcan-label-transphobe.assigned-label-transphobic {
     color: var(--wiawBotTransphobic) !important;
     font-weight: bold !important;
 }
 
-.wiaw-label-transphobe, a.wiaw-label-transphobe, div.wiaw-label-transphobe {
+.soupcan-label-transphobe, a.soupcan-label-transphobe, div.soupcan-label-transphobe {
     color: var(--wiawBotTransphobic) !important;
     font-weight: bold !important;
 }
 
 /* When marked in Shinigami Eyes */
-.wiaw-label-transphobe-se, a.wiaw-label-transphobe-se, div.wiaw-label-transphobe-se {
+.soupcan-label-transphobe-se, a.soupcan-label-transphobe-se, div.soupcan-label-transphobe-se {
     color: var(--wiawBotTransphobic) !important;
     font-weight: bold !important;
 }
 
-.wiaw-label-local-transphobe, a.wiaw-label-local-transphobe, div.wiaw-label-local-transphobe {
+.soupcan-label-local-transphobe, a.soupcan-label-local-transphobe, div.soupcan-label-local-transphobe {
     color: var(--wiawBotLocallyTransphobic) !important;
     font-weight: bold !important;
 }
 
-.wiaw-label-local-appeal, a.wiaw-label-local-appeal, div.wiaw-label-local-appeal {
+.soupcan-label-local-appeal, a.soupcan-label-local-appeal, div.soupcan-label-local-appeal {
     color: var(--wiawBotLocallyAppealed) !important;
     font-weight: bold !important;
 }
 
-.wiaw-label-controversial, a.wiaw-label-controversial, div.wiaw-label-controversial {
+.soupcan-label-controversial, a.soupcan-label-controversial, div.soupcan-label-controversial {
     color: var(--wiawBotControversial) !important;
     font-weight: bold !important;
 }
@@ -132,23 +132,23 @@ div[data-testid="card.layoutSmall.media"] div[aria-label="Play"] {
 }
 
 /* Zalgo hiding */
-body.wiawbe-hide-zalgo div[data-testid="UserDescription"] {
+body.soupcan-hide-zalgo div[data-testid="UserDescription"] {
     overflow: hidden;
 }
 
-body.wiawbe-hide-zalgo div[data-testid="UserCell"] div[dir="auto"] {
+body.soupcan-hide-zalgo div[data-testid="UserCell"] div[dir="auto"] {
     overflow: hidden;
 }
 
-body.wiawbe-hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
+body.soupcan-hide-zalgo div[data-testid="HoverCard"] div[dir="auto"] {
     overflow: hidden;
 }
 
-body.wiawbe-hide-zalgo [aria-label="Followers you know"] span {
+body.soupcan-hide-zalgo [aria-label="Followers you know"] span {
     overflow: hidden;
 }
 
-body.wiawbe-hide-zalgo [aria-label="Followers you know"] div:has(>span) {
+body.soupcan-hide-zalgo [aria-label="Followers you know"] div:has(>span) {
     overflow: hidden;
 }
 
@@ -168,15 +168,15 @@ body.soupcan-remove-sidebar-premium a[href="/i/verified-choose"] {
 
 /* Hide all content from red users */
 
-body.wiawbe-mask-hide-all [wiawbe-content-match='true'] {
+body.soupcan-mask-hide-all [soupcan-content-match='true'] {
     display: none !important;
 }
 
-body.wiawbe-mask-hide-all [wiawbe-mask-tag='tweet'],
-body.wiawbe-mask-hide-all [wiawbe-mask-tag='retweet'],
-body.wiawbe-mask-hide-all [role="link"][wiawbe-mask-tag="tweet"],
-body.wiawbe-mask-hide-all article:has([wiawbe-mask-tag="tweet"]),
-body.wiawbe-mask-hide-all article:has(div.wiaw-label-transphobe)
+body.soupcan-mask-hide-all [soupcan-mask-tag='tweet'],
+body.soupcan-mask-hide-all [soupcan-mask-tag='retweet'],
+body.soupcan-mask-hide-all [role="link"][soupcan-mask-tag="tweet"],
+body.soupcan-mask-hide-all article:has([soupcan-mask-tag="tweet"]),
+body.soupcan-mask-hide-all article:has(div.soupcan-label-transphobe)
 {
     display: none !important;
 }
@@ -185,9 +185,9 @@ body.wiawbe-mask-hide-all article:has(div.wiaw-label-transphobe)
 
 /* Image masking */
 
-body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']::after,
-body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-tag='media']::after,
-[wiawbe-content-match='true']::after
+body.soupcan-mask-direct-media [soupcan-mask-tag='tweet'] [soupcan-mask-tag='media']::after,
+body.soupcan-mask-media-incl-retweets [soupcan-mask-tag='retweet'] [soupcan-mask-tag='media']::after,
+[soupcan-content-match='true']::after
 {
     content: "";
     background-image: var(--soupcan-mask-image);
@@ -204,9 +204,9 @@ body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-ta
     pointer-events: none;
 }
 
-[wiawbe-content-match='true']::after
+[soupcan-content-match='true']::after
 {
-    content: attr(wiawbe-content-match-note);
+    content: attr(soupcan-content-match-note);
     color: #FFFFFF;
     white-space: pre-wrap;
     text-shadow: 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1), 0px 0px 20px rgba(0, 0, 0, 1);
@@ -217,7 +217,7 @@ body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-ta
     font-family: var(--twitter-font-family);
 }
 
-[wiawbe-content-match='pending']::after
+[soupcan-content-match='pending']::after
 {
     content: "";
     background-image: var(--soupcan-processing-image);
@@ -234,16 +234,16 @@ body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-ta
     pointer-events: none;
 }
 
-body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']:hover::after,
-body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-tag='media']:hover::after,
-[wiawbe-content-match='true']:hover::after
+body.soupcan-mask-direct-media [soupcan-mask-tag='tweet'] [soupcan-mask-tag='media']:hover::after,
+body.soupcan-mask-media-incl-retweets [soupcan-mask-tag='retweet'] [soupcan-mask-tag='media']:hover::after,
+[soupcan-content-match='true']:hover::after
 {
     opacity: 0;
 }
 
-body.wiawbe-mask-direct-media [wiawbe-mask-tag='tweet'] [wiawbe-mask-tag='media']:hover,
-body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-tag='media']:hover,
-[wiawbe-content-match='true']:hover
+body.soupcan-mask-direct-media [soupcan-mask-tag='tweet'] [soupcan-mask-tag='media']:hover,
+body.soupcan-mask-media-incl-retweets [soupcan-mask-tag='retweet'] [soupcan-mask-tag='media']:hover,
+[soupcan-content-match='true']:hover
 {
     filter: brightness(100%);
     animation-name: wait-to-reveal;
@@ -252,8 +252,8 @@ body.wiawbe-mask-media-incl-retweets [wiawbe-mask-tag='retweet'] [wiawbe-mask-ta
 
 /* Tweet masking */
 
-body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet'] [data-testid='tweetText'],
-body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet'] [data-testid='tweetText']
+body.soupcan-mask-all-content [soupcan-mask-tag='tweet'] [data-testid='tweetText'],
+body.soupcan-mask-all-content [soupcan-mask-tag='retweet'] [data-testid='tweetText']
 {
     content: "";
     filter: blur(8px);
@@ -277,8 +277,8 @@ body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet'] [data-testid='tweetText
     }
 }
 
-body.wiawbe-mask-all-content [wiawbe-mask-tag='tweet'] [data-testid='tweetText']:hover,
-body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet'] [data-testid='tweetText']:hover
+body.soupcan-mask-all-content [soupcan-mask-tag='tweet'] [data-testid='tweetText']:hover,
+body.soupcan-mask-all-content [soupcan-mask-tag='retweet'] [data-testid='tweetText']:hover
 {
     filter: blur(0px);
     animation-name: wait-unblur;
@@ -287,7 +287,7 @@ body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet'] [data-testid='tweetText
 
 /* Mark reason on profile page */
 
-.wiawbe-reason {
+.soupcan-reason {
     font-family: var(--twitter-font-family);
     top: -25px;
     position: absolute;
@@ -296,11 +296,11 @@ body.wiawbe-mask-all-content [wiawbe-mask-tag='retweet'] [data-testid='tweetText
     font-weight: 400 !important;
 }
 
-a.wiawbe-no-underline {
+a.soupcan-no-underline {
     text-decoration: none !important;
 }
 
- .has-wiaw-label * { color: inherit !important; }
+ .has-soupcan-label * { color: inherit !important; }
 
  /* Notifications */
 
@@ -336,7 +336,7 @@ a.wiawbe-no-underline {
     margin-top: 20px;
  }
 
- a.wiaw-username-link {
+ a.soupcan-username-link {
     text-decoration: none;
     cursor: auto;
     user-select: text;

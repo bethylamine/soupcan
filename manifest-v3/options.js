@@ -74,7 +74,7 @@ function loadThemeExamples() {
 
     var newEl = document.createElement("span");
     newEl.classList.add("text");
-    newEl.classList.add("wiaw-label-local-transphobe");
+    newEl.classList.add("soupcan-label-local-transphobe");
     newEl.style.left = "63px"; // -1
     newEl.style.top = "12px";  // -7
     newEl.innerText = "Transphobe Reported By You";
@@ -82,7 +82,7 @@ function loadThemeExamples() {
 
     newEl = document.createElement("span");
     newEl.classList.add("text");
-    newEl.classList.add("wiaw-label-local-transphobe");
+    newEl.classList.add("soupcan-label-local-transphobe");
     newEl.style.left = "63px";
     newEl.style.top = "31px";
     newEl.style.setProperty("font-weight", "normal", "important");
@@ -99,7 +99,7 @@ function loadThemeExamples() {
 
     newEl = document.createElement("span");
     newEl.classList.add("text");
-    newEl.classList.add("wiaw-label-transphobe");
+    newEl.classList.add("soupcan-label-transphobe");
     newEl.style.left = "53px";
     newEl.style.top = "122px";
     newEl.innerText = "Extra large transphobe";
@@ -107,7 +107,7 @@ function loadThemeExamples() {
 
     newEl = document.createElement("span");
     newEl.classList.add("text");
-    newEl.classList.add("wiaw-label-transphobe");
+    newEl.classList.add("soupcan-label-transphobe");
     newEl.style.left = "240px";
     newEl.style.top = "122px";
     newEl.style.setProperty("font-weight", "normal", "important");
@@ -121,7 +121,7 @@ function loadThemeExamples() {
     newEl.style.left = "23px";
     newEl.style.top = "153px";
     newEl.style.setProperty("font-weight", "normal", "important");
-    newEl.innerHTML = "Replying to <span class='wiaw-label-controversial'>" + (useSymbols ? "✱" : "@") + "controversialPerson</span> and <span class='wiaw-label-local-appeal'>" + (useSymbols ? "⊡" : "@") + "appealedByYou</span>";
+    newEl.innerHTML = "Replying to <span class='soupcan-label-controversial'>" + (useSymbols ? "✱" : "@") + "controversialPerson</span> and <span class='soupcan-label-local-appeal'>" + (useSymbols ? "⊡" : "@") + "appealedByYou</span>";
     themeEx.appendChild(newEl);
   }
 }
