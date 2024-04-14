@@ -6,6 +6,10 @@ const maskAllTransphobeMediaRadio = document.getElementById("maskAllTransphobeMe
 const maskAllTransphobeContentRadio = document.getElementById("maskAllTransphobeContent");
 const hideAllTransphobeContentRadio = document.getElementById("hideAllTransphobeContent");
 const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
+const removeSidebarGrokCheckbox = document.getElementById("removeSidebarGrok");
+const removeSidebarCommunitiesCheckbox = document.getElementById("removeSidebarCommunities");
+const removeSidebarPremiumCheckbox = document.getElementById("removeSidebarPremium");
+
 const hideAdsCheckbox = document.getElementById("hideAds");
 
 const useMediaMatching = document.getElementById("useMediaMatching");
@@ -117,7 +121,7 @@ function loadThemeExamples() {
     newEl.style.left = "23px";
     newEl.style.top = "153px";
     newEl.style.setProperty("font-weight", "normal", "important");
-    newEl.innerHTML = "Replying to <span class='wiaw-label-controversial'>" + (useSymbols ? "✱" : "@") +  "controversialPerson</span> and <span class='wiaw-label-local-appeal'>" + (useSymbols ? "⊡" : "@") +  "appealedByYou</span>";
+    newEl.innerHTML = "Replying to <span class='wiaw-label-controversial'>" + (useSymbols ? "✱" : "@") + "controversialPerson</span> and <span class='wiaw-label-local-appeal'>" + (useSymbols ? "⊡" : "@") + "appealedByYou</span>";
     themeEx.appendChild(newEl);
   }
 }
@@ -160,6 +164,18 @@ function loadOptions() {
 
     if (options["preventZalgoText"]) {
       preventZalgoTextCheckbox.checked = true;
+    }
+
+    if (options["removeSidebarGrok"]) {
+      removeSidebarGrokCheckbox.checked = true;
+    }
+
+    if (options["removeSidebarCommunities"]) {
+      removeSidebarCommunitiesCheckbox.checked = true;
+    }
+
+    if (options["removeSidebarPremium"]) {
+      removeSidebarPremiumCheckbox.checked = true;
     }
 
     if (options["cbTheme"]) {
@@ -220,6 +236,9 @@ function saveOptions() {
 
   options["hideAds"] = hideAdsCheckbox.checked;
   options["preventZalgoText"] = preventZalgoTextCheckbox.checked;
+  options["removeSidebarGrok"] = removeSidebarGrokCheckbox.checked;
+  options["removeSidebarCommunities"] = removeSidebarCommunitiesCheckbox.checked;
+  options["removeSidebarPremium"] = removeSidebarPremiumCheckbox.checked;
 
   options["mediaMatching"] = useMediaMatching.checked;
   options["cbTheme"] = colorBlindThemeSelect.value;
@@ -238,6 +257,7 @@ const permissionButton = document.getElementById("permission-button");
 permissionButton.addEventListener("click", async () => {
   await browser.permissions.request(permissions);
 });
+
 async function showPermissionsOption() {
   const permissionOption = document.getElementById("request-permission-div");
   if (await browser.permissions.contains(permissions)) {

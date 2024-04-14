@@ -152,6 +152,20 @@ body.wiawbe-hide-zalgo [aria-label="Followers you know"] div:has(>span) {
     overflow: hidden;
 }
 
+/* Sidebar hiding */
+
+body.soupcan-remove-sidebar-grok a[href="/i/grok"] {
+    display: none;
+}
+
+body.soupcan-remove-sidebar-communities a[href$="/communities"] {
+    display: none;
+}
+
+body.soupcan-remove-sidebar-premium a[href="/i/verified-choose"] {
+    display: none;
+}
+
 /* Hide all content from red users */
 
 body.wiawbe-mask-hide-all [wiawbe-content-match='true'] {

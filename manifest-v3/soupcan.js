@@ -160,6 +160,23 @@ function applyOptions() {
     body.classList.remove("wiawbe-hide-zalgo");
     if (options["preventZalgoText"]) {
       body.classList.add("wiawbe-hide-zalgo");
+    } else {
+      body.classList.remove("wiawbe-hide-zalgo");
+    }
+    if (options["removeSidebarGrok"]) {
+      body.classList.add("soupcan-remove-sidebar-grok");
+    } else {
+      body.classList.remove("soupcan-remove-sidebar-grok");
+    }
+    if (options["removeSidebarCommunities"]) {
+      body.classList.add("soupcan-remove-sidebar-communities");
+    } else {
+      body.classList.remove("soupcan-remove-sidebar-communities");
+    }
+    if (options["removeSidebarPremium"]) {
+      body.classList.add("soupcan-remove-sidebar-premium");
+    } else {
+      body.classList.remove("soupcan-remove-sidebar-premium");
     }
 
     applyHideAds();
