@@ -162,7 +162,8 @@ body.soupcan-remove-sidebar-communities a[href$="/communities"] {
     display: none;
 }
 
-body.soupcan-remove-sidebar-premium a[href="/i/verified-choose"] {
+body.soupcan-remove-sidebar-premium a[href="/i/verified-choose"],
+body.soupcan-remove-sidebar-premium a[href="/i/premium_sign_up"] {
     display: none;
 }
 

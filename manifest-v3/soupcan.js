@@ -311,6 +311,19 @@ function applyHideAds() {
     }
   }
 
+  // Hide "Subscribe to Premium" banner tweet
+  const premiumLink = document.querySelector("a[href*='premium']");
+  if (premiumLink) {
+    const container = premiumLink.closest("div[data-testid='cellInnerDiv']");
+    if (container) {
+      if (options["hideAds"]) {
+        container.style.display = "none";
+      } else {
+        container.style.display = "";
+      }
+    }
+  }
+
   // Hide promoted tweets
   const ads = document.querySelectorAll("div[data-testid='placementTracking'] article");
 
