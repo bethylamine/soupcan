@@ -218,19 +218,25 @@ browser.runtime.onMessageExternal.addListener((m, s, r) => { (async (message, se
   console.log("Got external message",message,sender);
   if (blueBlockerExtensionIds.includes(sender.id)) {
     if (message.action == "check_twitter_user") {
-      if (message.screen_name) {
-        let dbEntry = await getDatabaseEntry(message.screen_name);
+      if (message.data.legacy.screen_name) {
+        let dbEntry = await getDatabaseEntry(message.data.legacy.screen_name);
 
         if (dbEntry) {
           sendResponse({
-            status: dbEntry["label"].includes("transphobe") ? "transphobic" : "normal",
-            reason: dbEntry.reason,
-            reported_at: dbEntry.time
+            status: "SUCCESS",
+            result: {
+              block: dbEntry["label"].includes("transphobe") ? true : false,
+              reason: dbEntry.reason,
+              // This will get ignored by Blue Blocker
+              reported_at: dbEntry.time
+            }
           });
         } else {
           sendResponse({
-            screen_name: message.screen_name,
-            status: "not_found",
+            status: "SUCCESS",
+            result: {
+              block: false
+            }
           });
         }
       }
