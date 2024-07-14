@@ -167,6 +167,10 @@ body.soupcan-remove-sidebar-premium a[href="/i/premium_sign_up"] {
     display: none;
 }
 
+body.soupcan-remove-sidebar-verified-orgs a[href="/i/verified-orgs-signup"] {
+    display: none;
+}
+
 /* Hide all content from red users */
 
 body.soupcan-mask-hide-all [soupcan-content-match='true'] {

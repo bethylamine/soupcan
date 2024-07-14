@@ -179,6 +179,12 @@ function applyOptions() {
       body.classList.remove("soupcan-remove-sidebar-premium");
     }
 
+    if (options["removeSidebarVerifiedOrgs"]) {
+      body.classList.add("soupcan-remove-sidebar-verified-orgs");
+    } else {
+      body.classList.remove("soupcan-remove-sidebar-verified-orgs");
+    }
+
     applyHideAds();
   });
 }
