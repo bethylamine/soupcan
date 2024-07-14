@@ -9,6 +9,7 @@ const preventZalgoTextCheckbox = document.getElementById("preventZalgoText");
 const removeSidebarGrokCheckbox = document.getElementById("removeSidebarGrok");
 const removeSidebarCommunitiesCheckbox = document.getElementById("removeSidebarCommunities");
 const removeSidebarPremiumCheckbox = document.getElementById("removeSidebarPremium");
+const removeSidebarVerifiedOrgsCheckbox = document.getElementById("removeSidebarVerifiedOrgs");
 
 const hideAdsCheckbox = document.getElementById("hideAds");
 
@@ -178,6 +179,10 @@ function loadOptions() {
       removeSidebarPremiumCheckbox.checked = true;
     }
 
+    if (options["removeSidebarVerifiedOrgs"]) {
+      removeSidebarVerifiedOrgsCheckbox.checked = true
+    }
+
     if (options["cbTheme"]) {
       colorBlindThemeSelect.value = options["cbTheme"];
     }
@@ -239,6 +244,7 @@ function saveOptions() {
   options["removeSidebarGrok"] = removeSidebarGrokCheckbox.checked;
   options["removeSidebarCommunities"] = removeSidebarCommunitiesCheckbox.checked;
   options["removeSidebarPremium"] = removeSidebarPremiumCheckbox.checked;
+  options["removeSidebarVerifiedOrgs"] = removeSidebarVerifiedOrgsCheckbox.checked;
 
   options["mediaMatching"] = useMediaMatching.checked;
   options["cbTheme"] = colorBlindThemeSelect.value;
