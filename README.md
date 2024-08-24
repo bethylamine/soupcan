@@ -2,9 +2,9 @@
 
 ![icon128](https://user-images.githubusercontent.com/130214958/235278689-2c66607f-2665-48da-b668-915c23296418.png)
 
-### A cross-browser extension for Twitter to bring [@WhatIsAWomanBot](https://twitter.com/WhatIsAWomanBot) features into your browser created by [@bethylamine](https://twitter.com/bethylamine).
+### A cross-browser extension for Twitter to bring [@WhatIsAWomanBot](https://x.com/WhatIsAWomanBot) features into your browser created by [@bethylamine](https://x.com/bethylamine).
 
-Thank you to [@VehpuS](https://twitter.com/VehpuS) for helping me get started with extension development!
+Thank you to [@VehpuS](https://x.com/VehpuS) for helping me get started with extension development!
 
 Website: https://soupcan.beth.lgbt/
 
@@ -20,7 +20,7 @@ Website: https://soupcan.beth.lgbt/
 * Add trans-supportive library tool to provide you with relevant trans-supportive information you can reply with quickly
 * Auto-suggest debunking sources
 
-If you have any cool ideas, please pop a message into the **Issues** tab, or message me, [@bethylamine](https://twitter.com/bethylamine), on Twitter.
+If you have any cool ideas, please pop a message into the **Issues** tab, or message me, [@bethylamine](https://x.com/bethylamine), on Twitter.
 
 ## Install
 
