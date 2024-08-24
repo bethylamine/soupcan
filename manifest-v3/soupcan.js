@@ -777,7 +777,7 @@ function getReasoning(identifier) {
             reporterEl.innerText = reporter;
           } else {
             const reporterAnchor = document.createElement("a");
-            reporterAnchor.href = "https://twitter.com/" + report["reporter_screen_name"];
+            reporterAnchor.href = "https://x.com/" + report["reporter_screen_name"];
             reporterAnchor.innerText = reporter;
             reporterEl.appendChild(reporterAnchor);
           }
@@ -1535,7 +1535,7 @@ async function updateDatabase(sendResponse) {
             "database": database
           });
         }
-        
+
         saveDatabaseToLocalStorage(database);
         resolve();
 

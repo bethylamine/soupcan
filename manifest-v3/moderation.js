@@ -77,7 +77,7 @@ function buildTable(reports) {
   var report_screen_names = Object.keys(grouped_reports);
 
   // Let the server sort them
-  
+
   /*report_screen_names = report_screen_names.sort((a, b) => {
     var length = grouped_reports[b].length - grouped_reports[a].length;
     if (length != 0) {
@@ -121,7 +121,7 @@ function buildTable(reports) {
         totalTrust += report.reporter_trust;
       }
 
-      listEl.innerHTML = "Report from <a href='https://twitter.com/" + report.reporter_screen_name + "'>@" + report.reporter_screen_name + "</a> <span class='trust " + badgeClasses + "'>" + report.reporter_trust + "%</span> at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
+      listEl.innerHTML = "Report from <a href='https://x.com/" + report.reporter_screen_name + "'>@" + report.reporter_screen_name + "</a> <span class='trust " + badgeClasses + "'>" + report.reporter_trust + "%</span> at " + new Date(report.report_time * 1000).toString().replace(/\(.*/g, "");
       if (report["user_reason"]) {
         var preEl = document.createElement("pre");
         preEl.style.whiteSpace = "pre-wrap";
@@ -137,8 +137,8 @@ function buildTable(reports) {
     }
 
     var screenNameCell = document.createElement("td");
-    screenNameCell.innerHTML = "<a target='_blank' class='badge bg-danger' href='https://twitter.com/" + screenName + "'>@" + screenName + "</a><br/><b>Report Trust: " + totalTrust + "%</b>";
-    row.appendChild(screenNameCell);  
+    screenNameCell.innerHTML = "<a target='_blank' class='badge bg-danger' href='https://x.com/" + screenName + "'>@" + screenName + "</a><br/><b>Report Trust: " + totalTrust + "%</b>";
+    row.appendChild(screenNameCell);
 
     row.appendChild(reportsCell);
     var actionsCell = document.createElement("td");
