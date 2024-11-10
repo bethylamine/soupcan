@@ -2,6 +2,8 @@
 
 ![icon128](https://user-images.githubusercontent.com/130214958/235278689-2c66607f-2665-48da-b668-915c23296418.png)
 
+> Note: I've moved off Twitter and Soupcan is now in life support mode (breaking bugfixes, etc.) Feel free to get in touch with me over on Bluesky (@beth.lgbt), where the in-built moderation tools are great and make Soupcan unnecessary :)
+
 ### A cross-browser extension for Twitter to bring [@WhatIsAWomanBot](https://x.com/WhatIsAWomanBot) features into your browser created by [@bethylamine](https://x.com/bethylamine).
 
 Thank you to [@VehpuS](https://x.com/VehpuS) for helping me get started with extension development!
